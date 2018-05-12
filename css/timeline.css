@@ -1,0 +1,122 @@
+.timeline2 {
+    /* backface-visibility: hidden; */
+    will-change: inherit;
+    position: absolute;
+    transform-origin: left top;
+    font-size: 9px;
+    /* color: #FFF; */
+    /* backface-visibility: hidden; */
+    /* -webkit-backface-visibility: hidden; */
+}
+
+.timeline2 .inner {
+    /* transform: scale(4); */
+    transform-origin: left top;
+}
+
+.timeline2 .outer {
+    /* transform: scale(0.25); */
+    transform-origin: left top;
+}
+
+
+.timeline2 .container {
+    width: 20px;
+    text-rendering: optimizeSpeed;
+    /* overflow: hidden; */
+    /* margin: 1px; */
+    /* will-change: inherit; */
+    /* perspective: 600px; */
+    /* transform-style: preserve-3d; */
+    /* transition: all 0s linear; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    border-top: 1px solid rgba(243, 235, 214, 0.11);
+    /* background: #fff; */
+    transform-origin: left top;
+    position: absolute;
+    /* transform: scale(2); */
+    /*-webkit-filter: blur(1);*/
+    /* zoom:170%; */
+}
+
+.timeline2 .year {
+    /* transform: initial!important; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    position: relative;
+    /* left: 40%; */
+    /* padding-left: 12px; */
+    padding: 2px;
+    color: #fff;
+    transform-origin: left top;
+    /* position: absolute; */
+    /* transform: scale(2) translateZ(0); */
+    /* transform: scale(2); */
+    /* height: 4px; */
+}
+
+.timeline2 .entry {
+    width: 100%;
+    margin-bottom: 1px;
+    padding: 1px;
+    font-size: 0.1em;
+    /* overflow: hidden; */
+    position: relative;
+    transform-origin: left top;
+    background: #E5E3D2;
+    color: #000;
+    float: left;
+}
+
+.timeline2 .entries {
+	float: left;
+	width: 100%;
+	/* float: left; */
+	/* top: 0px; */
+	position: relative;
+	transform-origin: left top;
+	/* top: 10px; */
+}
+
+.timeline2 .title {
+    width: 100%;
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.timeline2 .yearOuter {
+    display: none;
+    width: 22px;
+    float: left;
+}
+
+.timeline2 .text {
+	font-family: "lyon-text";
+	display: none;
+	/* padding-top: 0.7em; */
+	/* font-size: 0.7em; */
+}
+
+.timeline2.middle .text,
+.timeline2.large .text {
+	display: block;
+	float: left;
+	width: 100%;
+	position: relative;
+}
+
+.timeline2 .extra {
+	float: left;
+	/* display: block; */
+	font-family: "lyon-text";
+	display: none;
+	padding-top: 0.7em;
+	/* font-size: 0.8px; */
+}
+
+.timeline2.large .extra {
+	/* float: left; */
+	display: block;
+}

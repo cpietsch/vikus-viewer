@@ -1,0 +1,292 @@
+.infobar {
+    float: left;
+    font-size: 15px;
+    /* font-family: "lyon-text"; */
+    z-index: 100;
+    height: 100%;
+    transition: left 0.3s ease-out;
+    /*box-shadow: 0 0px 56px rgba(0, 0, 0, 0.66), 0 0px 6px rgba(0, 0, 0, 0.23);*/
+    box-shadow: 5px 0px 0px rgba(0, 0, 0, 0.14);
+    left: 0px;
+    position: absolute;
+    width: 480px;
+    max-width: 100%;
+    color: #fff;
+    background: #353535;
+    line-height: 1.3em;
+    /* overflow: auto; */
+    /*direction: rtl;*/
+    z-index: 400;
+}
+
+.infobar .svgImg {
+    position: relative;
+}
+.infobar .svgImg #infobar_tags {
+    stroke: #000;
+
+}
+
+.menu {
+    width: 420px;
+    padding-left: 10px;
+    float: left;
+    position: relative;
+    background: rgba(255, 255, 255, 0.25);
+    padding: 10px;
+    padding-right: 30px;
+    padding-left: 30px;
+    /* width: 100%; */
+    display: block;
+}
+
+.menu a {
+    text-decoration: none;
+    margin-right: 5px;
+    padding: 7px;
+    float: left;
+    /* border-right: 1px solid rgba(255, 255, 255, 0.78); */
+    color: #FFF;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 13px;
+    /* background: rgb(53, 53, 53); */
+}
+
+.menu .language {
+    float: right;
+    font-weight: normal;
+}
+
+.menu .active {
+    font-weight: bold;
+}
+
+.de .infobar .en {
+    display: none;
+}
+
+.en .infobar .de {
+    /* display: none; */
+}
+
+.infobar.hide {
+    display: none;
+}
+
+.infobar.sneak {
+    left: -480px;
+}
+
+.infobar.sneak:hover {
+    left: -477px;
+}
+
+.infobar .infobuttons {
+    z-index: 200;
+    /* display: none; */
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    right: 18px;
+    width: 20px;
+    height: 30px;
+    position: absolute;
+    opacity: 0.5;
+    background-image: url("../img/infobutton.svg");
+    top: 50%;
+    /* opacity: 0.33; */
+    cursor: pointer;
+    transition: transform 0.3s, right 0.3s;
+}
+
+.infobar .infobutton {
+    z-index: 200;
+    /* display: none; */
+    right: 0px;
+    width: 50px;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    
+}
+
+.infobar .infobutton img {
+    width: 20px;
+    height: 30px;
+    top: 50%;
+    left: 25%;
+    position: absolute;
+    opacity: 0.5;
+    transition: all 0.5s;
+}
+
+.navi {
+    z-index: 300;
+    top: 30%;
+    position: absolute;
+    left: 0;    
+}
+.navi .button {
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-size: 10px;
+    z-index: 300;
+    /* display: none; */
+    /* background-size: 100% 100%; */
+    /* background-repeat: no-repeat; */
+    width: 60px;
+    height: 15px;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    text-align: center;
+    background: rgba(53, 54, 54, 0.65);
+    cursor: pointer;
+    font-weight: bold;
+    color: #A2A2A2;
+    margin-bottom: 5px;
+}
+
+.navi .button.active {
+    color: rgba(255, 255, 255, 0.75);
+    background: #353636;
+    padding-right: 10px;
+    /* border-right: 4px solid rgba(247, 239, 205, 0.18); */
+}
+.navi .button:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.infobar.sneak .infobuttons {
+    /* transform: rotate(180deg); */
+    right: -40px;
+    background-image: url("../img/infobutton2.svg");
+    width: 40px;
+    height: 40px;
+}
+
+.infobar.sneak .infobutton img {
+    right: -80px;
+    transform: rotate(180deg);
+}
+
+.infobar h1 {
+    float: left;
+    font-size: 20px;
+    text-align: left;
+    margin: 0;
+    text-align: left;
+}
+
+.infobar h2 {
+    float: left;
+    text-align: left;
+    font-size: 20px;
+    line-height: 30px;
+    font-family: "Lato";
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.infobar .outer {
+    /* width: 450px; */
+    float: left;
+    height: 100%;
+    /* overflow-y: auto; */
+    /* overflow-x: hidden; */
+}
+
+.infobar .outer::-webkit-scrollbar * {
+    /* background: #555555; */
+}
+
+.infobar .inner {
+    /* padding: 60px 60px; */
+    /* width: 100%; */
+    /* height: 100%; */
+    /* overflow-y: scroll; */
+    float: left;
+    /*direction: ltr;*/
+}
+.infobar .inner > div {
+    /* height: 100%; */
+    position: relative;
+    width: 360px;
+    float: left;
+    padding: 60px;
+}
+
+.infobar img {
+    /* width: 50%; */
+    margin: 0 auto;
+    position: relative;
+    /* float: left; */
+    xborder: 1px solid #999;
+    width: 275px;
+    /* margin: auto auto; */
+    display: table;
+    margin: 0 auto;
+}
+
+.infobar img.scroll {
+    width: 100px;
+    padding: 0 120px;
+    margin-top: 10px;
+}
+
+.infobar .label {
+    font-size: 13px;
+    font-family: "Lato";
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    margin-top: 0;
+    font-weight: bold;
+}
+
+.infobar p {
+    float: left;
+    clear: both;
+    /* font-family: "lyon-text", serif; */
+    font-family: "Lato";
+}
+
+.infobar p.description {
+    padding-bottom: 2em;
+}
+
+.infobar p em {
+    font-family: "Lato";
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: bold;
+    color: #FFF;
+    font-size: 0.94em;
+}
+
+.infobar .feedback {
+    clear: none;
+    float: left;
+    margin-top: 4em;
+    margin-right: 1em;
+    text-align: center;
+}
+
+.infobar .feedback a {
+    font-size: 16px;
+    font-family: "Lato";
+    margin-bottom: 2px;
+    margin-top: 1.5rem;
+    border: 2px solid #999;
+    font-weight: none;
+    color: #fff;
+    padding: 10px;
+    text-decoration: none;
+    xwidth: 125px;
+    xdisplay: block;
+}
+
+.infobar .feedback a:hover {
+    border: 2px solid #fff;
+}
+
+

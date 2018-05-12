@@ -1,0 +1,16 @@
+<IfModule mod_headers.c>
+    # WEEK
+    <FilesMatch "\.(jpg|jpeg|png|gif|swf|csv)$">
+        Header set Cache-Control "max-age=315360000, public"
+    </FilesMatch>
+
+</IfModule>
+
+# Deflate Compression by MimeType
+<IfModule mod_deflate.c>
+ <FilesMatch "\.(js|csv|css)$">
+  ExpiresActive on
+  ExpiresDefault "access plus 1 month"
+  SetOutputFilter DEFLATE
+ </FilesMatch>
+</IfModule>
