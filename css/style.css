@@ -889,7 +889,7 @@ svg {
   position: absolute;
   z-index: 300;
   background: #583700;
-  transform: translate(0px,-50px);
+  transform: translate(0px,-51px);
   transition: transform 0.3s ease-in-out;
 }
 
