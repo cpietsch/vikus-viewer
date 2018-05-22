@@ -1,10 +1,8 @@
 // copyright christopher pietsch
 // cpietsch@gmail.com
-// tweet me @chrispiecom
-// 2015-2016
+// @chrispiecom
+// 2015-2018
 
-// this is not meant for your eyes ;)
-// not yet at least - will publish the code on github soon
 
 window.utils = {};
 
@@ -28,10 +26,12 @@ utils.welcome = function(){
 
 utils.initConfig = function(config){
 
-	d3.text(config.loader.info, function(text){ infoVue.info = text	})
+	// load infosidebar info.md
+	d3.text(config.loader.info, function(text){ if(text) infoVue.info = text })
 
 	document.title = config.project.name
-	// puh thats nasty, lets call it oldschool
+
+	// puh thats nasty, lets call it oldschool...
 	var length = document.styleSheets[0].cssRules.length
 	document.styleSheets[0].insertRule('.close::before { background-color: ' + config.style.fontColorActive + '}', length);
 	document.styleSheets[0].insertRule('.close::after { background-color: ' + config.style.fontColorActive + '}', length);
@@ -42,19 +42,14 @@ utils.initConfig = function(config){
 	document.styleSheets[0].insertRule('.timeline .year { color: ' + config.style.fontColor + '}', length);
 	document.styleSheets[0].insertRule('.tagcloud .tag { text-shadow: ' + config.style.textShadow + '}', length);
 	document.styleSheets[0].insertRule('.infobar .outer { background: ' + config.style.infobarBackground + '}', length);
-	document.styleSheets[0].insertRule('.infobar .outer { color: ' + config.style.fontColor + '}', length);
+	document.styleSheets[0].insertRule('.infobar .outer { color: ' + config.style.infobarFontColor + '}', length);
 	document.styleSheets[0].insertRule('.infobar a { color: ' + config.style.linkColor + '}', length);
+	document.styleSheets[0].insertRule('.infobar .infobutton path { stroke: ' + config.style.fontColor + '}', length);
 	document.styleSheets[0].insertRule('.sidebar .outer { background: ' + config.style.sidebarBackground + '}', length);
 	document.styleSheets[0].insertRule('.searchbar input { background: ' + config.style.searchbarBackground + '}', length);
-
-	if(config.style.sidebarInverted) {
-		d3.selectAll('.infobar img')
-		.attr('src', function(){
-			return this.src.replace('.svg', '_b.svg')
-		})
-	}
 }
 
+// stationary exhibition installations, will reinitialize the vis after x seconds
 utils.ping = function(){
 	var time = +new Date();
 	var timeout = 2 * 60 * 1000;
@@ -99,11 +94,7 @@ utils.fullscreen = function(){
 	}
 }	
 
-utils.clean = function(data,texte,transKeyword) {
-
-	// console.log(transKeyword);
-	var texteMap = d3.map(texte, function(d){ return d.name; });
-	var keywordMap = d3.map(transKeyword, function(d){ return d.de; });
+utils.clean = function(data,texte) {
 
 	data.forEach(function(d,i){
 		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
@@ -117,29 +108,25 @@ utils.clean = function(data,texte,transKeyword) {
 		d.page = 0
 		d.keywords = _(d.keywords)
 		  .chain()
-		  // .split(";")
-		  // .split(":")
 		  .split(",")
 		  .map(_.trim)
 		  .uniq()
 		  .filter(function(d) { return d !== "" })
 		  .value()
 
+		// for sorting
 		d.keywords = d.keywords.map(function(d){ 
 			return d.charAt(0).toUpperCase() + d.slice(1);
 		});
 
-		d._year = d.jahr
+		d._year = d.year
 		d._keywords = d.keywords
 
-		// d.scaleFactor = d.hochkant ? (d.hoehe / scaleSize) : (d.breite / scaleSize);
-		// d.scaleFactor -= 0.5;
 		d.scaleFactor = 0.9
-		// console.log(d.scaleFactor);
+
 		d.x = i;
 		d.y = i;
 
-		// d.zusammenhang = d.zusammenhang.split(";").map(function(d){ return +d; });
 		// d.tsne = d.tsne.split(" ").map(function(d){ return +d; });
 		// d.grid = d.grid.split(" ").map(function(d){ return +d; });
 		// d.rTSNE = -1* Math.atan2(d.tsne[0], d.tsne[1]);
@@ -147,50 +134,9 @@ utils.clean = function(data,texte,transKeyword) {
 		d.order = i;
 	});
 
-	//console.log(data[0]);
 }
 
-utils.makeLinks = function(data){
-	var links = [];
-
-	data.forEach(function(d1){
-		d1.zusammenhang.forEach(function(d2){
-			var target = data.filter(function(d){ return d.id == d2; });
-			if(target.length==1){
-				links.push({ source: d1, target: target[0] });
-				// console.log(d1,target);
-				// console.log(d1.id,target[0].id);
-			}
-		})
-	})
-
-	return links;
-}
-
-utils.clean2 = function(data) {
-	return d3.values(data).map(function(d,i){
-		d.id = +d.id;
-		d.alpha = 1;
-		d.breite = +d.breite;
-		d.hoehe = +d.hoehe;
-		d.jahr = +d.jahr;
-		d.active = 1;
-		d.loaded = false;
-		// d.jahr = format.parse(d.jahr);
-		d.hochkant = d.breite < d.hoehe;
-		d.keywords = _(d.index_tags)
-		  .chain()
-		  .split(";")
-		  .map(_.trim)
-		  .value();
-
-		d.order = i;
-
-		return d;
-	});
-}
-
-utils.simulateData = function(data){
+utils.simulateLargeDatasets = function(data){
 	Array.prototype.push.apply(data, _.clone(data, true))
 	Array.prototype.push.apply(data, _.clone(data, true))
 	Array.prototype.push.apply(data, _.clone(data, true).slice(0,1036))
