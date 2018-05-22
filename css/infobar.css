@@ -19,14 +19,6 @@
     z-index: 400;
 }
 
-.infobar .svgImg {
-    position: relative;
-}
-.infobar .svgImg #infobar_tags {
-    stroke: #000;
-
-}
-
 .menu {
     width: 420px;
     padding-left: 10px;
@@ -82,26 +74,8 @@
     left: -477px;
 }
 
-.infobar .infobuttons {
-    z-index: 200;
-    /* display: none; */
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    right: 18px;
-    width: 20px;
-    height: 30px;
-    position: absolute;
-    opacity: 0.5;
-    background-image: url("../img/infobutton.svg");
-    top: 50%;
-    /* opacity: 0.33; */
-    cursor: pointer;
-    transition: transform 0.3s, right 0.3s;
-}
-
 .infobar .infobutton {
     z-index: 200;
-    /* display: none; */
     right: 0px;
     width: 50px;
     height: 100%;
@@ -110,7 +84,7 @@
     
 }
 
-.infobar .infobutton img {
+.infobar .infobutton svg {
     width: 20px;
     height: 30px;
     top: 50%;
@@ -118,6 +92,11 @@
     position: absolute;
     opacity: 0.5;
     transition: all 0.5s;
+}
+
+.infobar .infobutton svg path {
+    fill:none;
+    stroke: #000;
 }
 
 .navi {
@@ -156,16 +135,8 @@
     color: rgba(255, 255, 255, 0.75);
 }
 
-.infobar.sneak .infobuttons {
-    /* transform: rotate(180deg); */
-    right: -40px;
-    background-image: url("../img/infobutton2.svg");
-    width: 40px;
-    height: 40px;
-}
-
-.infobar.sneak .infobutton img {
-    right: -80px;
+.infobar.sneak .infobutton svg {
+    left: 65px;
     transform: rotate(180deg);
 }
 
@@ -236,7 +207,6 @@
 
 .infobar .label {
     font-size: 13px;
-    font-family: "Lato";
     margin-bottom: 2px;
     text-transform: uppercase;
     margin-top: 0;
@@ -246,8 +216,7 @@
 .infobar p {
     float: left;
     clear: both;
-    /* font-family: "lyon-text", serif; */
-    font-family: "Lato";
+    width: 100%;
 }
 
 .infobar p.description {
@@ -255,7 +224,6 @@
 }
 
 .infobar p em {
-    font-family: "Lato";
     text-transform: uppercase;
     font-style: normal;
     font-weight: bold;
