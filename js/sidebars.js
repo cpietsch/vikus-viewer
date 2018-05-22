@@ -6,11 +6,6 @@ var detailVue = new Vue({
         page: 0,
         id: null
       },
-      // computed: {
-      //   structure: function () {
-      //     return config.detail.structure
-      //   }
-      // },
       methods: {
         displayPage: function(page){
           list.changePage(this.id, page)
@@ -38,9 +33,6 @@ var detailVue = new Vue({
             }
           }
         }
-      },
-      mounted: function() {
-          console.log('vue')
       }
     })
   window.detailVue = detailVue;

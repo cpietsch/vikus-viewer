@@ -1,6 +1,5 @@
 // christopher pietsch
-// cpietsch@gmail.com
-// tweet me @chrispiecom
+// @chrispiecom
 // 2015-2016
 
 function Logger() {

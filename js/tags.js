@@ -1,7 +1,6 @@
 // christopher pietsch
 // cpietsch@gmail.com
-// tweet me @chrispiecom
-// 2015-2016
+// 2015-2018
 
 function myTagCloud() {
   var margin = {top: 10, right: 20, bottom: 20, left: 10},
@@ -91,9 +90,6 @@ function myTagCloud() {
       }
     });
 
-   // c("keywords", keywords)
-   // c(keywords.map(function(d){ return d.keyword; }).join("\n"))
-
   keywordsNestGlobal =  d3.nest()
       .key(function(d) { return d.keyword; })
       .rollup(function(d){
@@ -103,19 +99,6 @@ function myTagCloud() {
       .sort(function(a,b){
         return b.values.length - a.values.length;
       })
-
-
-  // var nestTopographisch = d3.nest()
-  //     .key(function(d) {  return d.keyword; })
-  //     .entries(topographisch)
-  //     .sort(function(a,b){
-  //       return b.values.length - a.values.length;
-  //     })
-  //     .forEach(function (d) {
-  //       console.log(d.key, d.values.length);
-  //     })
-
- // console.log(nestTopographisch)
 
   var sliceNum = parseInt(sliceScale(width));
 
@@ -264,24 +247,13 @@ function myTagCloud() {
 
     logger.log({ action: "click" , target: d.key });
 
-    //mouseclickCallback(d);
-
     chart.highlightWords(filterWords);
-    //data.forEach(function(d){ d.highlight = d.active; })
 
     setTimeout(function(){
       mouseclickCallback(d);
     },300);
 
-    // setTimeout(function(){
-    //   lock = false;
-    // },1200);
-
     lock = false
-
-    // list.clearSearch();
-
-    // mouseclickCallback(d);
     
   }
 
@@ -300,7 +272,6 @@ function myTagCloud() {
   chart.mouseenter = function (d1) {
     if(lock) return;
 
-    // console.log(d1.key,d1);
 
     var tempFilterWords = _.clone(filterWords);
     tempFilterWords.push(d1.key)

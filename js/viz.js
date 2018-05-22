@@ -30,16 +30,13 @@
 
 // christopher pietsch
 // @chrispiecom
-// 2015-2016
+// 2015-2018
 
 
 utils.welcome();
 
-var local = true;
-var s3 = "";
 
 var data;
-var links;
 var imagesMap = d3.map([]);;
 var imagesMap2 = d3.map([]);
 var cloud;
@@ -75,10 +72,7 @@ function init() {
     logger.log({ action: "load" });
 
     d3.json("data/config.json", function(config) {
-    // d3.json("data/fw4/config.json", function(config) {
-    // d3.json("data/goethe/config.json", function(config) {
-    // d3.json("data/muenzen/config.json", function(config) {
-    // d3.json("data/woman/config.json", function(config) {
+
       utils.initConfig(config)
       
       d3.csv(config.loader.timeline, function(timeline) {
@@ -88,7 +82,6 @@ function init() {
               window.config = config
 
               utils.clean(data, [], []);
-              links = []
 
               cloud.init(data);
               search.init();
@@ -96,7 +89,7 @@ function init() {
               data.forEach(function (d) {
                   imagesMap.set(d.id, PIXI.Texture.WHITE)
               })
-              list.init(data, timeline, links, config);
+              list.init(data, timeline);
 
 
               cloud.mouseenterCallback(function(d) {
@@ -119,8 +112,6 @@ function init() {
                   }
                 })
                 .load(config.loader.textures.medium.url)
-
-           
          
           });
         });
@@ -145,7 +136,6 @@ function init() {
 
 }
 
-d3.select("body").attr("class", lang);
 
 d3.select(".slidebutton")
   .on("click", function(){

@@ -85,7 +85,6 @@ function myListView() {
 
   var touchstart = 0;
   var vizContainer;
-  var links;
   var spriteClick = false
 
   var state = { 
@@ -169,9 +168,8 @@ function myListView() {
       zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width)
   }
 
-  chart.init = function(_data,_timeline,_links) {
+  chart.init = function(_data,_timeline) {
       data = _data;
-      links = _links;
 
       container = d3.select(".page").append("div").classed("viz", true);
 
@@ -1184,52 +1182,6 @@ function myListView() {
 
   }
 
-  chart.initGraph = function(){
-    
-
-    console.log(data)
-    console.log(links)
-
-    force
-      .nodes(data)
-      .links(links)
-      .charge(-2)
-      .gravity(0.01)
-      .linkDistance(10)
-      .on("tick", chart.tick)
-      .start();
-
-
-    quadtree = Quadtree(data);
-    chart.resetZoom();
-
-    // svg
-    //     .call(zoom.translate(translate).event)
-    //     .transition().duration(2000)
-    //     .call(zoom.scale(1).translate([0, -height]).event)
-
-  }
-
-  chart.tick = function(){
-
-    console.log("tick")
-
-    data.forEach(function(d){
-      d.x1 = d.x * scale1 + imageSize / 2;
-      d.y1 = d.y * scale1 + imageSize / 2;
-
-      if (d.sprite.position.x == 0) {
-          d.sprite.position.x = d.x1;
-          d.sprite.position.y = d.y1;
-      }
-
-      if (d.sprite2) {
-          d.sprite2.position.x = d.x * scale2 + imageSize2 / 2;
-          d.sprite2.position.y = d.y * scale2 + imageSize2 / 2;
-      }
-    })
-
-  }
 
   chart.resetZoom = function() {
       var duration = 1400;
@@ -1251,27 +1203,24 @@ function myListView() {
 
 
   chart.split = function() {
-      var oben = data.filter(function(d) {
+      var active = data.filter(function(d) {
           return d.active;
       })
-      stackLayout(oben, false);
+      stackLayout(active, false);
 
-      var unten = data.filter(function(d) {
+      var inactive = data.filter(function(d) {
           return !d.active;
       })
-      stackLayout(unten, true);
+      stackLayout(inactive, true);
 
       // console.time("Quadtree")
-      // quadtree = Quadtree(data);
       quadtree = Quadtree(data);
       // console.timeEnd("Quadtree");
-      // console.log(quadtree)
-
-      // console.log(timeDomain);
+ 
   }
 
   function nearest(x, y, best, node) {
-      // mike bostocks code
+      // mike bostocks code https://blocks...
       var x1 = node.x1,
           y1 = node.y1,
           x2 = node.x2,
