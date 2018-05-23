@@ -3,8 +3,6 @@
 // twitter @chrispiecom
 // 2015-2016
 
-// this is not meant for your eyes ;)
-// not yet at least - will publish the code on github soon
 
 function myListView() {
   var margin = {
@@ -247,7 +245,7 @@ function myListView() {
       })
       x.domain(chartDomain);
 
-      console.log(chartDomain)
+      // console.log(chartDomain)
 
       chart.makeScales();
 
@@ -657,9 +655,9 @@ function myListView() {
       detailContainer
           .classed("hide", false)
           .classed("sneak", (lang=="en" || utils.isMobile()) )
-          // .select(".inner")
-          // .html(detailTemplate(d))
 
+
+      // needs to be done better
       var detailData = {}
       for ( field in selectedImage ){
         if(field[0] === '_') detailData[field] = selectedImage[field]
@@ -673,26 +671,6 @@ function myListView() {
       detailVue._data.page = d.page
 
       console.log(selectedImage, detailData)
-
-      // // todo: fix this hacky template stuff
-      // var s = detailContainer
-      //     .select(".thementexte")
-      //     .text(d.thementexte.length ? "" : "Keine")
-      //     .selectAll("a")
-      //     .data(d.thementexte)
-
-      // s.enter().append("a")
-      // s.exit().remove()
-      // s
-      //     .attr("href", function(d) {
-      //         return (lang=="en" ? "../../vis/" : "") + "thementexte/" + d.file;
-      //     })
-      //     .attr("target", "_blank")
-      //     .attr("title", "zum PDF")
-      //     .text(function(d) {
-      //         return d.full_title;
-      //     })
-
   }
 
   function changePage(id, page){
@@ -704,104 +682,6 @@ function myListView() {
     loadBigImage(selectedImage)
   }
   chart.changePage = changePage
-
-  var loadedBigInterval = null;
-
-  function loadBigImage(d, type) {
-      console.log("loadBig", d.id, d.page);
-
-      if(!config.loader.textures.big) {
-        loadMiddleImage(d)
-        return
-      }
-
-      state.lastZoomed = d.id;
-
-      var page = d.page ? '_' + (d.page) : ''
-      var url = config.loader.textures.big.url + d.id + page + ".jpg";
-
-      LoaderBlob(url).finished(function(blob){
-        var sprite = new PIXI.Sprite.from(blob);
-
-        if(d.imagenum) {
-          sprite.on("mousemove", function (s) {
-            var pos = s.data.getLocalPosition(s.currentTarget)
-            s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize"
-          })
-          sprite.on("click", function (s) {
-            console.log("click sprite")
-            // s.stopPropagation()
-            spriteClick = true
-            var pos = s.data.getLocalPosition(s.currentTarget)
-            var dir = pos.x > 0 ? 1 : -1
-            var page = d.page + dir
-            // var nextPage = Math.min(Math.max(page, 0), d.imagenum-1)
-            var nextPage = page
-            if(page > d.imagenum-1) nextPage = 0
-            if(page < 0) nextPage = d.imagenum-1
-
-            changePage(d.id, nextPage)
-          })
-          sprite.interactive = true;
-        }
-        
-        // c(texture.baseTexture.hasLoaded, sprite);
-        sprite.scale.x = d.scaleFactor;
-        sprite.scale.y = d.scaleFactor;
-
-        sprite.anchor.x = 0.5;
-        sprite.anchor.y = 0.5;
-        sprite.position.x = d.x * scale3 + imageSize3 / 2;
-        sprite.position.y = d.y * scale3 + imageSize3 / 2;
-        sprite._data = d;
-        d.big = true;
-
-        stage5.addChild(sprite);
-
-      })
-
-  }
-
-
-  function loadBigImage2(d, callback) {
-      // c("loadBig", d.id);
-
-      var img = new Image();
-
-      img.addEventListener("load", function() {
-          // console.log(img)
-          var base = new PIXI.BaseTexture(img);
-          var texture = new PIXI.Texture(base);
-          // var texture = PIXI.Texture.fromImage("data/bilder_4000/" + d.id + ".jpg");
-          var sprite = new PIXI.Sprite(texture);
-
-          //c(texture.baseTexture.hasLoaded, sprite);
-
-          sprite.scale.x = sprite.scale.y = 0.1;
-
-          sprite.anchor.x = 0.5;
-          sprite.anchor.y = 0.5;
-          sprite.position.x = d.x * scale3 + imageSize3 / 2;
-          sprite.position.y = d.y * scale3 + imageSize3 / 2;
-          sprite._data = d;
-          d.big = true;
-
-          stage5.addChild(sprite);
-      });
-      // img.src = "data/bilder_4000/" + d.id + ".jpg";
-      // img.src = "data/large/105599.jpg";
-      img.crossOrigin = "";
-      img.src = "https://s3.eu-central-1.amazonaws.com/fw4/large/" + d.id + ".jpg";
-
-
-  }
-
-  function clearBigImages() {
-      while (stage5.children[0]) {
-          stage5.children[0]._data.big = false;
-          stage5.removeChild(stage5.children[0]);
-      }
-  }
 
 
   function hideTheRest(d) {
@@ -1027,16 +907,6 @@ function myListView() {
           detailContainer.classed("hide", true).classed("sneak", lang=="en")
       }
 
-      //domain
-      // console.log(state);
-      if(state.mode == "time"){
-        updateDomain(x1, x2);
-
-        var timeY = ((height) * scale - (-1 * translate[1]) - rangeBandImage * scale);
-        timeline
-            .style("transform", "translate3d(" + 0 + "px," + timeY + "px,0px)");
-      }
-     
 
       // toggle zoom overlays
       if (scale > zoomBarrier) {
@@ -1289,7 +1159,6 @@ function myListView() {
 
   }
 
-
   function loadMiddleImage(d) {
       if (d.loaded) {
           d.alpha2 = 1;
@@ -1318,8 +1187,165 @@ function myListView() {
    
 
       d.loaded = true;
+  }
 
-      
+  function loadBigImage(d) {
+      if(!config.loader.textures.big) {
+        loadMiddleImage(d)
+        return
+      }
+
+      state.lastZoomed = d.id;
+      var page = d.page ? '_' + d.page : ''
+      var url = config.loader.textures.big.url + d.id + page + ".jpg";
+
+      var texture = new PIXI.Texture.fromImage(url, true)
+      var sprite = new PIXI.Sprite(texture);
+      var res = config.loader.textures.big.size
+
+      var updateSize = function() {
+        var size = Math.max(texture.width, texture.height)
+        sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
+      }
+
+      sprite.on('added', updateSize)
+      texture.once('update', updateSize)
+
+      if(d.imagenum) {
+        sprite.on("mousemove", function (s) {
+          var pos = s.data.getLocalPosition(s.currentTarget)
+          s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize"
+        })
+        sprite.on("click", function (s) {
+
+          console.log("click sprite")
+          s.stopPropagation()
+          spriteClick = true
+          var pos = s.data.getLocalPosition(s.currentTarget)
+          var dir = pos.x > 0 ? 1 : -1
+          var page = d.page + dir
+          // var nextPage = Math.min(Math.max(page, 0), d.imagenum-1)
+          var nextPage = page
+          if(page > d.imagenum-1) nextPage = 0
+          if(page < 0) nextPage = d.imagenum-1
+
+          changePage(d.id, nextPage)
+        })
+        sprite.interactive = true;
+      }
+
+      sprite.anchor.x = 0.5;
+      sprite.anchor.y = 0.5;
+      sprite.position.x = d.x * scale3 + imageSize3 / 2;
+      sprite.position.y = d.y * scale3 + imageSize3 / 2;
+      sprite._data = d;
+      d.big = true;
+
+      console.log(sprite, "done")
+
+      stage5.addChild(sprite);
+
+  }
+
+
+  function loadBigImage2(d, type) {
+      console.log("loadBig", d.id, d.page);
+
+      if(!config.loader.textures.big) {
+        loadMiddleImage(d)
+        return
+      }
+
+      state.lastZoomed = d.id;
+
+      var page = d.page ? '_' + (d.page) : ''
+      var url = config.loader.textures.big.url + d.id + page + ".jpg";
+
+      LoaderBlob(url).finished(function(blob){
+        var sprite = new PIXI.Sprite.from(blob);
+
+        if(d.imagenum) {
+          sprite.on("mousemove", function (s) {
+            var pos = s.data.getLocalPosition(s.currentTarget)
+            s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize"
+          })
+          sprite.on("click", function (s) {
+            console.log("click sprite")
+            // s.stopPropagation()
+            spriteClick = true
+            var pos = s.data.getLocalPosition(s.currentTarget)
+            var dir = pos.x > 0 ? 1 : -1
+            var page = d.page + dir
+            // var nextPage = Math.min(Math.max(page, 0), d.imagenum-1)
+            var nextPage = page
+            if(page > d.imagenum-1) nextPage = 0
+            if(page < 0) nextPage = d.imagenum-1
+
+            changePage(d.id, nextPage)
+          })
+          sprite.interactive = true;
+        }
+
+        console.log(sprite.width, sprite.height)
+
+        var maxRes = Math.max(sprite.width, sprite.height)
+        
+        // c(texture.baseTexture.hasLoaded, sprite);
+        sprite.scale.x = d.scaleFactor;
+        sprite.scale.y = d.scaleFactor;
+
+        sprite.anchor.x = 0.5;
+        sprite.anchor.y = 0.5;
+        sprite.position.x = d.x * scale3 + imageSize3 / 2;
+        sprite.position.y = d.y * scale3 + imageSize3 / 2;
+        sprite._data = d;
+        d.big = true;
+
+        stage5.addChild(sprite);
+
+      })
+
+  }
+
+
+  function loadBigImage3(d, callback) {
+      // c("loadBig", d.id);
+
+      var img = new Image();
+
+      img.addEventListener("load", function() {
+          // console.log(img)
+          var base = new PIXI.BaseTexture(img);
+          var texture = new PIXI.Texture(base);
+          // var texture = PIXI.Texture.fromImage("data/bilder_4000/" + d.id + ".jpg");
+          var sprite = new PIXI.Sprite(texture);
+
+          //c(texture.baseTexture.hasLoaded, sprite);
+
+          sprite.scale.x = sprite.scale.y = 0.1;
+
+          sprite.anchor.x = 0.5;
+          sprite.anchor.y = 0.5;
+          sprite.position.x = d.x * scale3 + imageSize3 / 2;
+          sprite.position.y = d.y * scale3 + imageSize3 / 2;
+          sprite._data = d;
+          d.big = true;
+
+          stage5.addChild(sprite);
+      });
+      // img.src = "data/bilder_4000/" + d.id + ".jpg";
+      // img.src = "data/large/105599.jpg";
+      img.crossOrigin = "";
+      img.src = "https://s3.eu-central-1.amazonaws.com/fw4/large/" + d.id + ".jpg";
+
+
+  }
+
+  function clearBigImages() {
+      while (stage5.children[0]) {
+          stage5.children[0]._data.big = false;
+          stage5.removeChild(stage5.children[0]);
+      }
   }
 
   function loadImages() {
