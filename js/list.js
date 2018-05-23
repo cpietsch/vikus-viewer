@@ -736,6 +736,7 @@ function myListView() {
           return (2 * scale)+ "px";
       });
 
+
       var select = timeline.selectAll(".container")
           .data(timeDomain)
 
@@ -906,6 +907,13 @@ function myListView() {
           clearBigImages();
           detailContainer.classed("hide", true).classed("sneak", lang=="en")
       }
+
+      updateDomain(x1, x2);
+
+      var timeY = ((height) * scale - (-1 * translate[1]) - rangeBandImage * scale);
+      timeline
+          .style("transform", "translate(" + 0 + "px," + timeY + "px)");
+      
 
 
       // toggle zoom overlays
