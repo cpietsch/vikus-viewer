@@ -172,6 +172,8 @@ function myListView() {
       data = _data;
 
       container = d3.select(".page").append("div").classed("viz", true);
+      detailVue._data.structure = config.detail.structure
+
 
       collumns = config.projection.columns;
       imageSize = config.loader.textures.medium.size;
@@ -181,15 +183,14 @@ function myListView() {
         imageSize3 = config.loader.textures.big.size;
       }
       
-
+      // obsolete ?
       PIXI.settings.SCALE_MODE = 1
-      // renderer = new PIXI.WebGLRenderer(width, height);
+
       var renderOptions = {
           transparent: false,
           resolution: 1,
           antialiasing: false
       };
-      console.log(config)
       renderer = new PIXI.WebGLRenderer(width + margin.left + margin.right, height, renderOptions);
       renderer.backgroundColor = parseInt(config.style.canvasBackground.substring(1), 16)
       window.renderer = renderer;
@@ -329,29 +330,10 @@ function myListView() {
       timeline = d3.select(".viz").append("div").classed("timeline", true)
           .style("transform", "translate(" + 0 + "px," + (height - 30) + "px)");
 
-      //chart.flip();
-      //chart.initGraph();
-      //chart.initTSNE();
       chart.project();
 
       animate();
 
-      // detailVue = new Vue({
-      //   el: '#detail',
-      //   data: {
-      //     item: null
-      //   },
-      //   computed: {
-      //     structure: function () {
-      //       return config.detail.structure
-      //     }
-      //   },
-      //   mounted: function() {
-      //       console.log('vue')
-      //   }
-      // })
-
-      detailVue._data.structure = config.detail.structure
 
       state.init = true;
   };
