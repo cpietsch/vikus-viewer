@@ -11,7 +11,7 @@ var detailVue = new Vue({
           list.changePage(this.id, page)
         },
         hasData: function(entry){
-          return this.item[entry.source] !== '' && this.item[entry.source] !== undefined
+          return this.getContent(entry) !== ''
         },
         getContent: function(entry) {
           if(entry.type === 'text') {
