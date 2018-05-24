@@ -679,6 +679,7 @@ function myListView() {
     // console.log(d)
     selectedImage.page = page
     detailVue._data.page = page
+    clearBigImages();
     loadBigImage(selectedImage)
   }
   chart.changePage = changePage
@@ -868,7 +869,6 @@ function myListView() {
 
       // console.log(translate[1],e2, y3);
 
-
       if (d3.event.sourceEvent != null) {
           if (x1 < 0) {
               translate[0] = 0;
@@ -914,7 +914,6 @@ function myListView() {
       timeline
           .style("transform", "translate(" + 0 + "px," + timeY + "px)");
       
-
 
       // toggle zoom overlays
       if (scale > zoomBarrier) {
