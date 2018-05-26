@@ -345,7 +345,7 @@ function myListView() {
 
       var mouse = d3.mouse(vizContainer.node());
       var p = toScreenPoint(mouse);
-      console.log(p)
+      // console.log(p)
       // console.time("search")
       var best = nearest(p[0] - imgPadding, p[1] - imgPadding, {
           d: 200,
@@ -713,7 +713,7 @@ function myListView() {
       })
   }
 
-  var fontScale = d3.scale.linear()
+  var fontScaleYear = d3.scale.linear()
       .domain([1, 9])
       .range([9, 20])
       .clamp(true)
@@ -730,17 +730,19 @@ function myListView() {
 
   function updateDomain(x1, x2) {
 
-    console.log(scale, timelineFontScale(scale1))
+    var fontSize = timelineFontScale(scale1)
+
+    // console.log(scale, fontSize)
 
       timeDomain.forEach(function(d) {
           d.pos = ((d.x - x1) * scale);
           d.visible = (d.pos > (-rangeBand * scale) && d.pos < width + 100);
       })
 
-      timeline.attr("class", "timeline " + timelineScale(scale))
+      timeline.attr("class", "timeline " + timelineScale(scale * (fontSize/2)))
 
       timeline.style("font-size", function() {
-          return timelineFontScale(scale1) * scale + "px";
+          return fontSize * scale + "px";
       });
 
 
@@ -848,7 +850,7 @@ function myListView() {
 
       select
           .select(".year")
-          .style("font-size", fontScale(scale) + "px")
+          .style("font-size", fontScaleYear(scale) + "px")
 
   
   }
