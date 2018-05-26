@@ -43,7 +43,7 @@ utils.initConfig = function(config){
 	document.styleSheets[0].insertRule('.tagcloud .tag { text-shadow: ' + config.style.textShadow + '}', length);
 	document.styleSheets[0].insertRule('.infobar .outer { background: ' + config.style.infoBackground + '}', length);
 	document.styleSheets[0].insertRule('.infobar .outer { color: ' + config.style.infoFontColor + '}', length);
-	document.styleSheets[0].insertRule('.infobar a { color: ' + config.style.linkColor + '}', length);
+	document.styleSheets[0].insertRule('.infobar a { color: ' + config.style.infoFontColor + '}', length);
 	document.styleSheets[0].insertRule('.infobar .infobutton path { stroke: ' + config.style.fontColor + '}', length);
 	document.styleSheets[0].insertRule('.sidebar .outer { background: ' + config.style.detailBackground + '}', length);
 	document.styleSheets[0].insertRule('.searchbar input { background: ' + config.style.searchbarBackground + '}', length);
