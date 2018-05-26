@@ -141,11 +141,14 @@ function myListView() {
 
       rangeBand = x.rangeBand();
       rangeBandImage = x.rangeBand() / collumns;
+
       imgPadding = rangeBand / collumns / 2;
 
       scale1 = imageSize / (x.rangeBand() / collumns);
       scale2 = imageSize2 / (x.rangeBand() / collumns);
       scale3 = imageSize3 / (x.rangeBand() / collumns);
+
+      console.log(rangeBandImage, rangeBand, scale1)
 
       stage3.scale.x = 1 / scale1;
       stage3.scale.y = 1 / scale1;
@@ -195,8 +198,8 @@ function myListView() {
      
       var renderElem = d3.select(container.node().appendChild(renderer.view));
 
-      stats = new Stats();
-      document.body.appendChild(stats.domElement);
+      // stats = new Stats();
+      // document.body.appendChild(stats.domElement);
 
       stage = new PIXI.Container();
       stage2 = new PIXI.Container();
@@ -342,7 +345,7 @@ function myListView() {
 
       var mouse = d3.mouse(vizContainer.node());
       var p = toScreenPoint(mouse);
-
+      console.log(p)
       // console.time("search")
       var best = nearest(p[0] - imgPadding, p[1] - imgPadding, {
           d: 200,
@@ -541,40 +544,42 @@ function myListView() {
   }
 
   function imageAnimation() {
+      var change = false
 
       data.forEach(function(d, i) {
           var diff;
           diff = (d.x1 - d.sprite.position.x);
-          if (Math.abs(diff) > 0.1) d.sprite.position.x += diff * 0.1;
+          if (Math.abs(diff) > 0.1) d.sprite.position.x += diff * 0.1; change = true;
 
           diff = (d.y1 - d.sprite.position.y);
-          if (Math.abs(diff) > 0.1) d.sprite.position.y += diff * 0.1;
+          if (Math.abs(diff) > 0.1) d.sprite.position.y += diff * 0.1; change = true;
 
           diff = (d.alpha - d.sprite.alpha);
-          if (Math.abs(diff) > 0.01) d.sprite.alpha += diff * 0.2;
+          if (Math.abs(diff) > 0.01) d.sprite.alpha += diff * 0.2; change = true;
 
           d.sprite.visible = d.sprite.alpha > 0.1;
 
           if (d.sprite2) {
               diff = (d.alpha2 - d.sprite2.alpha);
-              if (Math.abs(diff) > 0.01) d.sprite2.alpha += diff * 0.2;
+              if (Math.abs(diff) > 0.01) d.sprite2.alpha += diff * 0.2; change = true;
 
               d.sprite2.visible = d.sprite2.alpha > 0.1;
               //else d.sprite2.visible = d.visible;
           }
       });
-    
+    return change
   }
+
+  var sleep = false
 
   function animate(time) {
 
       requestAnimationFrame(animate);
 
       loadImages();
-      imageAnimation();
-
+      sleep = imageAnimation();
       renderer.render(stage);
-      stats.update();
+      // stats.update();
   }
 
   function zoomToYear(d) {
@@ -714,9 +719,8 @@ function myListView() {
       .clamp(true)
 
   var timelineFontScale = d3.scale.linear()
-      .domain([2, 8, 20])
-      .range([9, 14, 19])
-      .clamp(true)
+      .domain([40, 8])
+      .range([2, 10])
 
   var timelineScale = d3.scale.threshold()
       .domain([3, 10, 20])
@@ -726,6 +730,8 @@ function myListView() {
 
   function updateDomain(x1, x2) {
 
+    console.log(scale, timelineFontScale(scale1))
+
       timeDomain.forEach(function(d) {
           d.pos = ((d.x - x1) * scale);
           d.visible = (d.pos > (-rangeBand * scale) && d.pos < width + 100);
@@ -734,7 +740,7 @@ function myListView() {
       timeline.attr("class", "timeline " + timelineScale(scale))
 
       timeline.style("font-size", function() {
-          return (2 * scale)+ "px";
+          return timelineFontScale(scale1) * scale + "px";
       });
 
 
@@ -878,7 +884,7 @@ function myListView() {
 
 
           if (translate[1] < y2) {
-              translate[1] = y2;
+              // translate[1] = y2;
           }
 
           zoom.translate([translate[0], translate[1]]);
@@ -886,8 +892,6 @@ function myListView() {
           x1 = -1 * translate[0] / scale;
           x2 = (x1 + (width / scale))
       }
-
-
 
       if (zoomedToImageScale != 0 && scale > zoomedToImageScale && !zoomedToImage && selectedImage && selectedImage.type == "image") {
           
@@ -898,14 +902,13 @@ function myListView() {
           showDetail(selectedImage)
       }
 
-
       if (zoomedToImage && zoomedToImageScale - 20 > scale) {
           // c("clear")
           zoomedToImage = false;
           state.lastZoomed = 0;
           showAllImages();
           clearBigImages();
-          detailContainer.classed("hide", true).classed("sneak", lang=="en")
+          detailContainer.classed("hide", true)
       }
 
       updateDomain(x1, x2);
@@ -1051,7 +1054,7 @@ function myListView() {
       console.log(extent, y)
       y =  (extent[1] / -3) - bottomPadding
       // y =  - bottomPadding
-      bottomZooming = (y<-30 && y>-40);      
+      //bottomZooming = (y<-30 && y>-40);      
 
       svg
           .call(zoom.translate(translate).event)
