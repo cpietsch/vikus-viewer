@@ -721,6 +721,7 @@ function myListView() {
   var timelineFontScale = d3.scale.linear()
       .domain([40, 8])
       .range([2, 10])
+      .clamp(true)
 
   var timelineScale = d3.scale.threshold()
       .domain([3, 10, 20])
@@ -732,7 +733,7 @@ function myListView() {
 
     var fontSize = timelineFontScale(scale1)
 
-    // console.log(scale, fontSize)
+    // console.log(scale1, fontSize, scale * (fontSize/2))
 
       timeDomain.forEach(function(d) {
           d.pos = ((d.x - x1) * scale);
