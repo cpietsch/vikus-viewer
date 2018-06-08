@@ -157,7 +157,7 @@ var browserInfo = d3.select(".browserInfo");
 
 if(utils.isMobile()){
     browserInfo
-      .text("Beware! This prototype will download 100mb of data.")
+      .text("This visualization is not optimized for mobiles. Please come back on a Computer.")
       .on("click", function(){ browserInfo.remove(); })
       .transition()
       .delay(7000)
