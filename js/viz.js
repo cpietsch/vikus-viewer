@@ -81,7 +81,7 @@ function init() {
               window.data = data;
               window.config = config
 
-              utils.clean(data, [], []);
+              utils.clean(data);
 
               cloud.init(data);
               search.init();

@@ -94,14 +94,13 @@ utils.fullscreen = function(){
 	}
 }	
 
-utils.clean = function(data,texte) {
+utils.clean = function(data) {
 
 	data.forEach(function(d,i){
 		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
 		d.i = i;
 		d.id = d.imageid;
 		d.alpha = 1;
-		d.jahr = d.year;
 		d.active = 1;
 		d.loaded = false;
 		d.type = "image";
@@ -126,10 +125,6 @@ utils.clean = function(data,texte) {
 
 		d.x = i;
 		d.y = i;
-
-		// d.tsne = d.tsne.split(" ").map(function(d){ return +d; });
-		// d.grid = d.grid.split(" ").map(function(d){ return +d; });
-		// d.rTSNE = -1* Math.atan2(d.tsne[0], d.tsne[1]);
 
 		d.order = i;
 	});
