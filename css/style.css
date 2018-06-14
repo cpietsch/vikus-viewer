@@ -757,7 +757,9 @@ svg {
 
 .detail .entry .content {
   flex: 1;
-  font-family: 'Lato', sans-serif;
+}
+.detail .entry .content p {
+  margin: 0;
 }
 
 .detail .entry .content .keyword {
