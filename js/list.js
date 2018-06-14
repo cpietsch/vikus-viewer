@@ -268,8 +268,6 @@ function myListView() {
 
               if (Math.abs(zoomedToImageScale - scale) < 0.1) {
                   chart.resetZoom();
-              } else if (scale < 3) {
-                zoomToYear(selectedImage)
               } else {
                 zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
               }
@@ -419,13 +417,10 @@ function myListView() {
   chart.wakeup = function() { sleep = false }
 
   function animate(time) {
-
       requestAnimationFrame(animate);
-      
       loadImages();
       if(sleep) return
       sleep = imageAnimation();
-      // console.log(sleep)
       renderer.render(stage);
   }
 
@@ -512,7 +507,6 @@ function myListView() {
       detailVue._data.id = d.id
       detailVue._data.page = d.page
 
-      console.log(selectedImage, detailData)
   }
 
   chart.changePage = function (id, page){
@@ -752,6 +746,13 @@ function myListView() {
       var texture = new PIXI.Texture.fromImage(config.loader.textures.detail.url + d.id + '.jpg', true)
       var sprite = new PIXI.Sprite(texture);
 
+      var update = function() {
+        sleep = false
+      }
+
+      sprite.on('added', update)
+      texture.once('update', update)
+
       sprite.scale.x = d.scaleFactor;
       sprite.scale.y = d.scaleFactor;
 
@@ -788,6 +789,7 @@ function myListView() {
       var updateSize = function() {
         var size = Math.max(texture.width, texture.height)
         sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
+        sleep = false
       }
 
       sprite.on('added', updateSize)
