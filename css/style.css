@@ -794,8 +794,7 @@ svg {
 }
 
 .detail a {
-  float: left;
-  /* text-decoration: inherit; */
+  text-decoration: none;
   color: #2D2D2D;
   font-style: normal;
 }

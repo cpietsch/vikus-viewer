@@ -314,7 +314,7 @@ function myTagCloud() {
       chart.filter(filterWords, true);
       chart.update();
       list.highlight();
-      list.split();
+      list.project()
       return
     }
 
@@ -404,7 +404,8 @@ function myTagCloud() {
 
     // list.highlight();
     list.highlight();
-    list.split();
+    // list.split();
+    list.project()
     
   }
 
