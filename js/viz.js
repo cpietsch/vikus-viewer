@@ -66,7 +66,8 @@ function init() {
 
     cloud = myTagCloud();
     list = myListView();
-    search = mySearch();
+    search = Search();
+    timeline = Timeline()
     ping = utils.ping();
 
     logger.log({ action: "load" });
@@ -108,8 +109,10 @@ function init() {
                       .forEach(function(d) { 
                         var texture = textures[id]
                         d.sprite.texture = texture
+
                       })
                   }
+                  list.wakeup()
                 })
                 .load(config.loader.textures.medium.url)
          

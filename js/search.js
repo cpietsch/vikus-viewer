@@ -1,4 +1,4 @@
-function mySearch() {
+function Search() {
 
 	var container = d3.select(".searchbar");
 	var state = {

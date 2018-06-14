@@ -65,7 +65,7 @@ function myListView() {
   var imageSize3 = 4000;
   var collumns = 4;
   var renderer, stage, stats;
-  var svg, timeline;
+  
   var svgscale, voronoi;
 
   var selectedImageDistance = 0;
@@ -107,6 +107,13 @@ function myListView() {
 
   function chart() {}
 
+  chart.rangeBand = function() { return rangeBand }
+  chart.width = function() { return width }
+  chart.height = function() { return height }
+  chart.rangeBandImage = function() { return rangeBandImage }
+  chart.zoom = zoom
+  chart.selectedImage = function() { return selectedImage }
+  chart.x = x
 
   chart.resize = function() {
       if(!state.init) return;
@@ -133,8 +140,6 @@ function myListView() {
       scale2 = imageSize2 / (x.rangeBand() / collumns);
       scale3 = imageSize3 / (x.rangeBand() / collumns);
 
-      console.log(rangeBandImage, rangeBand, scale1)
-
       stage3.scale.x = 1 / scale1;
       stage3.scale.y = 1 / scale1;
       stage3.y = height;
@@ -147,9 +152,7 @@ function myListView() {
       stage5.scale.y = 1 / scale3;
       stage5.y = height;
 
-      timeDomain.forEach(function(d) {
-          d.x = x(d.key);
-      });
+      timeline.rescale(scale1)
 
       zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width)
   }
@@ -211,6 +214,7 @@ function myListView() {
         }
       })
 
+      timeline.init(timeDomain)
       x.domain(chartDomain);
       chart.makeScales();
 
@@ -272,14 +276,8 @@ function myListView() {
 
           })
 
-
-      timeline = d3.select(".viz").append("div").classed("timeline", true)
-          .style("transform", "translate(" + 0 + "px," + (height - 30) + "px)");
-
       chart.project();
-
       animate();
-
 
       state.init = true;
   };
@@ -367,7 +365,6 @@ function myListView() {
       return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
   }
 
-
   function toScreenPoint(p) {
       var p2 = [0, 0];
 
@@ -379,64 +376,57 @@ function myListView() {
       return p2;
   }
 
-
-
-  // function translateUpDown(dir) {
-
-  //     var translateNow = [translate[0], translate[1] + dir * 10 * scale];
-
-  //     svg
-  //         .call(zoom.translate(translate).event)
-  //         .transition().duration(1000)
-  //         .call(zoom.translate(translateNow).event)
-  // }
-
-  // function getSiblingImage(active, dir) {
-  //     if (!active) return;
-
-  //     return data.filter(function(d) {
-  //         return (d.order == active.order + dir && d.year == active.year);
-  //     })[0];
-
-  // }
-
   function imageAnimation() {
-      var change = false
+      var sleep = true
 
       data.forEach(function(d, i) {
           var diff;
           diff = (d.x1 - d.sprite.position.x);
-          if (Math.abs(diff) > 0.1) d.sprite.position.x += diff * 0.1; change = true;
+          if (Math.abs(diff) > 0.1) {
+            d.sprite.position.x += diff * 0.1;
+            sleep = false;
+          }
 
           diff = (d.y1 - d.sprite.position.y);
-          if (Math.abs(diff) > 0.1) d.sprite.position.y += diff * 0.1; change = true;
+          if (Math.abs(diff) > 0.1) {
+            d.sprite.position.y += diff * 0.1
+            sleep = false;
+          }
 
           diff = (d.alpha - d.sprite.alpha);
-          if (Math.abs(diff) > 0.01) d.sprite.alpha += diff * 0.2; change = true;
+          if (Math.abs(diff) > 0.01) {
+            d.sprite.alpha += diff * 0.2
+            sleep = false;
+          }
 
           d.sprite.visible = d.sprite.alpha > 0.1;
 
           if (d.sprite2) {
               diff = (d.alpha2 - d.sprite2.alpha);
-              if (Math.abs(diff) > 0.01) d.sprite2.alpha += diff * 0.2; change = true;
+              if (Math.abs(diff) > 0.01) {
+                d.sprite2.alpha += diff * 0.2
+                sleep = false;
+              }
 
               d.sprite2.visible = d.sprite2.alpha > 0.1;
               //else d.sprite2.visible = d.visible;
           }
       });
-    return change
+    return sleep
   }
 
   var sleep = false
+  chart.wakeup = function() { sleep = false }
 
   function animate(time) {
 
       requestAnimationFrame(animate);
-
+      
       loadImages();
+      if(sleep) return
       sleep = imageAnimation();
+      // console.log(sleep)
       renderer.render(stage);
-      // stats.update();
   }
 
   function zoomToYear(d) {
@@ -559,134 +549,12 @@ function myListView() {
       })
   }
 
-  var fontScaleYear = d3.scale.linear()
-      .domain([1, 9])
-      .range([9, 20])
-      .clamp(true)
-
-  var timelineFontScale = d3.scale.linear()
-      .domain([40, 8])
-      .range([2, 10])
-      .clamp(true)
-
-  var timelineScale = d3.scale.threshold()
-      .domain([3, 10, 20])
-      .range(["none", "small", "middle", "large"])
 
   var timelineHover = false;
 
-  function updateDomain(x1, x2) {
-
-    var fontSize = timelineFontScale(scale1)
-
-    // console.log(scale1, fontSize, scale * (fontSize/2))
-
-      timeDomain.forEach(function(d) {
-          d.pos = ((d.x - x1) * scale);
-          d.visible = (d.pos > (-rangeBand * scale) && d.pos < width + 100);
-      })
-
-      timeline.attr("class", "timeline " + timelineScale(scale * (fontSize/2)))
-
-      timeline.style("font-size", function() {
-          return fontSize * scale + "px";
-      });
-
-      var select = timeline.selectAll(".container")
-          .data(timeDomain)
-
-      var enter = select
-          .enter()
-          .append("div")
-          .classed("container", true)
-          .on("mouseenter", function(d){
-            timelineHover = true;
-            zoom.center(null);
-            selectedImage = null;
-          })
-          .on("mouseleave", function(d){
-            timelineHover = false;
-          })
-
-      enter.append("div")
-          .classed("year", true)
-          .text(function(d) {
-              return d.key;
-          })
-
-      var e = enter
-          .append("div")
-          .classed("entries", true)
-          .selectAll(".entry")
-          .data(function(d) {
-              return d.values;
-          })
-          .enter()
-          .append("div")
-          .classed("entry", true)
-
-      e
-          .append("div")
-          .classed("small", true)
-          .append("div")
-          .classed("title", true)
-          .text(function(d) {
-              return d.titel;
-          })
-
-      var m = e
-          .append("div")
-          .classed("middle", true)
-
-      m
-          .append("div")
-          .classed("title", true)
-          .text(function(d) {
-              return d.titel;
-          })
-
-      m
-          .append("div")
-          .classed("text", true)
-          .text(function(d) {
-              return d.text + ".";
-          }) //…
-
-      var l = e
-          .append("div")
-          .classed("large", true)
-
-      l
-          .append("div")
-          .classed("title", true)
-          .text(function(d) {
-              return d.titel;
-          })
-
-      l
-          .append("div")
-          .classed("text", true)
-          .html(function(d) {
-              return d.text + ".<br><br>" + d.extra;
-          })
-
-      select
-          .style("transform", function(d) {
-              return "translate3d(" + parseInt(d.pos) + "px,0px,0px)";
-          })
-          .style("height", rangeBand * scale + "px")
-          .style("width", rangeBand * scale + "px")
-          .style("display", function(d) {
-              return d.visible ? "block" : "none";
-          })
-
-      select
-          .select(".year")
-          .style("font-size", fontScaleYear(scale) + "px")
-
-  }
 
   function zoomed() {
+
 
       translate = d3.event.translate;
       scale = d3.event.scale;
@@ -712,7 +580,6 @@ function myListView() {
           } else if (x2 > widthOuter) {
               translate[0] = ((widthOuter * scale) - widthOuter) * -1;
           }
-
 
           if (translate[1] < y2) {
               // translate[1] = y2;
@@ -742,13 +609,8 @@ function myListView() {
           detailContainer.classed("hide", true)
       }
 
-      updateDomain(x1, x2);
-
-      var timeY = ((height) * scale - (-1 * translate[1]) - rangeBandImage * scale);
-      timeline
-          .style("transform", "translate(" + 0 + "px," + timeY + "px)");
-      
-
+      timeline.update(x1, x2, scale, translate, scale1);
+    
       // toggle zoom overlays
       if (scale > zoomBarrier) {
           d3.select(".tagcloud").classed("hide", true);
@@ -765,6 +627,7 @@ function myListView() {
       stage2.x = d3.event.translate[0];
       stage2.y = d3.event.translate[1];
 
+      sleep = false
   }
 
   function zoomstart(d) {
@@ -792,6 +655,7 @@ function myListView() {
   }
 
   chart.project = function(){
+    sleep = false
     chart.split();
     chart.resetZoom();
   }
@@ -904,6 +768,7 @@ function myListView() {
    
 
       d.loaded = true;
+      sleep = false
   }
 
   function loadBigImage(d) {
@@ -961,13 +826,14 @@ function myListView() {
       console.log(sprite, "done")
 
       stage5.addChild(sprite);
-
+      sleep = false
   }
 
   function clearBigImages() {
       while (stage5.children[0]) {
           stage5.children[0]._data.big = false;
           stage5.removeChild(stage5.children[0]);
+          sleep = false
       }
   }
 
@@ -982,6 +848,26 @@ function myListView() {
           }
       }
   }
+
+
+  // function translateUpDown(dir) {
+
+  //     var translateNow = [translate[0], translate[1] + dir * 10 * scale];
+
+  //     svg
+  //         .call(zoom.translate(translate).event)
+  //         .transition().duration(1000)
+  //         .call(zoom.translate(translateNow).event)
+  // }
+
+  // function getSiblingImage(active, dir) {
+  //     if (!active) return;
+
+  //     return data.filter(function(d) {
+  //         return (d.order == active.order + dir && d.year == active.year);
+  //     })[0];
+
+  // }
 
   function nearest(x, y, best, node) {
       // mike bostock https://bl.ocks.org/mbostock/4343214
