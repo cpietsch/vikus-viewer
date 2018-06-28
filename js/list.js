@@ -647,6 +647,7 @@ function myListView() {
       data.forEach(function(d, i) {
           d.alpha = d.highlight ? 1 : 0.2;
       });
+      chart.wakeup();
   }
 
   chart.project = function(){
