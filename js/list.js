@@ -276,7 +276,8 @@ function myListView() {
 
       chart.project();
       animate();
-
+      // selectedImage = data.find(d => d.id == 88413)
+      // showDetail(selectedImage)
       state.init = true;
   };
 
@@ -483,7 +484,7 @@ function myListView() {
   }
 
   function showDetail(d) {
-      // console.log("show detail")
+      console.log("show detail", d)
 
       detailContainer
        .select(".outer")
@@ -825,7 +826,7 @@ function myListView() {
       sprite._data = d;
       d.big = true;
 
-      console.log(sprite, "done")
+      // console.log(sprite, "done")
 
       stage5.addChild(sprite);
       sleep = false

@@ -768,7 +768,6 @@ svg {
   line-height: 100%;
   margin: 2px;
   float: left;
-  cursor: pointer;
 }
 
 .detail .entry .content .keyword.active {
@@ -802,7 +801,7 @@ svg {
 }
 
 .detail a:hover {
-  text-decoration: underline;
+  
 }
 
 .detail h1, .infobar h1 {
