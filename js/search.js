@@ -28,10 +28,10 @@ function Search() {
     container.select("input")
       .on("keyup", function(s){
         var value = container.select("input").node().value
-        if(value === ""){
+        // if(value === ""){
 
-        }
-        if(value.length < 3) return
+        // }
+        // if(value.length < 3) return
         debounced(value)
       })
 	}

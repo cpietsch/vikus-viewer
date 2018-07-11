@@ -72,7 +72,7 @@ function myTagCloud() {
       else d.active = (matches.length == filterWords.length && search);
     });
 
-    var anzahl = data.filter(function(d){ return d.active; }).length;
+    // var anzahl = data.filter(function(d){ return d.active; }).length;
     // c("anzahl", anzahl)
   }
 
@@ -308,105 +308,11 @@ function myTagCloud() {
   chart.search = function(query){
 
     state.search = query
-
-    if(query === "") {
-      console.log("reset")
-      chart.filter(filterWords, true);
-      chart.update();
-      list.highlight();
-      list.project()
-      return
-    }
-
-    console.log(query)
-
-    var sliceNum = parseInt(sliceScale(width));
-
-    var keywords2 = [];
-
-    data.forEach(function(d) {
-      var active = d.search.toUpperCase().indexOf(query) > -1
-      d.active = active
-      d.highlight = active
-
-      if(active){
-        d.keywords.forEach(function(keyword) {
-          keywords2.push({ keyword: keyword, data: d });
-        })
-        
-      }
-    });
-
-    var result = d3.nest()
-      .key(function(d) { return d.keyword; })
-      .rollup(function(d){
-        return d.map(function(d){ return d.data; });
-      })
-      .entries(keywords2)
-      .sort(function(a,b){
-        return b.values.length - a.values.length;
-      })
-      .slice(0,sliceNum)
-      .sort(function(a,b){
-        return d3.ascending(a.key[0], b.key[0]);
-      })
-
-     // var result = keywordsNestGlobal
-     //  .filter(function(d){
-     //    return d.key.toUpperCase().indexOf(query) > -1;
-     //  })
-     //  .slice(0,sliceNum)
-     //  .sort(function(a,b){
-     //    return d3.ascending(a.key[0], b.key[0]);
-     //  })
-
-    // console.log(result)
-
-
-    // c("num",sliceNum)        
     
-    var keywordsExtent = d3.extent(result, function (d) {
-      return d.values.length;
-    })
-    keywordsScale
-      .domain(keywordsExtent)
-      .range([10,20]);
-
-    if(keywordsExtent[0]==keywordsExtent[1]) keywordsScale.range([15,15])
-
-
-    keywordsOpacityScale
-      .domain(keywordsExtent)
-      .range([0.2,1]);
-
-    listLayout(result);
-     
-    // var p = 10;
-    // var x0 = 0;
-    // result.forEach(function(d){
-    //   d.x = x0;
-    //   x0 += keywordsScale(d.values.length) + p;
-    // })
-
-    chart.draw(result)
-
-    // var words = result.map(function(d){ return d.key; });
-
-    // data.forEach(function(d) {
-    //   var matches = words.filter(function(word){
-    //     return d.keywords.indexOf(word) > -1;
-    //   });
-    //   d.active = matches.length > 0;
-    //   d.highlight = matches.length > 0;
-    // });
-
-    // c(words);
-
-    // list.highlight();
+    chart.filter(filterWords, true);
+    chart.update();
     list.highlight();
-    // list.split();
     list.project()
-    
   }
 
   chart.mouseenterCallback = function(callback){
