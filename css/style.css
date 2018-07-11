@@ -796,13 +796,12 @@ svg {
 }
 
 .detail a {
-  text-decoration: none;
   color: #2D2D2D;
   font-style: normal;
 }
 
 .detail a:hover {
-  
+  text-decoration: none;
 }
 
 .detail h1, .infobar h1 {
