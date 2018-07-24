@@ -44,23 +44,15 @@ var list;
 var search;
 var c = console.log.bind(console);
 var ping;
-var logger = Logger().register("vis");
 var feedbacked = false;
 
-logger.log({ action: "enter vis" });
 
-// 
-// if(utils.isMobile()){
-//   logger.log({ action: "mobile" }).sync();
-//   //alert("come back in some weeks");
-// } else {
-  if (Modernizr.webgl) {
-      init();
-    } else {
-      logger.log({ action: "noWebGL" }).sync();
-      alert("sorry you need webGL") 
-    }
-// }
+if (Modernizr.webgl) {
+  init();
+} else {
+  alert("sorry you need webGL") 
+}
+
 
 function init() {
 
@@ -69,8 +61,6 @@ function init() {
     search = Search();
     timeline = Timeline()
     ping = utils.ping();
-
-    logger.log({ action: "load" });
 
     d3.json("data/config.json", function(config) {
 
@@ -127,10 +117,6 @@ function init() {
             window.resizedFinished = setTimeout(function() {
                 list.resize();
                 cloud.resize();
-                logger.log({
-                    action: "resize",
-                    target: window.innerWidth + "," + window.innerHeight
-                });
             }, 250);
           }
         })
@@ -144,14 +130,12 @@ d3.select(".slidebutton")
   .on("click", function(){
     var s = !d3.select(".sidebar").classed("sneak");
     d3.select(".sidebar").classed("sneak", s);
-    logger.log({ action: !s ? "open" : "close" , target: "detail" });
   })
 
 d3.select(".infobutton")
   .on("click", function(){
     var s = !d3.select(".infobar").classed("sneak");
     d3.select(".infobar").classed("sneak", s)
-    logger.log({ action: !s ? "open" : "close" , target: "info" });
   })
 
 

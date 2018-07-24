@@ -244,9 +244,6 @@ function myTagCloud() {
     // c(filterWords);
 
     chart.update();
-
-    logger.log({ action: "click" , target: d.key });
-
     chart.highlightWords(filterWords);
 
     setTimeout(function(){

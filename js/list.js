@@ -64,7 +64,7 @@ function myListView() {
   var imageSize2 = 1024;
   var imageSize3 = 4000;
   var collumns = 4;
-  var renderer, stage, stats;
+  var renderer, stage;
   
   var svgscale, voronoi;
 
