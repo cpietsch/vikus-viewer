@@ -1,6 +1,6 @@
 ![VIKUS Viewer](https://vikusviewer.fh-potsdam.de/assets/teaser.png)
 
-# VikusViewer
+# VIKUS Viewer
 
 [VIKUS Viewer](https://vikusviewer.fh-potsdam.de/) is a web-based visualization system that arranges thousands of cultural artifacts on a dynamic canvas and supports the exploration of thematic and temporal patterns of large collections, while providing rapid access to high-resolution imagery.
 
