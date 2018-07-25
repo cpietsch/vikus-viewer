@@ -35,6 +35,8 @@ The timeline.csv holds the information for the timeline displayed underneath the
 
 #### [info.md](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/info.md)
 
+This is the information displayed on the left side when opening the visualization. You can put in any kind of [Markdown](https://marked.js.org/).
+
 
 ## Credits
 
