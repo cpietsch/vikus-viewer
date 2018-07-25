@@ -2,8 +2,11 @@
 
 # VikusViewer
 
-[VIKUS Viewer](https://vikusviewer.fh-potsdam.de/) is an advanced web-based visualization system that arranges thousands of cultural artifacts on a dynamic canvas and supports the exploration of thematic and temporal patterns of large collections, while providing rapid access to high-resolution imagery.
+[VIKUS Viewer](https://vikusviewer.fh-potsdam.de/) is a web-based visualization system that arranges thousands of cultural artifacts on a dynamic canvas and supports the exploration of thematic and temporal patterns of large collections, while providing rapid access to high-resolution imagery.
 
+## Documentation
+
+This repo contains the html, css and js of the VIKUS Viewer. You can customize your copy in various ways. To get started you will have to clone this repo and run a webserver. We recommend ngnix for production, but any apache server will work too. To minimize the loading time your should make use of gzip compression on js an csv files. Also enable HTTP/2, since Multiplexing will heavily help with loading speeds.
 
 ## Credits
 
