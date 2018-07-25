@@ -16,9 +16,22 @@ You can customize your copy of VIKUS Viewer in various ways. First you will need
 
 This is the first entry point of the VIKUS Viewer. It defines the project name, data urls, columns, styles and the detail sidebar of your collection.
 
-#### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.json)
+#### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.csv)
+
+The data.csv holds the metadata information of the collection. The following fields are mandatory: ```imageid, keywords, year```.
+- imageid: is a unique id which is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
+- keywords: comma seperated list of keywords for the tags on the top
+- year: can be a number or a string, will be sorted ascending
+- \_fields: these are custom meta data fields
+All of the columns are beeing sticked together to enable the freetext search.
 
 #### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.json)
+
+The timeline.csv holds the information for the timeline displayed underneath the years.
+- year: can be a number or a string, is linked to the data.csv year field
+- titel: the headline of the blurb
+- text: first detail text when zoomed in a little bit
+- extra: additional text when zoomed to the maximum
 
 #### [info.md](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/info.md)
 
