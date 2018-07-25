@@ -6,30 +6,32 @@
 
 ## Documentation
 
-This repo contains the html, css and js of the VIKUS Viewer. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any apache server will work too. To minimize the loading time your should make use of gzip compression on js and csv files. Also enable HTTP/2, since Multiplexing will heavily help with loading all those image assets.
+This repo contains the HTML, CSS and JS of the VIKUS Viewer software. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any web server will work too. There is no server-side logic necessary. To minimize the loading time your should make use of GZIP compression on JS and CSV files. Also enable HTTP/2, since Multiplexing will heavily help with loading all those image assets.
 
-### Data
+### Metadata
 
-You can customize your copy of VIKUS Viewer in various ways. First you will need to create a data folder which will contain your images and metadata. Have a look at the [data folder](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) of the vangogh collection.
+To use the VIKUS Viewer for a custom image collection, you need to prepare metadata files and pre-process the image files (see [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script)).
+
+First, you will need to create a ```data``` folder which will contain all metadata and image files. Have a look at the metadata generated for the [Van Gogh collection](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) (Van Gogh Museum) as a reference.
 
 #### [config.json](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json)
 
-This is the first entry point of the VIKUS Viewer. It defines the project name, data urls, columns, styles and the detail sidebar of your collection.
+This is the configuration file that defines the project name, data URLs, columns, styles, and what is shown in the detail sidebar of your collection.
 
 #### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.csv)
 
-The data.csv holds the metadata information of the collection. The following fields are mandatory: `imageid`, `keywords`, `year`.
+The data.csv holds all the metadata information for each object in the collection. The following fields are mandatory: `imageid`, `keywords`, `year`.
 - `imageid` is a unique id which is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
 - `keywords` comma seperated list of keywords for the tags on the top
 - `year` can be a number or a string, will be sorted ascending
-- `_fields` these are custom meta data fields
+- `_fields` these are custom metadata fields (note the prefixed underscore)
 All of the columns are beeing sticked together to enable the freetext search.
 
 #### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.json)
 
 The timeline.csv holds the information for the timeline displayed underneath the years.
-- `year` can be a number or a string, is linked to the data.csv year field
-- `titel` the headline of the blurb
+- `year` can be a number or a string, is linked to the `year` field in data.csv
+- `title` the headline of the blurb
 - `text` first detail text when zoomed in a little bit
 - `extra` additional text when zoomed to the maximum
 
