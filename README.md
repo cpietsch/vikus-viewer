@@ -10,9 +10,7 @@ This repo contains the HTML, CSS and JS of the VIKUS Viewer software. To get sta
 
 ### Metadata
 
-To use the VIKUS Viewer for a custom image collection, you need to prepare metadata files and pre-process the image files (see [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script)).
-
-First, you will need to create a ```data``` folder which will contain all metadata and image files. Have a look at the metadata generated for the [Van Gogh collection](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) (Van Gogh Museum) as a reference.
+To use the VIKUS Viewer for a custom image collection, you need to prepare metadata files that describe the collection and objects, and configure the visualization. To get started, you first need to create a ```data``` folder which will contain all metadata and image files. Have a look at the metadata generated for the [Van Gogh collection](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) (Van Gogh Museum) as a reference for the following descriptions.
 
 #### [config.json](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json)
 
@@ -25,6 +23,7 @@ The data.csv holds all the metadata information for each object in the collectio
 - `keywords` comma seperated list of keywords for the tags on the top
 - `year` can be a number or a string, will be sorted ascending
 - `_fields` these are custom metadata fields (note the prefixed underscore)
+
 All of the columns are beeing sticked together to enable the freetext search.
 
 #### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.json)
@@ -38,6 +37,11 @@ The timeline.csv holds the information for the timeline displayed underneath the
 #### [info.md](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/info.md)
 
 This is the information displayed on the left side when opening the visualization. You can put in any kind of [Markdown](https://marked.js.org/).
+
+
+## Images
+
+Apart from the metadata, you need to preprocess the image files, i.e., to generate sprites and textures for the different zoom levels. Please see the  [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) for the details.
 
 
 ## Credits
