@@ -6,7 +6,22 @@
 
 ## Documentation
 
-This repo contains the html, css and js of the VIKUS Viewer. You can customize your copy in various ways. To get started you will have to clone this repo and run a webserver. We recommend ngnix for production, but any apache server will work too. To minimize the loading time your should make use of gzip compression on js an csv files. Also enable HTTP/2, since Multiplexing will heavily help with loading speeds.
+This repo contains the html, css and js of the VIKUS Viewer. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any apache server will work too. To minimize the loading time your should make use of gzip compression on js and csv files. Also enable HTTP/2, since Multiplexing will heavily help with loading all those image assets.
+
+### Data
+
+You can customize your copy of VIKUS Viewer in various ways. First you will need to create a data folder which will contain your images and metadata. Have a look at the [data folder](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) of the vangogh collection.
+
+#### [config.json](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json)
+
+This is the first entry point of the VIKUS Viewer. It defines the project name, data urls, columns, styles and the detail sidebar of your collection.
+
+#### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.json)
+
+#### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.json)
+
+#### [info.md](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/info.md)
+
 
 ## Credits
 
