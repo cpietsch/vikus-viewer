@@ -257,4 +257,10 @@
     border: 2px solid #fff;
 }
 
+.infobar .credit {
+    text-align: right;
+    clear: both;
+    opacity: 0.7;
+}
+
 
