@@ -2,7 +2,7 @@
 // cpietsch@gmail.com
 // 2015-2018
 
-function myTagCloud() {
+function Tags() {
   var margin = {top: 10, right: 20, bottom: 20, left: 10},
       width = window.innerWidth - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
@@ -29,11 +29,11 @@ function myTagCloud() {
 
   var mouseenterCallback = function(){};
 
-  function chart(){ }
+  function tags(){ }
 
-  chart.state = state
+  tags.state = state
 
-  chart.init = function(_data) {
+  tags.init = function(_data) {
     data = _data;
 
     container = d3.select(".page").append("div")
@@ -44,10 +44,10 @@ function myTagCloud() {
       .append("div")
       //.attr("transform", "translate("+ margin.left +","+ margin.top +")")
       
-    chart.update();
+    tags.update();
   }
 
-  chart.resize = function(){
+  tags.resize = function(){
     if(!state.init) return;
     
     width = window.innerWidth - margin.left - margin.right,
@@ -59,10 +59,10 @@ function myTagCloud() {
 
     x.rangeBands([0, width]);
 
-    chart.update();
+    tags.update();
   }
 
-  chart.filter = function(filterWords,highlight){
+  tags.filter = function(filterWords,highlight){
     data.forEach(function(d) {
       var search = state.search !== "" ? d.search.indexOf(state.search) > -1 : true
       var matches = filterWords.filter(function(word){
@@ -76,9 +76,9 @@ function myTagCloud() {
     // c("anzahl", anzahl)
   }
 
-  chart.update = function() {
+  tags.update = function() {
 
-    chart.filter(filterWords);
+    tags.filter(filterWords);
 
     var keywords = [];
     // var topographisch = [];
@@ -128,24 +128,12 @@ function myTagCloud() {
       .domain(keywordsExtent)
       .range([0.2,1]);
 
-
-    // var p = 1.8;
-    // var p2 = 1;
-    // var x0 = 0;
-    // keywordsNest.forEach(function(d){
-    //   d.x = x0 + keywordsScale(d.values.length)*p +p2;
-    //   x0 += keywordsScale(d.values.length)*p;
-    // })
-
-    listLayout(keywordsNest);
-    
-    // x.domain(keywordsNest.map(function(d,i){ return i; }))
-
-    chart.draw(keywordsNest);
+    layout(keywordsNest);
+    tags.draw(keywordsNest);
    
   }
 
-  function listLayout(data){
+  function layout(data){
     var p = 1.8;
     var p2 = 1;
     var x0 = 0;
@@ -161,7 +149,7 @@ function myTagCloud() {
     return width/2 - w/2;
   }
 
-  chart.draw = function(words) {
+  tags.draw = function(words) {
     // c(words)   
 
     var select = container
@@ -188,9 +176,9 @@ function myTagCloud() {
 
     var e = select.enter().append("div")
         .classed("tag", true)
-        .on("mouseenter", chart.mouseenter)
-        .on("mouseleave", chart.mouseleave)
-        .on("click", chart.mouseclick)
+        .on("mouseenter", tags.mouseenter)
+        .on("mouseleave", tags.mouseleave)
+        .on("click", tags.mouseclick)
         .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
         .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
         .style("opacity", 0)
@@ -233,7 +221,15 @@ function myTagCloud() {
 
   }
 
-  chart.mouseclick = function (d) {
+  tags.reset = function(){
+    filterWords = []
+    tags.update();
+    tags.highlightWords(filterWords);
+    // canvas.highlight();
+    // canvas.project()
+  }
+
+  tags.mouseclick = function (d) {
     lock = true;
 
     if(filterWords.indexOf(d.key)>-1){
@@ -243,8 +239,8 @@ function myTagCloud() {
     }
     // c(filterWords);
 
-    chart.update();
-    chart.highlightWords(filterWords);
+    tags.update();
+    tags.highlightWords(filterWords);
 
     setTimeout(function(){
       mouseclickCallback(d);
@@ -254,7 +250,7 @@ function myTagCloud() {
     
   }
 
-  chart.mouseleave = function (d) {
+  tags.mouseleave = function (d) {
     if(lock) return;
 
     container
@@ -266,19 +262,19 @@ function myTagCloud() {
     mouseenterCallback();
   }
 
-  chart.mouseenter = function (d1) {
+  tags.mouseenter = function (d1) {
     if(lock) return;
 
 
     var tempFilterWords = _.clone(filterWords);
     tempFilterWords.push(d1.key)
 
-    chart.highlightWords(tempFilterWords);
+    tags.highlightWords(tempFilterWords);
   }
 
-  chart.filterWords = function(words){
+  tags.filterWords = function(words){
     
-    chart.filter(words,1);
+    tags.filter(words,1);
 
     container
       .selectAll(".tag")
@@ -289,9 +285,9 @@ function myTagCloud() {
     mouseenterCallback();
   }
 
-  chart.highlightWords = function(words){
+  tags.highlightWords = function(words){
     
-    chart.filter(words,1);
+    tags.filter(words,1);
 
     container
       .selectAll(".tag")
@@ -302,28 +298,28 @@ function myTagCloud() {
       mouseenterCallback();
   }
 
-  chart.search = function(query){
+  tags.search = function(query){
 
     state.search = query
     
-    chart.filter(filterWords, true);
-    chart.update();
-    list.highlight();
-    list.project()
+    tags.filter(filterWords, true);
+    tags.update();
+    canvas.highlight();
+    canvas.project()
   }
 
-  chart.mouseenterCallback = function(callback){
+  tags.mouseenterCallback = function(callback){
  
       mouseenterCallback = callback;
 
   }
 
-  chart.mouseclickCallback = function(callback){
+  tags.mouseclickCallback = function(callback){
     mouseclickCallback = callback;
   }
 
 
 
-  return chart;
+  return tags;
 
 }

@@ -39,8 +39,8 @@ utils.welcome();
 var data;
 var imagesMap = d3.map([]);;
 var imagesMap2 = d3.map([]);
-var cloud;
-var list;
+var tags;
+var canvas;
 var search;
 var c = console.log.bind(console);
 var ping;
@@ -56,8 +56,8 @@ if (Modernizr.webgl) {
 
 function init() {
 
-    cloud = myTagCloud();
-    list = myListView();
+    tags = Tags();
+    canvas = Canvas();
     search = Search();
     timeline = Timeline()
     ping = utils.ping();
@@ -74,21 +74,21 @@ function init() {
 
               utils.clean(data);
 
-              cloud.init(data);
+              tags.init(data);
               search.init();
         
               data.forEach(function (d) {
                   imagesMap.set(d.id, PIXI.Texture.WHITE)
               })
-              list.init(data, timeline);
+              canvas.init(data, timeline);
 
 
-              cloud.mouseenterCallback(function(d) {
-                  list.highlight(d);
+              tags.mouseenterCallback(function(d) {
+                  canvas.highlight(d);
               })
 
-              cloud.mouseclickCallback(function(d) {
-                  list.project(d);
+              tags.mouseclickCallback(function(d) {
+                  canvas.project(d);
               })
 
               LoaderSprites()
@@ -102,7 +102,7 @@ function init() {
 
                       })
                   }
-                  list.wakeup()
+                  canvas.wakeup()
                 })
                 .load(config.loader.textures.medium.url)
          
@@ -112,17 +112,20 @@ function init() {
 
     d3.select(window)
         .on("resize", function() {
-          if(list !== undefined && cloud !== undefined) {
+          if(canvas !== undefined && tags !== undefined) {
             clearTimeout(window.resizedFinished);
             window.resizedFinished = setTimeout(function() {
-                list.resize();
-                cloud.resize();
+                canvas.resize();
+                tags.resize();
             }, 250);
           }
         })
-
-    
-
+        .on("keydown", function(e) {
+          if(d3.event.keyCode != 27) return
+          search.reset();
+          tags.reset();
+          canvas.split();
+        })
 }
 
 

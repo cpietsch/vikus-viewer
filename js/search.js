@@ -16,28 +16,29 @@ function Search() {
         if(state.open){
           container.select("input").node().focus()
         } else {
-          cloud.search("")
+          tags.search("")
           container.select("input").node().value = ""
         }
 		  })
 
     var debounced = _.debounce(function(value) {
-      cloud.search(value.toUpperCase())
+      tags.search(value.toUpperCase())
     },300)
 
     container.select("input")
       .on("keyup", function(s){
         var value = container.select("input").node().value
-        // if(value === ""){
-
-        // }
-        // if(value.length < 3) return
         debounced(value)
       })
 	}
 
-  search.search = function (value) {
-    
+  search.reset = function (value) {
+    state.open = false
+    container
+      .classed("open", state.open)
+      .select("input").node().value = ""
+    d3.select(".tagcloud").classed("open", state.open)
+    tags.search("")
   }
 
 	return search;

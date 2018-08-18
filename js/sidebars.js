@@ -8,7 +8,7 @@ var detailVue = new Vue({
       },
       methods: {
         displayPage: function(page){
-          list.changePage(this.id, page)
+          canvas.changePage(this.id, page)
         },
         hasData: function(entry){
           return this.getContent(entry) !== ''

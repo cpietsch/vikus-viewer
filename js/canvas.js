@@ -3,7 +3,7 @@
 // 2015-2018
 
 
-function myListView() {
+function Canvas() {
   var margin = {
       top: 20,
       right: 50,
@@ -98,24 +98,22 @@ function myListView() {
   var startTranslate = [0, 0];
   var startScale = 0;
   var zooming = false;
-
-
   var detailContainer = d3.select(".sidebar")
-
   var timelineData;
   var stage, stage1, stage2, stage3, stage4, stage5;
 
-  function chart() {}
 
-  chart.rangeBand = function() { return rangeBand }
-  chart.width = function() { return width }
-  chart.height = function() { return height }
-  chart.rangeBandImage = function() { return rangeBandImage }
-  chart.zoom = zoom
-  chart.selectedImage = function() { return selectedImage }
-  chart.x = x
+  function canvas() {}
 
-  chart.resize = function() {
+  canvas.rangeBand = function() { return rangeBand }
+  canvas.width = function() { return width }
+  canvas.height = function() { return height }
+  canvas.rangeBandImage = function() { return rangeBandImage }
+  canvas.zoom = zoom
+  canvas.selectedImage = function() { return selectedImage }
+  canvas.x = x
+
+  canvas.resize = function() {
       if(!state.init) return;
       // console.log("resize")
       width = window.innerWidth - margin.left - margin.right;
@@ -124,11 +122,11 @@ function myListView() {
 
       renderer.resize(width + margin.left + margin.right, height);
 
-      chart.makeScales();
-      chart.project();
+      canvas.makeScales();
+      canvas.project();
   }
 
-  chart.makeScales = function() {
+  canvas.makeScales = function() {
       x.rangeBands([margin.left, width + margin.left], 0.2)
 
       rangeBand = x.rangeBand();
@@ -157,7 +155,7 @@ function myListView() {
       zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width)
   }
 
-  chart.init = function(_data,_timeline) {
+  canvas.init = function(_data,_timeline) {
       data = _data;
 
       container = d3.select(".page").append("div").classed("viz", true);
@@ -200,14 +198,14 @@ function myListView() {
           d.type = "timeline";
       });
 
-      var chartDomain = d3.nest()
+      var canvasDomain = d3.nest()
         .key(function(d){ return d.year; })
         .entries(_data.concat(_timeline))
         .sort(function(a, b) { return a.key - b.key; })
         // .sort(function(a, b) { return d3.descending(a.key, b.key) })
         .map(function(d){ return d.key; })
 
-      timeDomain = chartDomain.map(function(d){
+      timeDomain = canvasDomain.map(function(d){
         return {
           key: d,
           values: _timeline.filter(function(e){ return d == e.year; })
@@ -215,8 +213,8 @@ function myListView() {
       })
 
       timeline.init(timeDomain)
-      x.domain(chartDomain);
-      chart.makeScales();
+      x.domain(canvasDomain);
+      canvas.makeScales();
 
       // add preview pics
       data.forEach(function(d, i) {
@@ -267,15 +265,17 @@ function myListView() {
               
 
               if (Math.abs(zoomedToImageScale - scale) < 0.1) {
-                  chart.resetZoom();
+                  canvas.resetZoom();
               } else {
                 zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
               }
 
           })
 
-      chart.project();
+      canvas.project();
       animate();
+
+
       // selectedImage = data.find(d => d.id == 88413)
       // showDetail(selectedImage)
       state.init = true;
@@ -360,7 +360,7 @@ function myListView() {
       })
   }
 
-  chart.distance = function(a, b) {
+  canvas.distance = function(a, b) {
       return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
   }
 
@@ -415,7 +415,7 @@ function myListView() {
   }
 
   var sleep = false
-  chart.wakeup = function() { sleep = false }
+  canvas.wakeup = function() { sleep = false }
 
   function animate(time) {
       requestAnimationFrame(animate);
@@ -510,7 +510,7 @@ function myListView() {
 
   }
 
-  chart.changePage = function (id, page){
+  canvas.changePage = function (id, page){
     console.log("changePage", id, page, selectedImage);
     // var d = data.find(function (d) { d.imageid == id })
     // console.log(d)
@@ -643,22 +643,22 @@ function myListView() {
       }
   }
 
-  chart.highlight = function() {
+  canvas.highlight = function() {
       data.forEach(function(d, i) {
           d.alpha = d.highlight ? 1 : 0.2;
       });
-      chart.wakeup();
+      canvas.wakeup();
   }
 
-  chart.project = function(){
+  canvas.project = function(){
     sleep = false
-    chart.split();
-    chart.resetZoom();
+    canvas.split();
+    canvas.resetZoom();
   }
 
-  chart.resetZoom = function() {
+  canvas.resetZoom = function() {
       var duration = 1400;
-
+      console.log(translate)
       extent = d3.extent(data, function(d) { return d.y; });
 
       var y = -extent[1] - bottomPadding;
@@ -671,10 +671,10 @@ function myListView() {
           .call(zoom.translate(translate).event)
           .transition().duration(duration)
           .call(zoom.translate([0, y]).scale(1).event)
-          //.each("end", chart.split)
+          //.each("end", canvas.split)
   }
 
-  chart.split = function() {
+  canvas.split = function() {
       var active = data.filter(function(d) {
           return d.active;
       })
@@ -815,7 +815,7 @@ function myListView() {
           if(page > d.imagenum-1) nextPage = 0
           if(page < 0) nextPage = d.imagenum-1
 
-          chart.changePage(d.id, nextPage)
+          canvas.changePage(d.id, nextPage)
         })
         sprite.interactive = true;
       }
@@ -913,6 +913,6 @@ function myListView() {
   }
 
 
-  return chart;
+  return canvas;
 
 }

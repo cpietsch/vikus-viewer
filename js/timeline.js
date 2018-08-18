@@ -25,12 +25,12 @@ function Timeline() {
   timeline.init = function(_timeDomain) {
     timeDomain = _timeDomain
     container = d3.select(".viz").append("div").classed("timeline", true)
-    container.style("transform", "translate(" + 0 + "px," + (list.height() - 30) + "px)");
+    container.style("transform", "translate(" + 0 + "px," + (canvas.height() - 30) + "px)");
   }
 
   timeline.rescale = function(scale) {
     timeDomain.forEach(function(d) {
-        d.x = list.x(d.key);
+        d.x = canvas.x(d.key);
     });
     fontSize = timelineFontScale(scale)
   }
@@ -39,10 +39,10 @@ function Timeline() {
 
       timeDomain.forEach(function(d) {
           d.pos = ((d.x - x1) * scale);
-          d.visible = (d.pos > (-list.rangeBand() * scale) && d.pos < list.width() + 100);
+          d.visible = (d.pos > (-canvas.rangeBand() * scale) && d.pos < canvas.width() + 100);
       })
 
-      var timeY = ((list.height()) * scale - (-1 * translate[1]) - list.rangeBandImage() * scale);
+      var timeY = ((canvas.height()) * scale - (-1 * translate[1]) - canvas.rangeBandImage() * scale);
 
       container
         .attr("class", "timeline " + timelineScale(scale * (fontSize/2)))
@@ -60,8 +60,8 @@ function Timeline() {
           .classed("container", true)
           .on("mouseenter", function(d){
             timelineHover = true;
-            list.zoom.center(null);
-            // list.selectedImage() = null;
+            canvas.zoom.center(null);
+            // canvas.selectedImage() = null;
           })
           .on("mouseleave", function(d){
             timelineHover = false;
@@ -133,8 +133,8 @@ function Timeline() {
           .style("transform", function(d) {
               return "translate3d(" + parseInt(d.pos) + "px,0px,0px)";
           })
-          .style("height", list.rangeBand() * scale + "px")
-          .style("width", list.rangeBand() * scale + "px")
+          .style("height", canvas.rangeBand() * scale + "px")
+          .style("width", canvas.rangeBand() * scale + "px")
           .style("display", function(d) {
               return d.visible ? "block" : "none";
           })
