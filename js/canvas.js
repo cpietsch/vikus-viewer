@@ -550,10 +550,10 @@ function Canvas() {
 
   function zoomed() {
 
-
       translate = d3.event.translate;
       scale = d3.event.scale;
-
+      if(!startTranslate) startTranslate = translate
+      drag = startTranslate && translate !== startTranslate;
       // check borders
 
       var x1 = -1 * translate[0] / scale;
@@ -627,14 +627,14 @@ function Canvas() {
 
   function zoomstart(d) {
       zooming = true;
-      startTranslate = translate;
+      startTranslate = false;
+      drag = false
       startScale = scale;
   }
 
   function zoomend(d) {
-      drag = translate !== startTranslate;
+      drag = startTranslate && translate !== startTranslate;
       zooming = false;
-
       filterVisible();
 
       if (zoomedToImage && !selectedImage.big && state.lastZoomed != selectedImage.id && !state.zoomingToImage) {
@@ -803,8 +803,8 @@ function Canvas() {
           s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize"
         })
         sprite.on("click", function (s) {
-
-          console.log("click sprite")
+          if(drag) return
+            
           s.stopPropagation()
           spriteClick = true
           var pos = s.data.getLocalPosition(s.currentTarget)
