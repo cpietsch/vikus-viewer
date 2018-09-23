@@ -35,22 +35,16 @@
 
 utils.welcome();
 
-
 var data;
-var imagesMap = d3.map([]);;
-var imagesMap2 = d3.map([]);
 var tags;
 var canvas;
 var search;
-var c = console.log.bind(console);
 var ping;
-var feedbacked = false;
-
 
 if (Modernizr.webgl) {
   init();
 } else {
-  alert("sorry you need webGL") 
+  alert("Sorry your device doesn't support webGL") 
 }
 
 
@@ -69,43 +63,24 @@ function init() {
       d3.csv(config.loader.timeline, function(timeline) {
           Loader(config.loader.items).finished(function(data) {
 
-              window.data = data;
-              window.config = config
-
               utils.clean(data);
 
-              tags.init(data);
+              tags.init(data, config);
               search.init();
-        
-              data.forEach(function (d) {
-                  imagesMap.set(d.id, PIXI.Texture.WHITE)
-              })
-              canvas.init(data, timeline);
-
-
-              tags.mouseenterCallback(function(d) {
-                  canvas.highlight(d);
-              })
-
-              tags.mouseclickCallback(function(d) {
-                  canvas.project(d);
-              })
+              canvas.init(data, timeline, config);
 
               LoaderSprites()
                 .progress(function(textures){
-                  for(var id in textures) {
+                  Object.keys(textures).forEach(function(id){
                     data
                       .filter(function (d) { return d.id === id })
                       .forEach(function(d) { 
-                        var texture = textures[id]
-                        d.sprite.texture = texture
-
+                        d.sprite.texture = textures[id]
                       })
-                  }
+                  })
                   canvas.wakeup()
                 })
                 .load(config.loader.textures.medium.url)
-         
           });
         });
     });
@@ -142,7 +117,6 @@ d3.select(".infobutton")
   })
 
 
-
 var browserInfo = d3.select(".browserInfo");
 
 if(utils.isMobile()){
@@ -156,7 +130,3 @@ if(utils.isMobile()){
       })
       
 }
-
-var infoscroll = d3.select('.infobar .outer').node();
-Ps.initialize(infoscroll);
-

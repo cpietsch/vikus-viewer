@@ -163,7 +163,7 @@
     /* width: 450px; */
     float: left;
     height: 100%;
-    /* overflow-y: auto; */
+     overflow-y: auto; 
     /* overflow-x: hidden; */
 }
 
