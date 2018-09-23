@@ -17,7 +17,7 @@ utils.isSafari = function(){
 }
 
 utils.welcome = function(){
-
+	// who needs this fancy console styles
     if (window.console)
     {
         window.console.log('\n _   ________ ____  ______ \n| | / /  _/ //_/ / / / __/ \n| |/ // // ,< / /_/ /\ \ \n|___/___/_/|_|\____/___/_______ \n| | / /  _/ __/ | /| / / __/ _ \ \n| |/ // // _/ | |/ |/ / _// , _/ \n|___/___/___/ |__/|__/___/_/|_| \n')
@@ -29,9 +29,10 @@ utils.initConfig = function(config){
 	// load infosidebar info.md
 	d3.text(config.loader.info, function(text){ if(text) infoVue.info = text })
 
+	// set window title
 	document.title = config.project.name
 
-	// puh thats nasty, lets call it oldschool...
+	// puh thats kind of nasty, lets call it oldschool...
 	var length = document.styleSheets[0].cssRules.length
 	document.styleSheets[0].insertRule('.close::before { background-color: ' + config.style.fontColorActive + '}', length);
 	document.styleSheets[0].insertRule('.close::after { background-color: ' + config.style.fontColorActive + '}', length);
@@ -50,7 +51,7 @@ utils.initConfig = function(config){
 	document.styleSheets[0].insertRule('.searchbar input { background: ' + config.style.searchbarBackground + '}', length);
 }
 
-// stationary exhibition installations, will reinitialize the vis after x seconds
+// exhibition installations, will reinitialize the vis after x seconds
 utils.ping = function(){
 	var time = +new Date();
 	var timeout = 2 * 60 * 1000;
@@ -101,11 +102,6 @@ utils.clean = function(data) {
 		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
 		d.i = i;
 		d.id = d.imageid;
-		d.alpha = 1;
-		d.active = 1;
-		d.loaded = false;
-		d.type = "image";
-		d.page = 0
 		d.keywords = _(d.keywords)
 		  .chain()
 		  .split(",")
@@ -114,7 +110,7 @@ utils.clean = function(data) {
 		  .filter(function(d) { return d !== "" })
 		  .value()
 
-		// for sorting
+		// for proper sorting
 		d.keywords = d.keywords.map(function(d){ 
 			return d.charAt(0).toUpperCase() + d.slice(1);
 		});
@@ -122,11 +118,15 @@ utils.clean = function(data) {
 		d._year = d.year
 		d._keywords = d.keywords
 
+		// internal vars
+		d.alpha = 1;
+		d.active = 1;
+		d.loaded = false;
+		d.type = "image";
+		d.page = 0
 		d.scaleFactor = 0.9
-
 		d.x = i;
 		d.y = i;
-
 		d.order = i;
 	});
 
