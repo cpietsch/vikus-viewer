@@ -16,7 +16,7 @@
     line-height: 1.3em;
     /* overflow: auto; */
     /*direction: rtl;*/
-    z-index: 400;
+    z-index: 1000;
 }
 
 .menu {
@@ -182,7 +182,7 @@
 .infobar .inner > div {
     /* height: 100%; */
     position: relative;
-    width: 360px;
+    /*width: 360px;*/
     float: left;
     padding: 60px;
 }
