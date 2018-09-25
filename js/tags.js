@@ -27,13 +27,11 @@ function Tags() {
   var lock = false;
   var state = { init: false, search: '' };
 
-  var mouseenterCallback = function(){};
-
   function tags(){ }
 
   tags.state = state
 
-  tags.init = function(_data) {
+  tags.init = function(_data, config) {
     data = _data;
 
     container = d3.select(".page").append("div")
@@ -243,11 +241,10 @@ function Tags() {
     tags.highlightWords(filterWords);
 
     setTimeout(function(){
-      mouseclickCallback(d);
+      canvas.project(d);
     },300);
 
     lock = false
-    
   }
 
   tags.mouseleave = function (d) {
@@ -259,7 +256,7 @@ function Tags() {
 
     data.forEach(function(d){ d.highlight = d.active; })
 
-    mouseenterCallback();
+    canvas.highlight();
   }
 
   tags.mouseenter = function (d1) {
@@ -282,7 +279,7 @@ function Tags() {
         return d.values.some(function(d){ return d.active; }) ? 1 : 0.2;
       })
 
-    mouseenterCallback();
+    canvas.highlight();
   }
 
   tags.highlightWords = function(words){
@@ -295,7 +292,7 @@ function Tags() {
         return d.values.some(function(d){ return d.highlight; }) ? 1 : 0.2;
       })
 
-      mouseenterCallback();
+      canvas.highlight();
   }
 
   tags.search = function(query){
@@ -307,18 +304,6 @@ function Tags() {
     canvas.highlight();
     canvas.project()
   }
-
-  tags.mouseenterCallback = function(callback){
- 
-      mouseenterCallback = callback;
-
-  }
-
-  tags.mouseclickCallback = function(callback){
-    mouseclickCallback = callback;
-  }
-
-
 
   return tags;
 
