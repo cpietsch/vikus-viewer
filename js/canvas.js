@@ -53,6 +53,7 @@ function Canvas() {
   //     .on("keydown", keydown);
 
   var canvas;
+  var config;
   var container;
   var entries;
   var years;
@@ -155,8 +156,9 @@ function Canvas() {
       zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width)
   }
 
-  canvas.init = function(_data,_timeline) {
+  canvas.init = function(_data,_timeline, _config) {
       data = _data;
+      config = _config;
 
       container = d3.select(".page").append("div").classed("viz", true);
       detailVue._data.structure = config.detail.structure
@@ -218,8 +220,7 @@ function Canvas() {
 
       // add preview pics
       data.forEach(function(d, i) {
-          var texture = imagesMap.get(d.id);
-          var sprite = new PIXI.Sprite(texture);
+          var sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
           
           sprite.anchor.x = 0.5;
           sprite.anchor.y = 0.5;
@@ -500,7 +501,7 @@ function Canvas() {
       for ( field in selectedImage ){
         if(field[0] === '_') detailData[field] = selectedImage[field]
       }
-      detailData['_id'] = selectedImage.imageid
+      detailData['_id'] = selectedImage.id
       detailData['_keywords'] = selectedImage.keywords
       detailData['_year'] = selectedImage.year
       detailData['_imagenum'] = selectedImage.imagenum || 1
@@ -512,8 +513,6 @@ function Canvas() {
 
   canvas.changePage = function (id, page){
     console.log("changePage", id, page, selectedImage);
-    // var d = data.find(function (d) { d.imageid == id })
-    // console.log(d)
     selectedImage.page = page
     detailVue._data.page = page
     clearBigImages();
@@ -804,7 +803,7 @@ function Canvas() {
         })
         sprite.on("click", function (s) {
           if(drag) return
-            
+
           s.stopPropagation()
           spriteClick = true
           var pos = s.data.getLocalPosition(s.currentTarget)

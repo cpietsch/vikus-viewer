@@ -101,7 +101,6 @@ utils.clean = function(data) {
 	data.forEach(function(d,i){
 		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
 		d.i = i;
-		d.id = d.imageid;
 		d.keywords = _(d.keywords)
 		  .chain()
 		  .split(",")
