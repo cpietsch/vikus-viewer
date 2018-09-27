@@ -19,7 +19,7 @@ This is the configuration file that defines the project name, data URLs, columns
 #### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.csv)
 
 The data.csv holds all the metadata information for each object in the collection. The following fields are mandatory: `imageid`, `keywords`, `year`.
-- `imageid` is a unique id which is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
+- `id` is is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
 - `keywords` comma seperated list of keywords for the tags on the top
 - `year` can be a number or a string, will be sorted ascending
 - `_fields` these are custom metadata fields (note the prefixed underscore)
