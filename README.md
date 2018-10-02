@@ -46,7 +46,12 @@ Apart from the metadata, you need to preprocess the image files, i.e., to genera
 
 ## Credits
 
-VIKUS Viewer was designed and developed by Christopher Pietsch. The VIKUS Viewer software is based on the visualization code behind Past Visions, a collaborative effort by Katrin Glinka, Christopher Pietsch, and Marian Dörk carried out at the University of Applied Sciences Potsdam in the context of the Urban Complexity Lab during the research project VIKUS (2014-2017).
+VIKUS Viewer was designed and developed by Christopher Pietsch. 
+The VIKUS Viewer software is based on the visualization code behind Past Visions, a collaborative effort by Katrin Glinka, Christopher Pietsch, and Marian Dörk carried out at the University of Applied Sciences Potsdam in the context of the Urban Complexity Lab during the research project VIKUS (2014-2017).
+
+### Libraries
+- [pixi.js](https://github.com/pixijs/pixi.js)
+- [d3.js](https://github.com/d3/d3)
 
 ## License
 
