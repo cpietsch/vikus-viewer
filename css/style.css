@@ -194,21 +194,22 @@ canvas {
 }
 
 .browserInfo {
-    bottom: -100%;
-    text-align: center;
     position: absolute;
-    z-index: 1000;
+    z-index: 3000;
     background: rgb(251, 245, 223);
     font-weight: bold;
-    text-transform: uppercase;
+    font-size: 20px;
     padding: 20px;
-    width: 100%;
-    /* transition: left 0.3s ease-out; */
-    box-shadow: 0 0px 56px rgba(0, 0, 0, 0.66), 0 0px 6px rgba(0, 0, 0, 0.23);
-    transition:bottom 1s;
+    height: 100%;
+    vertical-align: middle;
+    display: none;
+    text-align: center;
+}
+.browserInfo span {
+  font-size: 60px;
 }
 .browserInfo.show {
-  bottom: 0;
+  display: block;
 }
 
 

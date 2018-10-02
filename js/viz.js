@@ -41,10 +41,8 @@ var canvas;
 var search;
 var ping;
 
-if (Modernizr.webgl) {
+if (Modernizr.webgl && !utils.isMobile()) {
   init();
-} else {
-  alert("Sorry your device doesn't support webGL") 
 }
 
 
@@ -117,16 +115,4 @@ d3.select(".infobutton")
   })
 
 
-var browserInfo = d3.select(".browserInfo");
-
-if(utils.isMobile()){
-    browserInfo
-      .text("This visualization is not optimized for mobiles. Please come back on a Computer.")
-      .on("click", function(){ browserInfo.remove(); })
-      .transition()
-      .delay(7000)
-      .each("end", function(){
-        d3.select(this).classed("show", false).remove();
-      })
-      
-}
+d3.select(".browserInfo").classed("show", utils.isMobile());
