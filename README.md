@@ -14,7 +14,7 @@ To use the VIKUS Viewer for a custom image collection, you need to prepare metad
 
 #### [config.json](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json)
 
-This is the configuration file that defines the project name, data URLs, columns, styles, and what is shown in the detail sidebar of your collection.
+This is the configuration file that defines the project name, data URLs, columns, styles, and what is shown in the detail sidebar of your collection. The URLs don't have to be absolute, but it can be handy if your assets are not hosted on the same server.
 
 #### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.csv)
 
