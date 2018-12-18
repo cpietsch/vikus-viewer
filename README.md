@@ -27,7 +27,7 @@ The data.csv holds all the metadata information for each object in the collectio
 
 All of the columns are beeing sticked together to enable the freetext search.
 
-#### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.json)
+#### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.csv)
 
 The timeline.csv holds the information for the timeline displayed underneath the years.
 - `year` can be a number or a string, is linked to the `year` field in data.csv
