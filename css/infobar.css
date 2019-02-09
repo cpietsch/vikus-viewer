@@ -81,7 +81,6 @@
     height: 100%;
     position: absolute;
     cursor: pointer;
-    
 }
 
 .infobar .infobutton svg {
@@ -95,16 +94,21 @@
 }
 
 .infobar .infobutton svg path {
-    fill:none;
+    fill: none;
     /*stroke: #000;*/
+}
+
+.navi.hide {
+    display: none;
 }
 
 .navi {
     z-index: 300;
     top: 30%;
     position: absolute;
-    left: 0;    
+    left: 0;
 }
+
 .navi .button {
     transition: all 0.3s;
     text-transform: uppercase;
@@ -131,6 +135,7 @@
     padding-right: 10px;
     /* border-right: 4px solid rgba(247, 239, 205, 0.18); */
 }
+
 .navi .button:hover:not(.active) {
     color: rgba(255, 255, 255, 0.75);
 }
@@ -164,7 +169,7 @@
     float: left;
     height: 100%;
     overflow-y: auto;
-    direction:rtl
+    direction: rtl
 }
 
 .infobar .outer::-webkit-scrollbar * {
@@ -177,10 +182,11 @@
     /* height: 100%; */
     /* overflow-y: scroll; */
     float: left;
-    direction:ltr;
+    direction: ltr;
     /*direction: ltr;*/
 }
-.infobar .inner > div {
+
+.infobar .inner>div {
     /* height: 100%; */
     position: relative;
     /*width: 360px;*/
@@ -262,7 +268,5 @@
     text-align: right;
     clear: both;
     opacity: 0.7;
-    padding-top: 30px; 
+    padding-top: 30px;
 }
-
-
