@@ -696,11 +696,14 @@ function Canvas() {
 
             var factor = height / 2;
             var tsneEntry = tsneIndex[d.id]
+            if(tsneEntry) {
+                d.x = (tsneEntry[0] * dimension) + width / 2 - dimension / 2 + margin.left;
+                d.y = (tsneEntry[1] * dimension) - dimension / 2 + marginBottom;
+            }
             // var tsneEntry = tsne.find(function (t) {
             //     return t.id == d.id
             // })
-            d.x = (tsneEntry[0] * dimension) + width / 2 - dimension / 2 + margin.left;
-            d.y = (tsneEntry[1] * dimension) - dimension / 2 + marginBottom;
+           
 
         })
 
