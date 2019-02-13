@@ -798,7 +798,7 @@ function Canvas() {
         }
 
         // console.log("load", d)
-        var url = encodeURIComponent(config.loader.textures.detail.url + d.id + '.jpg')
+        var url = config.loader.textures.detail.url + d.id + '.jpg'
         var texture = new PIXI.Texture.fromImage(url, true)
         var sprite = new PIXI.Sprite(texture);
 
