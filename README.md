@@ -44,9 +44,9 @@ This is the information displayed on the left side when opening the visualizatio
 
 Apart from the metadata, you need to preprocess the image files, i.e., to generate sprites and textures for the different zoom levels. Please see the  [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) for the details. After running the script you can place the resulting folders into ```/data``` or any other location. Make sure that the texture URLs in the config.json point to these folders.
 
-### TSNE
+### t-SNE
 
-As an alternative to the temporal view, you can create a TSNE layout based on image similarity. The script in [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) creates a tsne.csv which can be put next to the data.csv in the `/data` folder. Image similarity is calculated via the [imagenet activation logit](https://beta.observablehq.com/@cpietsch/imagenet-activation-logit) and then run throught TSNE. An additional spacing step ensures no overlaying images in the distribution.
+As an alternative to the temporal view, you can create a t-SNE layout based on image similarity. The script in [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) creates a tsne.csv which can be put next to the data.csv in the `/data` folder. Image similarity is calculated via the [imagenet activation logit](https://beta.observablehq.com/@cpietsch/imagenet-activation-logit) and then run throught t-SNE. An additional spacing step ensures no overlaying images in the distribution.
 
 ## Credits
 
