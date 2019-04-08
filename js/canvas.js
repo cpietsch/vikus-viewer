@@ -832,7 +832,7 @@ function Canvas() {
 
         state.lastZoomed = d.id;
         var page = d.page ? '_' + d.page : ''
-        var url = encodeURIComponent(config.loader.textures.big.url + d.id + page + ".jpg");
+        var url = config.loader.textures.big.url + d.id + page + ".jpg";
 
         var texture = new PIXI.Texture.fromImage(url, true)
         var sprite = new PIXI.Sprite(texture);
