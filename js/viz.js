@@ -122,10 +122,10 @@ function init() {
 
 	d3.selectAll(".navi .button")
 		.on("click", function () {
-			var that = this
-			var mode = d3.select(this).text()
-			canvas.setMode(mode)
-			timeline.setDisabled(mode != "time")
+			var that = this;
+			var mode = d3.select(this).attr("data");
+			canvas.setMode(mode);
+			timeline.setDisabled(mode != "time");
 
 			d3.selectAll(".navi .button").classed("active", function () {
 				return that === this
