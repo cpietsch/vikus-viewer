@@ -64,7 +64,7 @@ function Tags() {
     data.forEach(function(d) {
       var search = state.search !== "" ? d.search.indexOf(state.search) > -1 : true
       var matches = filterWords.filter(function(word){
-        return d.keywords.indexOf(word) > -1;
+        return d.keywords.filter(d => d == word).length;
       });
       if(highlight) d.highlight = (matches.length == filterWords.length && search);
       else d.active = (matches.length == filterWords.length && search);
@@ -88,6 +88,8 @@ function Tags() {
       }
     });
 
+    var filterWordsReverse = filterWords.map(d => d).reverse()
+
   keywordsNestGlobal =  d3.nest()
       .key(function(d) { return d.keyword; })
       .rollup(function(d){
@@ -97,6 +99,28 @@ function Tags() {
       .sort(function(a,b){
         return b.values.length - a.values.length;
       })
+      .filter(d => {
+        if(filterWords.length === 0){ return d.key.indexOf(":") === -1 }
+        else {
+          if(filterWords.map(f => d.key === f).length == filterWords.length) return true
+          else if(d.key.indexOf(":") === -1) return true 
+          else return false
+        }
+      })
+      .map(d => {
+
+        var out = d.key
+        filterWordsReverse.forEach(f => {
+          if(f != out) out = out.replace(f + ":", "")
+        })
+        d.display = out
+       // console.log(filterWordsReverse, d.key, out)
+       
+        return d
+      })
+      .filter(d => d.display.indexOf(":") == -1 || filterWords.length == 0)
+   
+  console.log(filterWordsReverse, keywordsNestGlobal)
 
   var sliceNum = parseInt(sliceScale(width));
 
@@ -105,7 +129,7 @@ function Tags() {
    var keywordsNest = keywordsNestGlobal
       .slice(0,sliceNum)
       .sort(function(a,b){
-        return d3.ascending(a.key[0], b.key[0]);
+        return d3.ascending(a.display[0], b.display[0]);
       })
 
     // c("keywordsNest", keywordsNest);
@@ -152,7 +176,7 @@ function Tags() {
 
     var select = container
       .selectAll(".tag")
-        .data(words, function(d){ return d.key; })
+        .data(words, function(d){ return d.display; })
 
     select
       .classed("active", function(d){ return filterWords.indexOf(d.key) > -1; })
@@ -174,15 +198,15 @@ function Tags() {
 
     var e = select.enter().append("div")
         .classed("tag", true)
-        .on("mouseenter", tags.mouseenter)
-        .on("mouseleave", tags.mouseleave)
+        // .on("mouseenter", tags.mouseenter)
+        // .on("mouseleave", tags.mouseleave)
         .on("click", tags.mouseclick)
         .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
         .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
         .style("opacity", 0)
 
     e.append("span")
-        .text(function(d) { return d.key; })
+        .text(function(d) { return d.display; })
     
     e.append("div")
       .classed("close", true)
@@ -229,6 +253,8 @@ function Tags() {
 
   tags.mouseclick = function (d) {
     lock = true;
+
+    console.log("clikc", d)
 
     if(filterWords.indexOf(d.key)>-1){
       _.remove(filterWords,function(d2){ return d2 == d.key; });

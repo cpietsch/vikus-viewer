@@ -107,8 +107,20 @@ utils.clean = function(data) {
 		  .map(_.trim)
 		  .uniq()
 		  .filter(function(d) { return d !== "" })
-		  .value()
+		  .map(function(d) {
+				if(d.indexOf(":") === -1) return d
+				else {
+					var split = d.split(":")
+					return split.map(function(d,i) { 
+						return split.slice(0,i+1).join(":")
+					})
+				}
+			})
+			.flatten()
+			.value()
 
+
+		//console.log(test)
 		// for proper sorting
 		d.keywords = d.keywords.map(function(d){ 
 			return d.charAt(0).toUpperCase() + d.slice(1);
