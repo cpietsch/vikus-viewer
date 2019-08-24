@@ -206,8 +206,8 @@ function Tags() {
       // .transition()
       // .duration(500)
       .style("opacity", 0)
-      .transition()
-      .duration(500)
+      // .transition()
+      // .duration(500)
       .remove();
 
     if(words.length === 0) return
