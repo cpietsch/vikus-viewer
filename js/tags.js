@@ -254,10 +254,13 @@ function Tags() {
   tags.mouseclick = function (d) {
     lock = true;
 
-    console.log("clikc", d)
-
     if(filterWords.indexOf(d.key)>-1){
+      console.log(d.key, filterWords)
       _.remove(filterWords,function(d2){ return d2 == d.key; });
+      // if hierarchical keywords, could turn those into an array instead of strings
+      if(d.key.indexOf(":")){
+        filterWords = filterWords.filter(f => !f.startsWith(d.key))
+      }
     } else {
       filterWords.push(d.key);
     }
