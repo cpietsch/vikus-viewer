@@ -192,10 +192,16 @@ function Canvas() {
         stage = new PIXI.Container();
         stage2 = new PIXI.Container();
         stage3 = new PIXI.Container();
+        stage3_cluster = new PIXI.Container();
         stage4 = new PIXI.Container();
         stage5 = new PIXI.Container();
 
+        var blurFilter1 = new PIXI.filters.BlurFilter();
+        blurFilter1.blur = 10
+        stage3_cluster.filters = [blurFilter1];
+
         stage.addChild(stage2);
+        stage3.addChild(stage3_cluster);
         stage2.addChild(stage3);
         stage2.addChild(stage4);
         stage2.addChild(stage5);
@@ -233,6 +239,7 @@ function Canvas() {
         data.forEach(function (d, i) {
             var sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
+            //sprite.tint = 0x0231243;
             sprite.anchor.x = 0.5;
             sprite.anchor.y = 0.5;
 
@@ -243,6 +250,16 @@ function Canvas() {
             d.sprite = sprite;
 
             stage3.addChild(sprite);
+
+            var sprite2 = new PIXI.Sprite(PIXI.Texture.WHITE);
+            // sprite2.tint = 0x0231243;
+            sprite2.anchor.x = 0.5;
+            sprite2.anchor.y = 0.5;
+            sprite2.scale.x = scale1*0.7;
+            sprite2.scale.y = scale1*0.7;
+
+            d.clusterSprite = sprite2
+            stage3_cluster.addChild(sprite2);
 
         })
 
@@ -300,7 +317,8 @@ function Canvas() {
             return {
                 id: d.id,
                 x: parseFloat(d.x),
-                y: parseFloat(d.y)
+                y: parseFloat(d.y),
+                cluster: parseInt(d.cluster)
             }
         })
         var xExtent = d3.extent(clean, function (d) {
@@ -313,11 +331,23 @@ function Canvas() {
         var x = d3.scale.linear().range([0, 1]).domain(xExtent)
         var y = d3.scale.linear().range([0, 1]).domain(yExtent)
 
+        var colorScale = d3.scale.category10()
+
         d.forEach(function (d) {
             tsneIndex[d.id] = [
                 x(d.x),
-                y(d.y)
+                y(d.y),
+                d.cluster,
+                colorScale(d.cluster)
             ]
+        })
+
+        data.forEach(function(d){
+            var tsne = tsneIndex[d.id]
+            var color = tsne[3] || "#FFFFFF"
+            var intcolor =  parseInt(color.substring(1), 16)
+            // console.log(color, intcolor)
+            d.clusterSprite.tint = intcolor
         })
 
         console.timeEnd("tsne")
@@ -383,9 +413,13 @@ function Canvas() {
                 d.x1 = d.x * scale1 + imageSize / 2;
                 d.y1 = d.y * scale1 + imageSize / 2;
 
+               
+
                 if (d.sprite.position.x == 0) {
                     d.sprite.position.x = d.x1;
                     d.sprite.position.y = d.y1;
+                    d.clusterSprite.position.x = d.x1
+                    d.clusterSprite.position.y = d.y1
                 }
 
                 if (d.sprite2) {
@@ -419,22 +453,29 @@ function Canvas() {
             diff = (d.x1 - d.sprite.position.x);
             if (Math.abs(diff) > 0.1) {
                 d.sprite.position.x += diff * 0.1;
+                d.clusterSprite.position.x = d.sprite.position.x;
                 sleep = false;
             }
 
             diff = (d.y1 - d.sprite.position.y);
             if (Math.abs(diff) > 0.1) {
                 d.sprite.position.y += diff * 0.1
+                d.clusterSprite.position.y = d.sprite.position.y
                 sleep = false;
             }
 
             diff = (d.alpha - d.sprite.alpha);
             if (Math.abs(diff) > 0.01) {
                 d.sprite.alpha += diff * 0.2
+                d.clusterSprite.alpha = d.sprite.alpha
                 sleep = false;
             }
 
             d.sprite.visible = d.sprite.alpha > 0.1;
+            d.clusterSprite.visible = d.sprite.visible;
+
+            // d.clusterSprite.position.x = d.x1
+            // d.clusterSprite.position.y = d.y1
 
             if (d.sprite2) {
                 diff = (d.alpha2 - d.sprite2.alpha);
