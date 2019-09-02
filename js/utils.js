@@ -101,7 +101,8 @@ utils.clean = function(data) {
 	data.forEach(function(d,i){
 		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
 		d.i = i;
-		d.keywords = _(d.keywords)
+		d.id = d._id;
+		d.keywords = _(d._keywords)
 		  .chain()
 		  .split(",")
 		  .map(_.trim)
@@ -117,17 +118,15 @@ utils.clean = function(data) {
 				}
 			})
 			.flatten()
+			.map(function(d){ 
+				// for sorting
+				return d.charAt(0).toUpperCase() + d.slice(1);
+			})
 			.value()
 
 
-		//console.log(test)
-		// for proper sorting
-		d.keywords = d.keywords.map(function(d){ 
-			return d.charAt(0).toUpperCase() + d.slice(1);
-		});
-
 		d._year = d.year
-		d._keywords = d.keywords
+		//d._keywords = d.keywords
 
 		// internal vars
 		d.alpha = 1;
