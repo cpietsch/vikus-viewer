@@ -138,9 +138,44 @@ utils.clean = function(data) {
 		d.x = i;
 		d.y = i;
 		d.order = i;
+		d.tsne = JSON.parse(d.tsne)
 	});
 
+	utils.initTsne(data)
+
 }
+
+utils.initTsne = function(clean){
+	var xExtent = d3.extent(clean, function (d) {
+		return d.tsne[0]
+	})
+	var yExtent = d3.extent(clean, function (d) {
+		return d.tsne[1]
+	})
+
+	var x = d3.scale.linear().range([0, 1]).domain(xExtent)
+	var y = d3.scale.linear().range([0, 1]).domain(yExtent)
+
+	var colorScale = d3.scale.category10()
+
+	clean.forEach(function (d) {
+		d.tsne = [
+			x(d.tsne[0]),
+			y(d.tsne[1]),
+			d.tsne[2],
+			colorScale(d.tsne[2])
+		]
+	})
+
+	// data.forEach(function(d){
+	// 	var tsne = tsneIndex[d.id]
+	// 	var color = tsne[3] || "#FFFFFF"
+	// 	var intcolor =  parseInt(color.substring(1), 16)
+	// 	// console.log(color, intcolor)
+	// 	d.clusterSprite.tint = intcolor
+	// })
+}
+
 
 utils.simulateLargeDatasets = function(data){
 	Array.prototype.push.apply(data, _.clone(data, true))

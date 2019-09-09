@@ -65,13 +65,13 @@ function init() {
 				search.init();
 				canvas.init(data, timeline, config);
 
-				if (config.loader.tsne) {
-					d3.csv(config.loader.tsne, function (tsne) {
-						console.log(tsne)
-						d3.select(".navi").classed("hide", false)
-						canvas.addTsneData(tsne)
-					})
-				}
+				// if (config.loader.tsne) {
+				// 	d3.csv(config.loader.tsne, function (tsne) {
+				// 		console.log(tsne)
+				// 		d3.select(".navi").classed("hide", false)
+				// 		canvas.addTsneData(tsne)
+				// 	})
+				// }
 
 				LoaderSprites()
 					.progress(function (textures) {

@@ -261,6 +261,12 @@ function Canvas() {
             d.clusterSprite = sprite2
             stage3_cluster.addChild(sprite2);
 
+            // console.log(d.tsne)
+            var color = d.tsne[3]
+            var intcolor =  parseInt(color.substring(1), 16)
+            // console.log(color, intcolor)
+            d.clusterSprite.tint = intcolor
+
         })
 
 
@@ -736,11 +742,9 @@ function Canvas() {
         active.forEach(function (d) {
 
             var factor = height / 2;
-            var tsneEntry = tsneIndex[d.id]
-            if(tsneEntry) {
-                d.x = (tsneEntry[0] * dimension) + width / 2 - dimension / 2 + margin.left;
-                d.y = (tsneEntry[1] * dimension) - dimension / 2 + marginBottom;
-            }
+            d.x = (d.tsne[0] * dimension) + width / 2 - dimension / 2 + margin.left;
+            d.y = (d.tsne[1] * dimension) - dimension / 2 + marginBottom;
+       
             // var tsneEntry = tsne.find(function (t) {
             //     return t.id == d.id
             // })
