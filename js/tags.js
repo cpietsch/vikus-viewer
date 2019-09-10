@@ -34,6 +34,8 @@ function Tags() {
   tags.init = function(_data, config) {
     data = _data;
 
+    d3.select(".tagcloud").remove()
+    
     container = d3.select(".page").append("div")
       .style("width", width + margin.left + margin.right)
       .style("height", height + margin.top + margin.bottom)

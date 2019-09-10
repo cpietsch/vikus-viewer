@@ -166,6 +166,9 @@ function Canvas() {
         data = _data;
         config = _config;
 
+        d3.select(".viz").remove()
+
+
         container = d3.select(".page").append("div").classed("viz", true);
         detailVue._data.structure = config.detail.structure
 

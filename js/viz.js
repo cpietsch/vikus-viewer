@@ -44,18 +44,14 @@ if (Modernizr.webgl && !utils.isMobile()) {
 	init();
 }
 
-function init() {
+function loadConfig(path){
 
-	tags = Tags();
-	canvas = Canvas();
-	search = Search();
-	timeline = Timeline()
-	ping = utils.ping();
+	console.log("loading", path)
 
-	d3.json("data/config.json", function (config) {
+	d3.json(path, function (config) {
 
 		utils.initConfig(config)
-
+		
 		Loader(config.loader.timeline).finished(function (timeline) {
 			Loader(config.loader.items).finished(function (data) {
 
@@ -64,14 +60,6 @@ function init() {
 				tags.init(data, config);
 				search.init();
 				canvas.init(data, timeline, config);
-
-				// if (config.loader.tsne) {
-				// 	d3.csv(config.loader.tsne, function (tsne) {
-				// 		console.log(tsne)
-				// 		d3.select(".navi").classed("hide", false)
-				// 		canvas.addTsneData(tsne)
-				// 	})
-				// }
 
 				LoaderSprites()
 					.progress(function (textures) {
@@ -90,6 +78,44 @@ function init() {
 			});
 		});
 	});
+		
+}
+
+function init() {
+
+	tags = Tags();
+	canvas = Canvas();
+	search = Search();
+	timeline = Timeline()
+	ping = utils.ping();
+
+	d3.json("data/settings.json", function (settings) {
+		console.log(settings)
+
+		var firstConfig = settings.configs[0];
+		var active = null
+		if(firstConfig){
+			loadConfig(firstConfig.path)
+			active = firstConfig
+		}
+
+		var d = d3.select("#configs").selectAll(".button").data(settings.configs)
+
+		d.enter()
+			.append("div")
+			.classed("button", true)
+			.classed("active", function(d){ return d === active })
+			.text(function(d){ return d.name })
+			.on("click", function (d) {
+				console.log(d)
+				active = d
+				d3.select("#configs").selectAll(".button")
+					.classed("active", function(d){ return d === active })
+				loadConfig(d.path)
+			})
+	});
+
+	
 
 	d3.select(window)
 		.on("resize", function () {
@@ -120,14 +146,14 @@ function init() {
 			d3.select(".infobar").classed("sneak", s)
 		})
 
-	d3.selectAll(".navi .button")
+	d3.selectAll("#view .button")
 		.on("click", function () {
 			var that = this;
 			var mode = d3.select(this).attr("data");
 			canvas.setMode(mode);
 			timeline.setDisabled(mode != "time");
 
-			d3.selectAll(".navi .button").classed("active", function () {
+			d3.selectAll("#view .button").classed("active", function () {
 				return that === this
 			});
 		})

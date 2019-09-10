@@ -102,6 +102,13 @@
     display: none;
 }
 
+.navi.configs {
+    z-index: 300;
+    top: 10%;
+    position: absolute;
+    left: 0;
+}
+
 .navi {
     z-index: 300;
     top: 30%;
@@ -117,7 +124,7 @@
     /* display: none; */
     /* background-size: 100% 100%; */
     /* background-repeat: no-repeat; */
-    width: 60px;
+    width: 80px;
     height: 15px;
     padding-top: 6px;
     padding-bottom: 4px;
@@ -127,6 +134,7 @@
     font-weight: bold;
     color: #A2A2A2;
     margin-bottom: 5px;
+    user-select: none;
 }
 
 .navi .button.active {

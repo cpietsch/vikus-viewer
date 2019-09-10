@@ -24,6 +24,7 @@ function Timeline() {
 
     timeline.init = function (_timeDomain) {
         timeDomain = _timeDomain
+        d3.select(".timeline").remove()
         container = d3.select(".viz").append("div").classed("timeline", true)
         container.style("transform", "translate(" + 0 + "px," + (canvas.height() - 30) + "px)");
     }
