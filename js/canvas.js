@@ -878,6 +878,8 @@ function Canvas() {
             return
         }
 
+        d.alpha = 0
+
         state.lastZoomed = d.id;
         var page = d.page ? '_' + d.page : ''
         var url = config.loader.textures.big.url + d.id + page + ".jpg";
@@ -890,6 +892,7 @@ function Canvas() {
             var size = Math.max(texture.width, texture.height)
             sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
             sleep = false
+            d.alpha2 = 0
         }
 
         sprite.on('added', updateSize)

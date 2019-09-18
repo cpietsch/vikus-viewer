@@ -70,6 +70,9 @@ function loadConfig(path){
 								})
 								.forEach(function (d) {
 									d.sprite.texture = textures[id]
+
+									d.clusterSprite.width = d.sprite.width
+									d.clusterSprite.height = d.sprite.height
 								})
 						})
 						canvas.wakeup()
@@ -99,15 +102,14 @@ function init() {
 			active = firstConfig
 		}
 
-		var d = d3.select("#configs").selectAll(".button").data(settings.configs)
-
-		d.enter()
+		var configsButtons = d3.select("#configs").selectAll(".button").data(settings.configs)
+		configsButtons.enter()
 			.append("div")
 			.classed("button", true)
 			.classed("active", function(d){ return d === active })
 			.text(function(d){ return d.name })
 			.on("click", function (d) {
-				console.log(d)
+				//console.log(d)
 				active = d
 				d3.select("#configs").selectAll(".button")
 					.classed("active", function(d){ return d === active })
