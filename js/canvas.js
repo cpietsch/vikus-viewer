@@ -95,6 +95,7 @@ function Canvas() {
 
     var startTranslate = [0, 0];
     var startScale = 0;
+    var cursorCutoff = 1;
     var zooming = false;
     var detailContainer = d3.select(".sidebar")
     var timelineData;
@@ -159,7 +160,9 @@ function Canvas() {
 
         timeline.rescale(scale1)
 
+        cursorCutoff =  1/scale1 * imageSize * 0.48
         zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width)
+        // console.log("zoomedToImageScale", zoomedToImageScale)
     }
 
     canvas.init = function (_data, _timeline, _config) {
@@ -271,9 +274,10 @@ function Canvas() {
                     spriteClick = false;
                     return;
                 }
+
                 if (selectedImage && !selectedImage.id) return;
                 if (drag) return;
-                if (selectedImageDistance > 15) return;
+                if (selectedImageDistance > cursorCutoff) return;
                 if (selectedImage && !selectedImage.active) return;
                 if (timelineHover) return;
                 // console.log(selectedImage)
@@ -330,12 +334,15 @@ function Canvas() {
         var mouse = d3.mouse(vizContainer.node());
         var p = toScreenPoint(mouse);
 
+        var distance = 200
+
         var best = nearest(p[0] - imgPadding, p[1] - imgPadding, {
-            d: 200,
+            d: distance,
             p: null
         }, quadtree);
 
         selectedImageDistance = best.d;
+        // console.log(cursorCutoff,scale, scale1,  selectedImageDistance)
 
         if (bottomZooming && best.p && best.p.ii < 3 && selectedImageDistance > 7) {
             selectedImage = null;
@@ -344,14 +351,13 @@ function Canvas() {
         } else {
             if (best.p && !zoomedToImage) {
                 var d = best.p;
-                // todo iprove that bitch
                 var center = [((d.x + imgPadding) * scale) + translate[0], (height + d.y + imgPadding) * scale + translate[1]];
                 zoom.center(center);
                 selectedImage = d;
             }
 
             container.style("cursor", function () {
-                return ((best.d < 5) && selectedImage.active) ? "pointer" : "default";
+                return ((selectedImageDistance < cursorCutoff) && selectedImage.active) ? "pointer" : "default";
             });
         }
 
@@ -512,7 +518,7 @@ function Canvas() {
     }
 
     function showDetail(d) {
-        console.log("show detail", d)
+        // console.log("show detail", d)
 
         detailContainer
             .select(".outer")
@@ -586,7 +592,7 @@ function Canvas() {
             x2 = (x1 + (width / scale))
         }
 
-        if (zoomedToImageScale != 0 && scale > zoomedToImageScale && !zoomedToImage && selectedImage && selectedImage.type == "image") {
+        if (zoomedToImageScale != 0 && scale > zoomedToImageScale*0.9 && !zoomedToImage && selectedImage && selectedImage.type == "image") {
 
             zoomedToImage = true;
             zoom.center(null);
@@ -595,8 +601,8 @@ function Canvas() {
             showDetail(selectedImage)
         }
 
-        if (zoomedToImage && zoomedToImageScale - 20 > scale) {
-            // c("clear")
+        if (zoomedToImage && zoomedToImageScale *0.8 > scale) {
+            // console.log("clear")
             zoomedToImage = false;
             state.lastZoomed = 0;
             showAllImages();
