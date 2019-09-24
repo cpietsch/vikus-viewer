@@ -118,6 +118,9 @@ cpietsch@gmail.com
 								<span v-else-if="entry.type === 'markdown'">
 									<span v-html="getContent(entry)"></span>
 								</span>
+								<span v-else-if="entry.type === 'function'">
+									<span v-html="getContent(entry)"></span>
+								</span>
 								<span v-else>
 									{{ getContent(entry) }}
 								</span>

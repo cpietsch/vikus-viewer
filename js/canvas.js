@@ -40,7 +40,7 @@ function Canvas() {
 
     var quadtree;
 
-    var maxZoomLevel = utils.isMobile() ? 5000 : 2500;
+    var maxZoomLevel = utils.isMobile() ? 400 : 800;
 
     var zoom = d3.behavior.zoom()
         .scaleExtent([1, maxZoomLevel])
@@ -90,7 +90,7 @@ function Canvas() {
     };
 
     var zoomedToImage = false;
-    var zoomedToImageScale = 117;
+    var zoomedToImageScale = 30;
     var zoomBarrier = 2;
 
     var startTranslate = [0, 0];
@@ -103,6 +103,8 @@ function Canvas() {
     var timelineHover = false;
     var tsne = []
     var tsneIndex = {}
+
+    var scaleFactor = 0.9
 
     function canvas() {}
 
@@ -161,7 +163,7 @@ function Canvas() {
         timeline.rescale(scale1)
 
         cursorCutoff =  1/scale1 * imageSize * 0.48
-        zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width)
+        zoomedToImageScale = 0.3 / (x.rangeBand() / collumns / width)
         // console.log("zoomedToImageScale", zoomedToImageScale)
     }
 
@@ -184,9 +186,11 @@ function Canvas() {
 
         var renderOptions = {
             resolution: 1,
-            antialiasing: false
+            antialiasing: false,
+            width: width + margin.left + margin.right,
+            height: height
         };
-        renderer = new PIXI.WebGLRenderer(width + margin.left + margin.right, height, renderOptions);
+        renderer = new PIXI.WebGLRenderer(renderOptions);
         renderer.backgroundColor = parseInt(config.style.canvasBackground.substring(1), 16)
         window.renderer = renderer;
 
@@ -239,8 +243,8 @@ function Canvas() {
             sprite.anchor.x = 0.5;
             sprite.anchor.y = 0.5;
 
-            sprite.scale.x = d.scaleFactor;
-            sprite.scale.y = d.scaleFactor;
+            sprite.scale.x = scaleFactor;
+            sprite.scale.y = scaleFactor;
 
             sprite._data = d;
             d.sprite = sprite;
@@ -270,23 +274,25 @@ function Canvas() {
             })
             .on("click", function () {
                 console.log("click");
-                if (spriteClick) {
-                    spriteClick = false;
-                    return;
-                }
+                // if (spriteClick) {
+                //     spriteClick = false;
+                //     return;
+                // }
 
-                if (selectedImage && !selectedImage.id) return;
+                // if (selectedImage && !selectedImage.id) return;
                 if (drag) return;
-                if (selectedImageDistance > cursorCutoff) return;
-                if (selectedImage && !selectedImage.active) return;
+                // if (selectedImageDistance > cursorCutoff) return;
+                // if (selectedImage && !selectedImage.active) return;
                 if (timelineHover) return;
                 // console.log(selectedImage)
 
-                if (Math.abs(zoomedToImageScale - scale) < 0.1) {
-                    canvas.resetZoom();
-                } else {
-                    zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
-                }
+                // if (Math.abs(zoomedToImageScale - scale) < 0.1) {
+                //     canvas.resetZoom();
+                // } else {
+                //     zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
+                // }
+                console.log("zoom to ")
+                zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
 
             })
 
@@ -324,6 +330,10 @@ function Canvas() {
             ]
         })
 
+        data.forEach(d => {
+            d.active = tsneIndex[d.id] !== undefined
+        })
+
         console.timeEnd("tsne")
     }
 
@@ -344,12 +354,8 @@ function Canvas() {
         selectedImageDistance = best.d;
         // console.log(cursorCutoff,scale, scale1,  selectedImageDistance)
 
-        if (bottomZooming && best.p && best.p.ii < 3 && selectedImageDistance > 7) {
-            selectedImage = null;
-            zoom.center(null);
-            container.style("cursor", "default");
-        } else {
-            if (best.p && !zoomedToImage) {
+        
+            if (best.p) {
                 var d = best.p;
                 var center = [((d.x + imgPadding) * scale) + translate[0], (height + d.y + imgPadding) * scale + translate[1]];
                 zoom.center(center);
@@ -359,8 +365,7 @@ function Canvas() {
             container.style("cursor", function () {
                 return ((selectedImageDistance < cursorCutoff) && selectedImage.active) ? "pointer" : "default";
             });
-        }
-
+        
     }
 
 
@@ -376,7 +381,7 @@ function Canvas() {
             var startX = x(year.key);
             var total = year.values.length;
             year.values.sort(function (a, b) {
-                return b.keywords.length - a.keywords.length;
+                return b._layerId - a._layerId;
             })
 
             year.values.forEach(function (d, i) {
@@ -388,6 +393,8 @@ function Canvas() {
 
                 d.x1 = d.x * scale1 + imageSize / 2;
                 d.y1 = d.y * scale1 + imageSize / 2;
+
+                d.sprite.scale.x = d.sprite.scale.y = scaleFactor
 
                 if (d.sprite.position.x == 0) {
                     d.sprite.position.x = d.x1;
@@ -440,7 +447,10 @@ function Canvas() {
                 sleep = false;
             }
 
-            d.sprite.visible = d.sprite.alpha > 0.1;
+            d.sprite.visible = d.visible && d.sprite.alpha > 0.1;
+
+            // d.sprite.visible = d.visible;
+
 
             if (d.sprite2) {
                 diff = (d.alpha2 - d.sprite2.alpha);
@@ -494,8 +504,10 @@ function Canvas() {
         d3.select(".tagcloud").classed("hide", true);
         var padding = x.rangeBand() / collumns / 2;
         var sidbar = width / 8;
-        var scale = 0.8 / (x.rangeBand() / collumns / width);
-        var translateNow = [(-scale * (d.x - padding / 2)) - sidbar, -scale * (height + d.y)];
+        var scale = 0.3 / (x.rangeBand() / collumns / width);
+        var translateNow = [(-scale * d.x) - sidbar + width/2 - imageSize/2, (-scale * (height + d.y)) + height/4];
+
+        console.log(translateNow, width, scale, d.x)
 
         zoomedToImageScale = scale;
 
@@ -554,6 +566,7 @@ function Canvas() {
 
 
     function hideTheRest(d) {
+        return;
         data.forEach(function (d2) {
             if (d2.id !== d.id) {
                 d2.alpha = 0;
@@ -636,12 +649,14 @@ function Canvas() {
         startTranslate = false;
         drag = false
         startScale = scale;
+        sleep = false
     }
 
     function zoomend(d) {
         drag = startTranslate && translate !== startTranslate;
         zooming = false;
         filterVisible();
+        sleep = false
 
         if (zoomedToImage && !selectedImage.big && state.lastZoomed != selectedImage.id && !state.zoomingToImage) {
             loadBigImage(selectedImage, "zoom");
@@ -664,8 +679,10 @@ function Canvas() {
     canvas.project = function () {
         sleep = false
         if (state.mode == "tsne") {
+            scaleFactor = 0.5
             canvas.projectTSNE();
         } else {
+            scaleFactor = 0.9
             canvas.split();
         }
         canvas.resetZoom();
@@ -717,6 +734,8 @@ function Canvas() {
             d.x1 = d.x * scale1 + imageSize / 2;
             d.y1 = d.y * scale1 + imageSize / 2;
 
+            d.sprite.scale.x = d.sprite.scale.y = scaleFactor
+
             if (d.sprite.position.x == 0) {
                 d.sprite.position.x = d.x1;
                 d.sprite.position.y = d.y1;
@@ -742,13 +761,13 @@ function Canvas() {
             return d.y;
         });
 
-        var y = -extent[1] - bottomPadding;
-        y = (extent[1] / -3) - bottomPadding
+        var y = -extent[1]*2 -height -extent[0]/4;
+        // y = (extent[1] / -1.5) - bottomPadding
 
         vizContainer
             .call(zoom.translate(translate).event)
             .transition().duration(duration)
-            .call(zoom.translate([0, y]).scale(1).event)
+            .call(zoom.translate([-width/2, y]).scale(2).event)
     }
 
     canvas.split = function () {
@@ -771,10 +790,10 @@ function Canvas() {
             var p = d.sprite.position;
             var x = (p.x / scale1) + translate[0] / zoomScale;
             var y = ((p.y / scale1) + (translate[1]) / zoomScale);
-            var padding = 5;
+            var padding = (width/3) / scale;
 
             if (x > (-padding) && x < ((width / zoomScale) + padding) && y + height < (height / zoomScale + padding) && y > (height * -1) - padding) {
-                d.visible = true;
+                d.visible = true;              
             } else {
                 d.visible = false;
             }
@@ -784,17 +803,22 @@ function Canvas() {
             return d.visible;
         });
 
-        if (visible.length < 40) {
+        console.log(visible.length)
+
+        if (visible.length < 200) {
             data.forEach(function (d) {
-                if (d.visible && d.loaded && d.active) d.alpha2 = 1;
+                if (d.visible && d.loaded && d.active) {d.alpha2 = 1 }
                 else if (d.visible && !d.loaded && d.active) loadImagesCue.push(d);
-                else d.alpha2 = 0;
+                else {d.alpha2 = 0}
             })
-        } else {
-            data.forEach(function (d) {
-                d.alpha2 = 0;
-            })
-        }
+        } 
+        // else {
+        //     data.forEach(function (d) {
+        //         d.alpha2 = 0;
+        //         // d.alpha = 1
+        //         d.visible = true;
+        //     })
+        // }
     }
 
     function loadMiddleImage(d) {
@@ -805,18 +829,19 @@ function Canvas() {
 
         // console.log("load", d)
         var url = config.loader.textures.detail.url + d.id + '.jpg'
-        var texture = new PIXI.Texture.fromImage(url, true)
+        var texture = new PIXI.Texture.fromImage(url)
         var sprite = new PIXI.Sprite(texture);
 
         var update = function () {
             sleep = false
+            d.visible = false
         }
 
         sprite.on('added', update)
         texture.once('update', update)
 
-        sprite.scale.x = d.scaleFactor;
-        sprite.scale.y = d.scaleFactor;
+        sprite.scale.x = scaleFactor;
+        sprite.scale.y = scaleFactor;
 
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 0.5;
@@ -840,40 +865,20 @@ function Canvas() {
         var page = d.page ? '_' + d.page : ''
         var url = config.loader.textures.big.url + d.id + page + ".jpg";
 
-        var texture = new PIXI.Texture.fromImage(url, true)
+        console.log(url)
+
+        var texture = new PIXI.Texture.from(url)
         var sprite = new PIXI.Sprite(texture);
         var res = config.loader.textures.big.size
 
         var updateSize = function () {
             var size = Math.max(texture.width, texture.height)
-            sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
+            sprite.scale.x = sprite.scale.y = (imageSize3 / size) * scaleFactor;
             sleep = false
         }
 
         sprite.on('added', updateSize)
         texture.once('update', updateSize)
-
-        if (d.imagenum) {
-            sprite.on("mousemove", function (s) {
-                var pos = s.data.getLocalPosition(s.currentTarget)
-                s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize"
-            })
-            sprite.on("click", function (s) {
-                if (drag) return
-
-                s.stopPropagation()
-                spriteClick = true
-                var pos = s.data.getLocalPosition(s.currentTarget)
-                var dir = pos.x > 0 ? 1 : -1
-                var page = d.page + dir
-                var nextPage = page
-                if (page > d.imagenum - 1) nextPage = 0
-                if (page < 0) nextPage = d.imagenum - 1
-
-                canvas.changePage(d.id, nextPage)
-            })
-            sprite.interactive = true;
-        }
 
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 0.5;
@@ -899,10 +904,32 @@ function Canvas() {
 
         if (loadImagesCue.length) {
             var d = loadImagesCue.pop();
+            // console.log(d.id)
             if (!d.loaded) {
                 loadMiddleImage(d);
             }
         }
+        if (loadImagesCue.length) {
+            var d = loadImagesCue.pop();
+            // console.log(d.id)
+            if (!d.loaded) {
+                loadMiddleImage(d);
+            }
+        }
+        if (loadImagesCue.length) {
+            var d = loadImagesCue.pop();
+            // console.log(d.id)
+            if (!d.loaded) {
+                loadMiddleImage(d);
+            }
+        }
+        // if (loadImagesCue.length) {
+        //     var d = loadImagesCue.pop();
+        //     console.log(d.id)
+        //     if (!d.loaded) {
+        //         loadMiddleImage(d);
+        //     }
+        // }
     }
 
     function nearest(x, y, best, node) {

@@ -72,19 +72,33 @@ function init() {
 						canvas.addTsneData(tsne)
 					})
 				}
-
+				var i = 0
+				var allTextures = {}
 				LoaderSprites()
 					.progress(function (textures) {
-						Object.keys(textures).forEach(function (id) {
-							data
-								.filter(function (d) {
-									return d.id === id
-								})
-								.forEach(function (d) {
-									d.sprite.texture = textures[id]
-								})
-						})
+						console.log("textures", textures)
+						allTextures = { ...textures, ...allTextures }
+						// Object.keys(textures).forEach(function (id) {
+						// 	if(i++ % 1000 == 0) console.log(i)
+						// 	var d = data
+						// 		.find(function (d) {
+						// 			return d.id === id
+						// 		})
+						// 	// if(d) d.sprite.texture = textures[id]
+						// 	// if(!d) console.log(id)
+						// 		// .forEach(function (d) {
+						// 		// 	d.sprite.texture = textures[id]
+						// 		// })
+						// })
 						canvas.wakeup()
+					})
+					.done(function(){
+						console.log(allTextures)
+						data.forEach(d => {
+							// if(!allTextures[d.id]) console.log(d.id)
+							d.sprite.texture = allTextures[d.id]
+							if(i++ % 10000 == 0) console.log(i)
+						})
 					})
 					.load(config.loader.textures.medium.url)
 			});

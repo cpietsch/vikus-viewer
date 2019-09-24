@@ -68,6 +68,7 @@ function LoaderSprites(){
 
   var loader = {};
   var progress = function(){};
+  var done = function(){};
 
   var pixiloader = new PIXI.loaders.Loader();
     pixiloader
@@ -85,12 +86,19 @@ function LoaderSprites(){
     return loader;
   };
 
+  loader.done = function(value) {
+    if (!arguments.length) return done;
+    done = value;
+    return loader;
+  };
+
   loader.load = function(url){
     pixiloader
       .add(url)
       .load(function (r) {
           console.log("done", r);
           container.selectAll("div").remove();
+          done()
       });
   }
 

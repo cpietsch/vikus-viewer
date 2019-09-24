@@ -100,6 +100,7 @@ utils.clean = function(data) {
 
 	data.forEach(function(d,i){
 		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
+		// d.search = d._layerId
 		d.i = i;
 		d.keywords = _(d.keywords)
 		  .chain()
@@ -123,11 +124,13 @@ utils.clean = function(data) {
 		d.loaded = false;
 		d.type = "image";
 		d.page = 0
-		d.scaleFactor = 0.9
+		d.scaleFactor = 0.5
 		d.x = i;
 		d.y = i;
 		d.order = i;
 	});
+
+	data.sort(function(a,b){ return +a._layerId - b._layerId })
 
 }
 

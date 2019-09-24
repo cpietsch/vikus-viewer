@@ -58,10 +58,10 @@ window.pixiPackerParser = function (PIXI)
                 res.textures = {};
                 spritesheet.sprites.forEach(function(sprite) {
                     var frame = new PIXI.Rectangle(
-                        sprite.position.x / resolution,
-                        sprite.position.y / resolution,
-                        sprite.dimension.w / resolution,
-                        sprite.dimension.h / resolution
+                        sprite.position.x+1 / resolution,
+                        sprite.position.y+1 / resolution,
+                        sprite.dimension.w-2 / resolution,
+                        sprite.dimension.h-2 / resolution
                     );
 
                     var crop;
@@ -106,7 +106,7 @@ window.pixiPackerParser = function (PIXI)
                     res.textures[sprite.name] = new PIXI.Texture(res.texture.baseTexture, frame, crop, trim, false);
 
                     // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                    PIXI.utils.TextureCache[sprite.name] = res.textures[sprite.name];
+                    // PIXI.utils.TextureCache[sprite.name] = res.textures[sprite.name];
                 });
                 waiter.done();
             });
