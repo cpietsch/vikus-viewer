@@ -76,7 +76,7 @@ function init() {
 				var allTextures = {}
 				LoaderSprites()
 					.progress(function (textures) {
-						console.log("textures", textures)
+						// console.log("textures", textures)
 						allTextures = { ...textures, ...allTextures }
 						// Object.keys(textures).forEach(function (id) {
 						// 	if(i++ % 1000 == 0) console.log(i)
@@ -99,6 +99,7 @@ function init() {
 							d.sprite.texture = allTextures[d.id]
 							if(i++ % 10000 == 0) console.log(i)
 						})
+						canvas.setMode("tsne")
 					})
 					.load(config.loader.textures.medium.url)
 			});
@@ -135,6 +136,7 @@ function init() {
 		})
 
 	d3.selectAll(".navi .button")
+		.hide()
 		.on("click", function () {
 			var that = this;
 			var mode = d3.select(this).attr("data");

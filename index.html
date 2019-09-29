@@ -21,7 +21,7 @@
 	<script src="js/vue.min.js"></script>
 	<script src="js/marked.min.js"></script>
 	<script src="js/lodash.min.js"></script>
-	<script src="js/pixi.min.js"></script>
+	<script src="js/pixi.min.5.js"></script>
 	<script src="js/pixi-packer-parser.js"></script>
 	<script src="js/loader.js"></script>
 	<script src="js/canvas.js"></script>
@@ -77,13 +77,13 @@ cpietsch@gmail.com
 <body>
 	<div id="hiddenreload"></div>
 
-	<div class="browserInfo">
+	<!-- <div class="browserInfo">
 		<p>This visualization is not optimized for mobile phones and needs WebGL enabled.</p>
 		<p>Please come back on a Computer.</p>
 		<span>💡</span>
-	</div>
+	</div> -->
 
-	<div class="search"></div>
+	<!-- <div class="search"></div> -->
 
 	<div class="page">
 
@@ -131,12 +131,12 @@ cpietsch@gmail.com
 			</div>
 		</div>
 
-		<div class="navi hide">
+		<div class="navi" style="display: none">
 			<div class="time button active" data="time">time</div>
 			<div class="tsne button" data="tsne">similarity</div>
 		</div>
 
-		<div class="infobar sneak">
+		<div class="infobar sneak hide">
 			<div class="infobutton">
 				<svg width="16px" height="24px" viewBox="0 0 16 24">
 					<path d="M13.6824546,2 L3.7109392,11.9715154 L13.7394238,22" stroke="#FFF" stroke-width="5"></path>
@@ -154,7 +154,7 @@ cpietsch@gmail.com
 				</div>
 			</div>
 		</div>
-		<div class="searchbar">
+		<div class="searchbar hide">
 			<input type="input" name="suche">
 			<div class="button">
 				<div class="openbutton"></div>

@@ -104,6 +104,11 @@ function Canvas() {
     var tsne = []
     var tsneIndex = {}
 
+    
+    var scaleTo, scaleNow = 1;
+    var translateTo, translateNow =[0,0]
+
+
     var scaleFactor = 0.9
 
     function canvas() {}
@@ -190,7 +195,7 @@ function Canvas() {
             width: width + margin.left + margin.right,
             height: height
         };
-        renderer = new PIXI.WebGLRenderer(renderOptions);
+        renderer = new PIXI.Renderer(renderOptions);
         renderer.backgroundColor = parseInt(config.style.canvasBackground.substring(1), 16)
         window.renderer = renderer;
 
@@ -256,10 +261,10 @@ function Canvas() {
 
         vizContainer = d3.select(".viz")
             .call(zoom)
-            .on("mousemove", mousemove)
+            // .on("mousemove", mousemove)
             .on("dblclick.zoom", null)
             .on("touchstart", function (d) {
-                mousemove(d);
+                // mousemove(d);
                 touchstart = new Date() * 1;
             })
             .on("touchend", function (d) {
@@ -344,7 +349,9 @@ function Canvas() {
         var mouse = d3.mouse(vizContainer.node());
         var p = toScreenPoint(mouse);
 
-        var distance = 200
+        if(zoomI % 10 !== 0) return
+
+        var distance = 10
 
         var best = nearest(p[0] - imgPadding, p[1] - imgPadding, {
             d: distance,
@@ -447,7 +454,7 @@ function Canvas() {
                 sleep = false;
             }
 
-            d.sprite.visible = d.visible && d.sprite.alpha > 0.1;
+            d.sprite.visible = d.visible && d.sprite.alpha > 0.01;
 
             // d.sprite.visible = d.visible;
 
@@ -459,10 +466,31 @@ function Canvas() {
                     sleep = false;
                 }
 
-                d.sprite2.visible = d.sprite2.alpha > 0.1;
+                d.sprite2.visible = d.sprite2.alpha > 0.01;
                 //else d.sprite2.visible = d.visible;
             }
         });
+
+        diff = (-stage2.scale.x + scaleTo)*0.1;
+        if(Math.abs(diff) > 0.0001){
+            stage2.scale.x += diff
+            stage2.scale.y += diff
+            sleep = false
+        }
+        diff = (translateTo[0] - stage2.x) * 0.1;
+        if(Math.abs(diff) > 0.0001){
+            stage2.x += diff
+            sleep = false
+        }
+        diff =  (translateTo[1] - stage2.y) * 0.1;
+        if(Math.abs(diff) > 0.0001){
+            stage2.y += diff
+            sleep = false
+        }
+
+        scaleNow = stage2.scale.x
+        translateNow = [stage2.x, stage2.y]
+
         return sleep
     }
 
@@ -481,6 +509,7 @@ function Canvas() {
         loadImages();
         if (sleep) return
         sleep = imageAnimation();
+        if(zoomI++ % 10 === 0) filterVisible();
         renderer.render(stage);
     }
 
@@ -498,6 +527,7 @@ function Canvas() {
     }
 
     function zoomToImage(d, duration) {
+        return
         state.zoomingToImage = true;
         zoom.center(null);
         loadMiddleImage(d);
@@ -578,11 +608,12 @@ function Canvas() {
 
     function showAllImages() {
         data.forEach(function (d) {
-            d.alpha = d.active ? 1 : 0.2;;
+            d.alpha = d.active ? 1 : 0;
             d.alpha2 = d.visible ? 1 : 0;
         })
     }
 
+    var zoomI = 0;
     function zoomed() {
         translate = d3.event.translate;
         scale = d3.event.scale;
@@ -592,38 +623,38 @@ function Canvas() {
         var x1 = -1 * translate[0] / scale;
         var x2 = (x1 + (widthOuter / scale));
 
-        if (d3.event.sourceEvent != null) {
-            if (x1 < 0) {
-                translate[0] = 0;
-            } else if (x2 > widthOuter) {
-                translate[0] = ((widthOuter * scale) - widthOuter) * -1;
-            }
+        // if (d3.event.sourceEvent != null) {
+        //     if (x1 < 0) {
+        //         translate[0] = 0;
+        //     } else if (x2 > widthOuter) {
+        //         translate[0] = ((widthOuter * scale) - widthOuter) * -1;
+        //     }
 
-            zoom.translate([translate[0], translate[1]]);
+        //     zoom.translate([translate[0], translate[1]]);
 
-            x1 = -1 * translate[0] / scale;
-            x2 = (x1 + (width / scale))
-        }
+        //     x1 = -1 * translate[0] / scale;
+        //     x2 = (x1 + (width / scale))
+        // }
 
-        if (zoomedToImageScale != 0 && scale > zoomedToImageScale*0.9 && !zoomedToImage && selectedImage && selectedImage.type == "image") {
+        // if (zoomedToImageScale != 0 && scale > zoomedToImageScale*0.9 && !zoomedToImage && selectedImage && selectedImage.type == "image") {
 
-            zoomedToImage = true;
-            zoom.center(null);
-            zoomedToImageScale = scale;
-            hideTheRest(selectedImage);
-            showDetail(selectedImage)
-        }
+        //     zoomedToImage = true;
+        //     zoom.center(null);
+        //     zoomedToImageScale = scale;
+        //     hideTheRest(selectedImage);
+        //     showDetail(selectedImage)
+        // }
 
-        if (zoomedToImage && zoomedToImageScale *0.8 > scale) {
-            // console.log("clear")
-            zoomedToImage = false;
-            state.lastZoomed = 0;
-            showAllImages();
-            clearBigImages();
-            detailContainer.classed("hide", true)
-        }
+        // if (zoomedToImage && zoomedToImageScale *0.85 > scale) {
+        //     // console.log("clear")
+        //     zoomedToImage = false;
+        //     state.lastZoomed = 0;
+        //     // showAllImages();
+        //     clearBigImages();
+        //     detailContainer.classed("hide", true)
+        // }
 
-        timeline.update(x1, x2, scale, translate, scale1);
+        // timeline.update(x1, x2, scale, translate, scale1);
 
         // toggle zoom overlays
         if (scale > zoomBarrier) {
@@ -631,17 +662,24 @@ function Canvas() {
             d3.select(".searchbar").classed("hide", true);
             d3.select(".infobar").classed("sneak", true);
         } else {
-            d3.select(".tagcloud").classed("hide", false);
+            d3.select(".tagcloud").classed("hide", true);
+            d3.select(".searchbar").classed("hide", true);
+            d3.select(".infobar").classed("sneak", true);
+            // d3.select(".tagcloud").classed("hide", false);
             d3.select(".searchbar").classed("hide", false);
         }
 
 
-        stage2.scale.x = d3.event.scale;
-        stage2.scale.y = d3.event.scale;
-        stage2.x = d3.event.translate[0];
-        stage2.y = d3.event.translate[1];
+        scaleTo = d3.event.scale;
+        translateTo = [ d3.event.translate[0] , d3.event.translate[1]]
+
+        // stage2.scale.x = d3.event.scale;
+        // stage2.scale.y = d3.event.scale;
+        // stage2.x = d3.event.translate[0];
+        // stage2.y = d3.event.translate[1];
 
         sleep = false
+        
     }
 
     function zoomstart(d) {
@@ -755,6 +793,7 @@ function Canvas() {
     }
 
     canvas.resetZoom = function () {
+        
         var duration = 1400;
 
         extent = d3.extent(data, function (d) {
@@ -762,12 +801,13 @@ function Canvas() {
         });
 
         var y = -extent[1]*2 -height -extent[0]/4;
-        // y = (extent[1] / -1.5) - bottomPadding
+        y = (extent[1] / -1.5) - bottomPadding
 
         vizContainer
             .call(zoom.translate(translate).event)
-            .transition().duration(duration)
-            .call(zoom.translate([-width/2, y]).scale(2).event)
+            // .transition().duration(duration)
+            .call(zoom.translate([0, y]).scale(1).event)
+            // .call(zoom.translate([-width/2, y]).scale(2).event)
     }
 
     canvas.split = function () {
@@ -783,14 +823,17 @@ function Canvas() {
     }
 
     function filterVisible() {
-        var zoomScale = scale;
-        if (zoomedToImage) return;
+        var zoomScale = scaleNow;
+        console.log(scaleNow)
+        // var translate = translateNow
+        // if (zoomedToImage) return;
 
         data.forEach(function (d, i) {
             var p = d.sprite.position;
-            var x = (p.x / scale1) + translate[0] / zoomScale;
-            var y = ((p.y / scale1) + (translate[1]) / zoomScale);
-            var padding = (width/3) / scale;
+            var x = (p.x / scale1) + translateNow[0] / zoomScale;
+            var y = ((p.y / scale1) + (translateNow[1]) / zoomScale);
+            var padding = (width/8) / scale;
+            // padding = 0
 
             if (x > (-padding) && x < ((width / zoomScale) + padding) && y + height < (height / zoomScale + padding) && y > (height * -1) - padding) {
                 d.visible = true;              
@@ -805,36 +848,38 @@ function Canvas() {
 
         console.log(visible.length)
 
-        if (visible.length < 200) {
+        if (visible.length < 300) {
             data.forEach(function (d) {
-                if (d.visible && d.loaded && d.active) {d.alpha2 = 1 }
+                if (d.visible && d.loaded && d.active) {d.alpha2 = 1; d.alpha = 0; }
                 else if (d.visible && !d.loaded && d.active) loadImagesCue.push(d);
-                else {d.alpha2 = 0}
+                else {d.alpha2 = 0; d.alpha = 1;}
             })
         } 
-        // else {
-        //     data.forEach(function (d) {
-        //         d.alpha2 = 0;
-        //         // d.alpha = 1
-        //         d.visible = true;
-        //     })
-        // }
+        else {
+            data.forEach(function (d) {
+                d.alpha2 = 0;
+                d.alpha = 1
+                // d.visible = true;
+            })
+        }
     }
 
     function loadMiddleImage(d) {
         if (d.loaded) {
             d.alpha2 = 1;
+            d.alpha = 0;
             return;
         }
 
         // console.log("load", d)
-        var url = config.loader.textures.detail.url + d.id + '.jpg'
+        var url = config.loader.textures.detail.url + d.id + '.png'
         var texture = new PIXI.Texture.fromImage(url)
         var sprite = new PIXI.Sprite(texture);
 
         var update = function () {
             sleep = false
-            d.visible = false
+            // d.visible = false
+            // d.alpha = 0;
         }
 
         sprite.on('added', update)
@@ -863,7 +908,7 @@ function Canvas() {
 
         state.lastZoomed = d.id;
         var page = d.page ? '_' + d.page : ''
-        var url = config.loader.textures.big.url + d.id + page + ".jpg";
+        var url = config.loader.textures.big.url + d.id + page + ".png";
 
         console.log(url)
 
@@ -899,30 +944,39 @@ function Canvas() {
     }
 
     function loadImages() {
-        if (zooming) return;
-        if (zoomedToImage) return;
+        // if (zooming) return;
+        // if (zoomedToImage) return;
 
-        if (loadImagesCue.length) {
-            var d = loadImagesCue.pop();
-            // console.log(d.id)
-            if (!d.loaded) {
-                loadMiddleImage(d);
+        for (let index = 0; index < 4; index++) {
+            if (loadImagesCue.length) {
+                var d = loadImagesCue.pop();
+                // console.log(d.id)
+                if (!d.loaded) {
+                    loadMiddleImage(d);
+                }
             }
         }
-        if (loadImagesCue.length) {
-            var d = loadImagesCue.pop();
-            // console.log(d.id)
-            if (!d.loaded) {
-                loadMiddleImage(d);
-            }
-        }
-        if (loadImagesCue.length) {
-            var d = loadImagesCue.pop();
-            // console.log(d.id)
-            if (!d.loaded) {
-                loadMiddleImage(d);
-            }
-        }
+        // if (loadImagesCue.length) {
+        //     var d = loadImagesCue.pop();
+        //     // console.log(d.id)
+        //     if (!d.loaded) {
+        //         loadMiddleImage(d);
+        //     }
+        // }
+        // if (loadImagesCue.length) {
+        //     var d = loadImagesCue.pop();
+        //     // console.log(d.id)
+        //     if (!d.loaded) {
+        //         loadMiddleImage(d);
+        //     }
+        // }
+        // if (loadImagesCue.length) {
+        //     var d = loadImagesCue.pop();
+        //     // console.log(d.id)
+        //     if (!d.loaded) {
+        //         loadMiddleImage(d);
+        //     }
+        // }
         // if (loadImagesCue.length) {
         //     var d = loadImagesCue.pop();
         //     console.log(d.id)
