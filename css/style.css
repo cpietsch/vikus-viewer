@@ -735,14 +735,17 @@ svg {
   display: flex;
   flex-wrap: nowrap;
   margin-bottom: 20px;
+  left: -30px;
+  position: relative;
 }
 
 .detail .entry.wide {
   flex-direction: column;
+  left: 0px;
 }
 
 .detail .entry.column .label {
-  width: 130px;
+  width: 160px;
   padding-right: 10px;
   flex: none;
   text-align: right;
