@@ -768,6 +768,8 @@ function Canvas() {
             if (d.sprite.position.x == 0) {
                 d.sprite.position.x = d.x1;
                 d.sprite.position.y = d.y1;
+                d.clusterSprite.position.x = d.x1
+                d.clusterSprite.position.y = d.y1
             }
 
             if (d.sprite2) {
