@@ -62,3 +62,8 @@ The T-SNE view has been implemented for the [Sphaera project](https://sphaera.mp
 
 You may use VIKUS Viewer under the terms of the MIT License. See http://en.wikipedia.org/wiki/MIT_License for more information.
 Copyright (C) 2017-2019 Christopher Pietsch, and contributors
+
+## Gallery
+
+- [Lego Sets 1955-2019](http://nijdam.nu/vikus-viewer/) by [Pin0](https://github.com/Pin0)
+- [Swedish Nationalmuseum](https://riksantikvarieambetet.github.io/VIKUS-Viewer-Nationalmuseum/) by [Swedish National Heritage Board](https://www.raa.se/)
