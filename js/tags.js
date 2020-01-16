@@ -33,6 +33,8 @@ function Tags() {
 
   tags.init = function(_data, config) {
     data = _data;
+    keywords = [];
+    filterWords = [];
 
     d3.select(".tagcloud").remove()
     
