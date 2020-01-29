@@ -180,7 +180,8 @@ function Canvas() {
             imageSize3 = config.loader.textures.big.size;
         }
 
-        PIXI.settings.SCALE_MODE = 1
+        PIXI.settings.SCALE_MODE = 1;
+        PIXI.settings.SPRITE_MAX_TEXTURES = Math.min(PIXI.settings.SPRITE_MAX_TEXTURES , 16);
 
         var renderOptions = {
             resolution: 1,
