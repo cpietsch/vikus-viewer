@@ -129,7 +129,7 @@ function Tags() {
    var keywordsNest = keywordsNestGlobal
       .slice(0,sliceNum)
       .sort(function(a,b){
-        return d3.ascending(a.display[0], b.display[0]);
+        return d3.ascending(a.key, b.key);
       })
 
     // c("keywordsNest", keywordsNest);
