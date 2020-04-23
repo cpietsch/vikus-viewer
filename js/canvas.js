@@ -191,12 +191,10 @@ function Canvas() {
     var renderOptions = {
       resolution: 1,
       antialiasing: false,
+      width: width + margin.left + margin.right,
+      height: height,
     };
-    renderer = new PIXI.WebGLRenderer(
-      width + margin.left + margin.right,
-      height,
-      renderOptions
-    );
+    renderer = new PIXI.Renderer(renderOptions);
     renderer.backgroundColor = parseInt(
       config.style.canvasBackground.substring(1),
       16
@@ -827,7 +825,7 @@ function Canvas() {
 
     // console.log("load", d)
     var url = config.loader.textures.detail.url + d.id + ".jpg";
-    var texture = new PIXI.Texture.fromImage(url, true);
+    var texture = new PIXI.Texture.fromImage(url);
     var sprite = new PIXI.Sprite(texture);
 
     var update = function () {
@@ -862,7 +860,7 @@ function Canvas() {
     var page = d.page ? "_" + d.page : "";
     var url = config.loader.textures.big.url + d.id + page + ".jpg";
 
-    var texture = new PIXI.Texture.fromImage(url, true);
+    var texture = new PIXI.Texture.from(url);
     var sprite = new PIXI.Sprite(texture);
     var res = config.loader.textures.big.size;
 
