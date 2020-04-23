@@ -788,7 +788,7 @@ function Canvas() {
       var p = d.sprite.position;
       var x = p.x / scale1 + translate[0] / zoomScale;
       var y = p.y / scale1 + translate[1] / zoomScale;
-      var padding = 5;
+      var padding = width / 3 / scale;
 
       if (
         x > -padding &&
