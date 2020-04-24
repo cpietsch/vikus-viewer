@@ -864,16 +864,20 @@ function Canvas() {
     var sprite = new PIXI.Sprite(texture);
     var res = config.loader.textures.big.size;
 
-    var updateSize = function () {
+    var updateSize = function (t) {
       var size = Math.max(texture.width, texture.height);
       sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
       sleep = false;
+      if(t.valid){
+        d.alpha = 0;
+        d.alpha2 = 0;
+      }
     };
 
     sprite.on("added", updateSize);
     texture.once("update", updateSize);
 
-    if (d.imagenum) {
+    if (d.imagenum > 1) {
       sprite.on("mousemove", function (s) {
         var pos = s.data.getLocalPosition(s.currentTarget);
         s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize";
