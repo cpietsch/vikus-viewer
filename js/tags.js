@@ -143,8 +143,7 @@ function Tags() {
       .domain(keywordsExtent)
       .range([10,20]);
 
-    if(keywordsExtent[0]==keywordsExtent[1]) keywordsScale.range([15,15])
-
+    if (keywordsExtent[0] == keywordsExtent[1] || !filterWords.length) keywordsScale.range([15, 15]);
 
     keywordsOpacityScale
       .domain(keywordsExtent)
