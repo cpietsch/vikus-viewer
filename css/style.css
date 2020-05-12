@@ -48,9 +48,12 @@ body {
 }
 
 
+#map { position: absolute; top: 0; bottom: 0; width: 100%; z-index: 1;}
+
 
 canvas {
   position: absolute;
+  z-index: 3;
   /* cursor: pointer; */
 }
 

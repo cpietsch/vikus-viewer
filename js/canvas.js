@@ -87,7 +87,7 @@ function Canvas() {
   var state = {
     lastZoomed: 0,
     zoomingToImage: false,
-    mode: "time",
+    mode: "map",
     init: false,
   };
 
@@ -105,6 +105,7 @@ function Canvas() {
   var timelineHover = false;
   var tsne = [];
   var tsneIndex = {};
+  var mapIndex = {};
 
   function canvas() {}
 
@@ -193,12 +194,13 @@ function Canvas() {
       antialiasing: false,
       width: width + margin.left + margin.right,
       height: height,
+      transparent: true
     };
     renderer = new PIXI.Renderer(renderOptions);
-    renderer.backgroundColor = parseInt(
-      config.style.canvasBackground.substring(1),
-      16
-    );
+    // renderer.backgroundColor = parseInt(
+    //   config.style.canvasBackground.substring(1),
+    //   16
+    // );
     window.renderer = renderer;
 
     var renderElem = d3.select(container.node().appendChild(renderer.view));
@@ -332,6 +334,16 @@ function Canvas() {
     });
 
     console.timeEnd("tsne");
+  };
+
+  canvas.addMapData = function (d) {
+    console.time("map");
+
+    d.forEach(function (d) {
+      mapIndex[d.id] = [d.x,d.y];
+    });
+
+    console.timeEnd("map");
   };
 
   function mousemove(d) {
@@ -627,6 +639,7 @@ function Canvas() {
     }
 
     timeline.update(x1, x2, scale, translate, scale1);
+    if(state.mode === "map") map.zoom(selectedImage, scale, translate, scale1)
 
     // toggle zoom overlays
     if (scale > zoomBarrier) {
@@ -685,10 +698,57 @@ function Canvas() {
     sleep = false;
     if (state.mode == "tsne") {
       canvas.projectTSNE();
+    } else if (state.mode == "map") {
+      canvas.projectMap();
     } else {
       canvas.split();
     }
     canvas.resetZoom();
+  };
+
+  canvas.projectMap = function () {
+
+    // console.log(mapIndex)
+
+    var inactive = data.filter(function (d) {
+      return !d.active;
+    });
+
+    var active = data.filter(function (d) {
+      return d.active;
+    });
+
+    active.forEach(function (d) {
+      var mapEntry = mapIndex[d.id];
+      if (mapEntry) {
+        d.x = mapEntry[0];
+        d.y = mapEntry[1];
+        // console.log(mapEntry)
+      }
+      // var tsneEntry = tsne.find(function (t) {
+      //     return t.id == d.id
+      // })
+    });
+
+    data.forEach(function (d) {
+      d.x1 = d.x * scale1 + imageSize / 2;
+      d.y1 = d.y * scale1 + imageSize / 2;
+
+      d.sprite.scale.x = d.sprite.scale.y = 10
+
+      if (d.sprite.position.x == 0) {
+        d.sprite.position.x = d.x1;
+        d.sprite.position.y = d.y1;
+      }
+
+      if (d.sprite2) {
+        d.sprite2.position.x = d.x * scale2 + imageSize2 / 2;
+        d.sprite2.position.y = d.y * scale2 + imageSize2 / 2;
+      }
+    });
+
+    quadtree = Quadtree(data);
+    //chart.resetZoom();
   };
 
   canvas.projectTSNE = function () {
@@ -758,6 +818,10 @@ function Canvas() {
 
     var y = -extent[1] - bottomPadding;
     y = extent[1] / -3 - bottomPadding;
+
+    if(state.mode === "map"){
+      y = 0
+    }
 
     vizContainer
       .call(zoom.translate(translate).event)

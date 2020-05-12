@@ -39,6 +39,7 @@ var tags;
 var canvas;
 var search;
 var ping;
+var map;
 
 if (Modernizr.webgl && !utils.isMobile()) {
 	init();
@@ -46,6 +47,7 @@ if (Modernizr.webgl && !utils.isMobile()) {
 
 function init() {
 
+	map = Mapbox();
 	tags = Tags();
 	canvas = Canvas();
 	search = Search();
@@ -64,6 +66,9 @@ function init() {
 				tags.init(data, config);
 				search.init();
 				canvas.init(data, timeline, config);
+				map.init(data)
+
+				window.data = data
 
 				if (config.loader.tsne) {
 					d3.csv(config.loader.tsne, function (tsne) {
