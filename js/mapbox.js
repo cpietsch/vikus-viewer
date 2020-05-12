@@ -1,95 +1,163 @@
-mapboxgl.accessToken = '';
-
+mapboxgl.accessToken =
+  'pk.eyJ1IjoidGVjaG5vbG9naWVzdGlmdHVuZyIsImEiOiJja2EyODNzenQwMHB0M2xsazd1dXZtOW5tIn0.GxXlHFEWUj_zfgnPAjpX3g'
 
 function Mapbox() {
+  var state = {
+    open: false,
+  }
 
-	var state = {
-		open: false
-	}
+  var map
+  var initialZoom
+  var initialCenter
+  var projected
+  var validData
+  var bounds
+  function mapbox() {}
 
-	var map;
-	var initialZoom;
-	var initialCenter;
-	
-	function mapbox() { }
+  mapbox.init = function (data) {
+    data.forEach((d) => {
+      d.lat = Number(d._Lat)
+      d.lng = Number(d._Lon)
+    })
 
-	mapbox.init = function(data){
+    validData = data.filter((d) => !isNaN(d.lat) && !isNaN(d.lng))
 
-		data.forEach(d => {
-			d.lat = Number(d._Lat)
-			d.lng = Number(d._Lon)
-		})
+    var extent = [
+      d3.extent(validData, function (d) {
+        return d.lng
+      }),
+      d3.extent(validData, function (d) {
+        return d.lat
+      }),
+    ]
 
-		var validData = data.filter(d => !isNaN(d.lat) && !isNaN(d.lng))
+    bounds = [
+      [extent[0][0], extent[1][0]],
+      [extent[0][1], extent[1][1]],
+    ]
+    console.log(bounds, bounds)
 
-		var extent = [
-			d3.extent(validData, function(d){ return d.lng; })
-			,d3.extent(validData, function(d){ return d.lat; })
-		]
+    map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      bounds: bounds,
+      //fitBoundsOptions: { padding: 200 },
+      // causes pan & zoom handlers not to be applied, similar to
+      // .dragging.disable() and other handler .disable() funtions in Leaflet.
+      interactive: false,
+    })
 
-		var bounds = [[extent[0][0], extent[1][0]], [extent[0][1], extent[1][1]]]
-		console.log(bounds, bounds)
+    window.mapbox = map
 
-		map = new mapboxgl.Map({
-			container: 'map',
-			style: 'mapbox://styles/mapbox/streets-v11',
-			bounds: bounds,
-			//fitBoundsOptions: { padding: 200 },
-			// causes pan & zoom handlers not to be applied, similar to
-			// .dragging.disable() and other handler .disable() funtions in Leaflet.
-			interactive: false
-		});
+    map.on('load', function () {
+      console.log('load')
+      mapbox.project()
+    })
+    // map.on('resize', function () {
+    //   mapbox.project()
+    // })
+  }
 
-		
+  mapbox.project = function () {
+    console.log('projekt')
+    map.fitBounds(bounds)
+    var projected = validData.map((d) => {
+      var point = map.project([d.lng, d.lat])
+      return {
+        id: d.id,
+        // x: point.x - 50 - canvas.imgPadding(),
+        // y: point.y - canvas.imgPadding() - canvas.height(),
+        x: point.x,
+        y: point.y,
+      }
+    })
 
-		window.mapbox = map
+    initialZoom = map.getZoom()
+    initialCenter = map.getCenter()
+    initialCenterPos = map.project(initialCenter)
 
-		initialZoom = map.getZoom()
-		initialCenter = map.getCenter()
+    var aspect = canvas.width() / canvas.height()
+    // var magic = aspect ? 18.4 : 17.85
+    var magic = 17.75
 
-		
+    console.log(aspect)
 
-		map.on('load', function() {
+    zoomScale.range([initialZoom, magic])
 
-			var projected = validData.map(d => {
-				var point = map.project([d.lng, d.lat])
-				return {
-					id: d.id,
-					x: point.x,
-					y: point.y- canvas.height()
-				}
-			})
+    canvas.setMapData(projected)
+    // canvas.projectMap()
+    // canvas.wakeup()
+  }
 
-			canvas.addMapData(projected)
-			canvas.projectMap()
-			canvas.wakeup()
+  var zoomScale = d3.scale.log().domain([1, 80])
+  mapbox.zoom = function (center, mousePos, scale, translate, imageSize) {
+    if (!map) return
+    // console.log('zoom')
 
-		})
-	}
+    // console.log(map.getZoom(), scale)
+    // console.log(Math.log(scale))
 
-	mapbox.zoom = function(center, scale, translate, scale1){
-		if(!map) return
-		var height = canvas.height()
-		console.log(scale, translate, scale1)
-		//map.setZoom(initialZoom + scale)
+    if (initialCenter) {
+      var x0 = translate[0] + (canvas.width() * scale - canvas.width()) / 2
+      var y0 = translate[1] + (canvas.height() * scale - canvas.height()) / 2
 
-		var y = (height + translate[1]) * -1
-		var x = translate[0]
+      // console.log(translate, y0)
+      // console.log(canvas.width() / 2, canvas.height() / 2)
 
-		map.panTo(initialCenter, {offset: translate, animate:false})
-		map.setZoom(initialZoom - (1-Math.sqrt(scale)))
-		// if(center){
-		// 	var c = [center.lng, center.lat]
-		// 	//map.setCenter(c)
-		// 	//console.log(c)
-		// 	map.flyTo({
-		// 		around: c,
-		// 		zoom: initialZoom + Math.sqrt(scale),
-		// 		duration: 0
-		// 	})
-		// }
+      var x = canvas.width() / 2 + x0
+      var y = canvas.height() / 2 + y0
 
-	}
+      var zoom = zoomScale(scale)
 
-	return mapbox;
+      map.setZoom(zoom)
+      map.transform.setLocationAtPoint(initialCenter, new mapboxgl.Point(x, y))
+    }
+
+    if (center) {
+      // var centerCoord = { lng: center.lng, lat: center.lat }
+      // var centerPos = [center.x, center.y]
+      // var projected = map.project(centerCoord)
+      // // console.log(centerCoord, center, projected, mousePos, centerPos)
+      // var x0 = translate[0] + (canvas.width() * scale - canvas.width()) / 2
+      // var y0 = translate[1] + (canvas.height() * scale - canvas.height()) / 2
+      // console.log(translate, y0)
+      // var x = center.x + x0
+      // var y = center.y + canvas.height() + y0
+      // var zoom = zoomScale(scale)
+      // // console.log('zooom', zoom, scale)
+      // //map.panTo(initialCenter, { offset: translate, animate: false })
+      // map.transform.setLocationAtPoint(centerCoord, new mapboxgl.Point(x, y))
+      // map.setZoom(zoom)
+      // ---
+      // console.log(map.getCenter())
+      //initialCenter = centerCoord
+      //map.setCenter(c)
+      //console.log(c)
+      // map.flyTo({
+      //   around: c,
+      //   zoom: initialZoom - (1 - Math.sqrt(scale)),
+      //   duration: 0,
+      // })
+    }
+    // } else {
+
+    //   map.panTo(initialCenter, { offset: scaledTranslate, animate: false })
+    //   console.log(map.getCenter())
+    //   console.log(translate)
+    //   //initialCenter = map.getCenter()
+    // }
+
+    // if(center){
+    // 	var c = [center.lng, center.lat]
+    // 	//map.setCenter(c)
+    // 	//console.log(c)
+    // 	map.flyTo({
+    // 		around: c,
+    // 		zoom: initialZoom + Math.sqrt(scale),
+    // 		duration: 0
+    // 	})
+    // }
+  }
+
+  return mapbox
 }

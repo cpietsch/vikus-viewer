@@ -50,6 +50,10 @@ body {
 
 #map { position: absolute; top: 0; bottom: 0; width: 100%; z-index: 1;}
 
+#map.hide {
+  opacity: 0;
+}
+
 
 canvas {
   position: absolute;
@@ -342,6 +346,7 @@ svg {
 .timeline {
     z-index: 200;
     color: #000;
+    position: absolute;
 }
 
 .timeline * {
