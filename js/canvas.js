@@ -739,6 +739,8 @@ function Canvas() {
         d.x = 100
         d.y = -100
       }
+      d.scaleFactor = scale1 / 40
+      d.sprite.scale.x = d.sprite.scale.y = d.scaleFactor
     })
 
     data.forEach(function (d) {
