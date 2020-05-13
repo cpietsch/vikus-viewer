@@ -40,7 +40,7 @@ function Mapbox() {
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v11',
       bounds: bounds,
-      //fitBoundsOptions: { padding: 200 },
+      fitBoundsOptions: { padding: 100 },
       // causes pan & zoom handlers not to be applied, similar to
       // .dragging.disable() and other handler .disable() funtions in Leaflet.
       interactive: false,
@@ -59,13 +59,12 @@ function Mapbox() {
 
   mapbox.project = function () {
     console.log('projekt')
-    map.fitBounds(bounds)
+    map.fitBounds(bounds, { padding: 100, linaer: true, animate: false })
+
     var projected = validData.map((d) => {
       var point = map.project([d.lng, d.lat])
       return {
         id: d.id,
-        // x: point.x - 50 - canvas.imgPadding(),
-        // y: point.y - canvas.imgPadding() - canvas.height(),
         x: point.x,
         y: point.y,
       }
@@ -75,20 +74,11 @@ function Mapbox() {
     initialCenter = map.getCenter()
     initialCenterPos = map.project(initialCenter)
 
-    var aspect = canvas.width() / canvas.height()
-    // var magic = aspect ? 18.4 : 17.85
-    var magic = 17.75
-
-    console.log(aspect)
-
-    zoomScale.range([initialZoom, magic])
-
     canvas.setMapData(projected)
     // canvas.projectMap()
     // canvas.wakeup()
   }
 
-  var zoomScale = d3.scale.log().domain([1, 80])
   mapbox.zoom = function (center, mousePos, scale, translate, imageSize) {
     if (!map) return
     // console.log('zoom')
@@ -106,7 +96,7 @@ function Mapbox() {
       var x = canvas.width() / 2 + x0
       var y = canvas.height() / 2 + y0
 
-      var zoom = zoomScale(scale)
+      var zoom = initialZoom + Math.log(scale) / Math.LN2
 
       map.setZoom(zoom)
       map.transform.setLocationAtPoint(initialCenter, new mapboxgl.Point(x, y))
