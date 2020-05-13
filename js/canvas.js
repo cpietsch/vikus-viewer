@@ -707,6 +707,16 @@ function Canvas() {
 
   canvas.project = function () {
     sleep = false
+    data.forEach(function (d) {
+      if (state.mode === 'time') {
+        d.scaleFactor = 0.9
+      }
+      if (state.mode === 'map') {
+        d.scaleFactor = scale1 / 40
+      }
+      d.sprite.scale.x = d.sprite.scale.y = d.scaleFactor
+    })
+
     if (state.mode == 'tsne') {
       canvas.projectTSNE()
     } else if (state.mode == 'map') {
@@ -739,11 +749,7 @@ function Canvas() {
         d.x = 100
         d.y = -100
       }
-      d.scaleFactor = scale1 / 40
-      d.sprite.scale.x = d.sprite.scale.y = d.scaleFactor
-    })
 
-    data.forEach(function (d) {
       d.x1 = d.x * scale1 + imageSize / 2
       d.y1 = d.y * scale1 + imageSize / 2
 
