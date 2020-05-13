@@ -1,5 +1,4 @@
-mapboxgl.accessToken =
-  'pk.eyJ1IjoidGVjaG5vbG9naWVzdGlmdHVuZyIsImEiOiJja2EyODNzenQwMHB0M2xsazd1dXZtOW5tIn0.GxXlHFEWUj_zfgnPAjpX3g'
+mapboxgl.accessToken = ''
 
 function Mapbox() {
   var state = {
