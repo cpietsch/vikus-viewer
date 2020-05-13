@@ -480,6 +480,10 @@ function Canvas() {
 
       d.sprite.visible = d.sprite.alpha > 0.1
 
+      if (state.mode === 'map') {
+        d.sprite.visible = d.active
+      }
+
       if (d.sprite2) {
         diff = d.alpha2 - d.sprite2.alpha
         if (Math.abs(diff) > 0.01) {
@@ -730,13 +734,13 @@ function Canvas() {
   canvas.projectMap = function () {
     // console.log(mapIndex)
 
-    var inactive = data.filter(function (d) {
-      return !d.active
-    })
+    // var inactive = data.filter(function (d) {
+    //   return !d.active
+    // })
 
-    var active = data.filter(function (d) {
-      return d.active
-    })
+    // var active = data.filter(function (d) {
+    //   return d.active
+    // })
 
     data.forEach(function (d) {
       var mapEntry = mapIndex[d.id]
@@ -752,8 +756,6 @@ function Canvas() {
 
       d.x1 = d.x * scale1 + imageSize / 2
       d.y1 = d.y * scale1 + imageSize / 2
-
-      // d.sprite.scale.x = d.sprite.scale.y = 10
 
       if (d.sprite.position.x == 0) {
         d.sprite.position.x = d.x1
