@@ -197,8 +197,8 @@ function Tags() {
 
     var e = select.enter().append("div")
         .classed("tag", true)
-        // .on("mouseenter", tags.mouseenter)
-        // .on("mouseleave", tags.mouseleave)
+        .on("mouseenter", tags.mouseenter)
+        .on("mouseleave", tags.mouseleave)
         .on("click", tags.mouseclick)
         .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
         .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
