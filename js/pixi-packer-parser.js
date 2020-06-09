@@ -23,7 +23,7 @@ window.pixiPackerParser = function (PIXI) {
       !resource.data ||
       resource.type !== PIXI.LoaderResource.TYPE.JSON ||
       !resource.data.meta ||
-      (resource.data.meta.type !== "pixi-packer" || 
+      (resource.data.meta.type !== "pixi-packer" && 
        resource.data.meta.type !== "sharpsheet")
     ) {
       return next();
