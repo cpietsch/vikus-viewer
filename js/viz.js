@@ -56,21 +56,42 @@ function init() {
 
 		utils.initConfig(config)
 
-		Loader(config.loader.timeline).finished(function (timeline) {
+		Loader(config.loader.timeline).finished(function (timelinedata) {
 			Loader(config.loader.items).finished(function (data) {
 
 				utils.clean(data);
 
 				tags.init(data, config);
 				search.init();
-				canvas.init(data, timeline, config);
+				canvas.init(data, timelinedata, config);
 
-				if (config.loader.tsne) {
-					d3.csv(config.loader.tsne, function (tsne) {
-						console.log(tsne)
-						d3.select(".navi").classed("hide", false)
-						canvas.addTsneData(tsne)
+				if (config.loader.layouts) {
+					d3.select(".navi").classed("hide", false)
+
+					config.loader.layouts.forEach(d => {
+						d3.csv(d.url, function (tsne) {
+							canvas.addTsneData(d.name, tsne)
+						})
 					})
+
+					var layouts = config.loader.layouts
+					layouts.unshift({ name: "time", title: "zeit" })
+					
+					d3.select(".navi")
+						.selectAll('.button')
+						.data(config.loader.layouts)
+						.enter()
+						.append('div')
+						.classed("button", true)
+						.classed("active", d => d.name == canvas.getMode())
+						.text(d => d.title)
+						.attr("data", d => d.name)
+						.on("click", function (d) {
+							canvas.setMode(d.name);
+							timeline.setDisabled(d.name != "time");
+							d3.selectAll(".navi .button")
+								.classed("active", d => d.name == canvas.getMode())
+						})
 				}
 
 				LoaderSprites()
@@ -120,17 +141,7 @@ function init() {
 			d3.select(".infobar").classed("sneak", s)
 		})
 
-	d3.selectAll(".navi .button")
-		.on("click", function () {
-			var that = this;
-			var mode = d3.select(this).attr("data");
-			canvas.setMode(mode);
-			timeline.setDisabled(mode != "time");
-
-			d3.selectAll(".navi .button").classed("active", function () {
-				return that === this
-			});
-		})
+	
 }
 
 d3.select(".browserInfo").classed("show", utils.isMobile());

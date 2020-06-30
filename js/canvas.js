@@ -191,10 +191,12 @@ function Canvas() {
     var renderOptions = {
       resolution: 1,
       antialiasing: false,
-      width: width + margin.left + margin.right,
-      height: height,
     };
-    renderer = new PIXI.Renderer(renderOptions);
+    renderer = new PIXI.WebGLRenderer(
+      width + margin.left + margin.right,
+      height,
+      renderOptions
+    );
     renderer.backgroundColor = parseInt(
       config.style.canvasBackground.substring(1),
       16
@@ -308,8 +310,9 @@ function Canvas() {
     state.init = true;
   };
 
-  canvas.addTsneData = function (d) {
+  canvas.addTsneData = function (name, d) {
     console.time("tsne");
+    tsneIndex[name] = {};
     var clean = d.map(function (d) {
       return {
         id: d.id,
@@ -328,7 +331,7 @@ function Canvas() {
     var y = d3.scale.linear().range([0, 1]).domain(yExtent);
 
     d.forEach(function (d) {
-      tsneIndex[d.id] = [x(d.x), y(d.y)];
+      tsneIndex[name][d.id] = [x(d.x), y(d.y)];
     });
 
     console.timeEnd("tsne");
@@ -479,6 +482,10 @@ function Canvas() {
   canvas.setMode = function (mode) {
     state.mode = mode;
     canvas.project();
+  };
+
+  canvas.getMode = function () {
+    return state.mode;
   };
 
   function animate(time) {
@@ -683,7 +690,13 @@ function Canvas() {
 
   canvas.project = function () {
     sleep = false;
-    if (state.mode == "tsne") {
+    data.forEach(function (d) {
+      d.scaleFactor = state.mode != "time" ? 0.9 : 0.9;
+      d.sprite.scale.x = d.scaleFactor;
+      d.sprite.scale.y = d.scaleFactor;
+    });
+
+    if (state.mode.startsWith("tsne")) {
       canvas.projectTSNE();
     } else {
       canvas.split();
@@ -719,7 +732,7 @@ function Canvas() {
 
     active.forEach(function (d) {
       var factor = height / 2;
-      var tsneEntry = tsneIndex[d.id];
+      var tsneEntry = tsneIndex[state.mode][d.id];
       if (tsneEntry) {
         d.x =
           tsneEntry[0] * dimension + width / 2 - dimension / 2 + margin.left;
@@ -786,7 +799,7 @@ function Canvas() {
       var p = d.sprite.position;
       var x = p.x / scale1 + translate[0] / zoomScale;
       var y = p.y / scale1 + translate[1] / zoomScale;
-      var padding = width / 3 / scale;
+      var padding = 5;
 
       if (
         x > -padding &&
@@ -825,7 +838,7 @@ function Canvas() {
 
     // console.log("load", d)
     var url = config.loader.textures.detail.url + d.id + ".jpg";
-    var texture = new PIXI.Texture.from(url);
+    var texture = new PIXI.Texture.fromImage(url, true);
     var sprite = new PIXI.Sprite(texture);
 
     var update = function () {
@@ -860,24 +873,20 @@ function Canvas() {
     var page = d.page ? "_" + d.page : "";
     var url = config.loader.textures.big.url + d.id + page + ".jpg";
 
-    var texture = new PIXI.Texture.from(url);
+    var texture = new PIXI.Texture.fromImage(url, true);
     var sprite = new PIXI.Sprite(texture);
     var res = config.loader.textures.big.size;
 
-    var updateSize = function (t) {
+    var updateSize = function () {
       var size = Math.max(texture.width, texture.height);
       sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
       sleep = false;
-      if(t.valid){
-        d.alpha = 0;
-        d.alpha2 = 0;
-      }
     };
 
     sprite.on("added", updateSize);
     texture.once("update", updateSize);
 
-    if (d.imagenum > 1) {
+    if (d.imagenum) {
       sprite.on("mousemove", function (s) {
         var pos = s.data.getLocalPosition(s.currentTarget);
         s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize";
