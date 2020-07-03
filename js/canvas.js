@@ -191,12 +191,10 @@ function Canvas() {
     var renderOptions = {
       resolution: 1,
       antialiasing: false,
+      width: width + margin.left + margin.right,
+      height: height,
     };
-    renderer = new PIXI.WebGLRenderer(
-      width + margin.left + margin.right,
-      height,
-      renderOptions
-    );
+    renderer = new PIXI.Renderer(renderOptions);
     renderer.backgroundColor = parseInt(
       config.style.canvasBackground.substring(1),
       16
