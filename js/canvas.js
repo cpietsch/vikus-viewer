@@ -686,15 +686,15 @@ function Canvas() {
   canvas.project = function () {
     sleep = false;
     data.forEach(function (d) {
-      d.scaleFactor = state.mode != "time" ? 0.9 : 0.9;
+      //d.scaleFactor = state.mode != "time" ? 0.9 : 0.9;
       d.sprite.scale.x = d.scaleFactor;
       d.sprite.scale.y = d.scaleFactor;
     });
 
-    if (state.mode.startsWith("tsne")) {
-      canvas.projectTSNE();
-    } else {
+    if (state.mode == "time") {
       canvas.split();
+    } else {
+      canvas.projectTSNE();
     }
     canvas.resetZoom();
   };
