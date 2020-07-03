@@ -311,7 +311,6 @@ function Canvas() {
   };
 
   canvas.addTsneData = function (name, d) {
-    console.time("tsne");
     tsneIndex[name] = {};
     var clean = d.map(function (d) {
       return {
@@ -333,8 +332,6 @@ function Canvas() {
     d.forEach(function (d) {
       tsneIndex[name][d.id] = [x(d.x), y(d.y)];
     });
-
-    console.timeEnd("tsne");
   };
 
   function mousemove(d) {
