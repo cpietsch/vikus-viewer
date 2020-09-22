@@ -46,7 +46,7 @@ Apart from the metadata, you need to preprocess the image files, i.e., to genera
 
 ### t-SNE
 
-As an alternative to the temporal view, you can create a t-SNE layout based on image similarity. The script in [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) creates a tsne.csv which can be put next to the data.csv in the `/data` folder. Image similarity is calculated via the [imagenet activation logit](https://beta.observablehq.com/@cpietsch/imagenet-activation-logit) and then run throught t-SNE. An additional spacing step ensures no overlaying images in the distribution.
+As an alternative to the temporal view, you can create a t-SNE layout based on image similarity. The script in [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) creates a tsne.csv which can be put next to the data.csv in the `/data` folder. Image similarity is calculated via the [imagenet activation logit](https://beta.observablehq.com/@cpietsch/imagenet-activation-logit) and then run through t-SNE. An additional spacing step ensures no overlaying images in the distribution.
 
 ## Credits
 
