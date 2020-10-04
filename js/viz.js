@@ -120,7 +120,7 @@ function init() {
 			if (d3.event.keyCode != 27) return
 			search.reset();
 			tags.reset();
-			canvas.split();
+			canvas.setMode("tsne")
 		})
 
 	d3.select(".slidebutton")
@@ -149,4 +149,10 @@ function init() {
 		})
 }
 
-d3.select(".browserInfo").classed("show", utils.isMobile());
+// d3.select(".browserInfo").classed("show", utils.isMobile());
+
+d3.select(".tagcloud").classed("hide", true)
+d3.select(".searchbar").classed("hide", true);
+d3.select(".infobar").classed("sneak", true);
+// d3.select(".tagcloud").classed("hide", false);
+d3.select(".searchbar").classed("hide", true);

@@ -58,10 +58,10 @@ window.pixiPackerParser = function (PIXI)
                 res.textures = {};
                 spritesheet.sprites.forEach(function(sprite) {
                     var frame = new PIXI.Rectangle(
-                        sprite.position.x+1 / resolution,
-                        sprite.position.y+1 / resolution,
-                        sprite.dimension.w-2 / resolution,
-                        sprite.dimension.h-2 / resolution
+                        sprite.position.x / resolution,
+                        sprite.position.y / resolution,
+                        sprite.dimension.w / resolution,
+                        sprite.dimension.h / resolution
                     );
 
                     var crop;

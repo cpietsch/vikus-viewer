@@ -524,6 +524,7 @@ svg {
 }
 
 .tagcloud {
+  display:none;
     /* background: linear-gradient(to bottom, rgba(28, 30, 31, 0.78) 14%,rgba(28,30,31,0) 80%); */
     width: 100%;
     height: 300px;
