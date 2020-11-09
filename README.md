@@ -69,3 +69,5 @@ Copyright (C) 2017-2019 Christopher Pietsch, and contributors
 - [Swedish Nationalmuseum](https://riksantikvarieambetet.github.io/VIKUS-Viewer-Nationalmuseum/) by [Swedish National Heritage Board](https://www.raa.se/)
 - [INEL Project](https://inel.corpora.uni-hamburg.de/vikus_viewer/selkup-1.0/) [[2](https://inel.corpora.uni-hamburg.de/vikus_viewer/dolgan-1.0/), [3](https://inel.corpora.uni-hamburg.de/vikus_viewer/kamas-1.0/)] by [Anne Ferger & Daniel Jettka](https://www.slm.uni-hamburg.de/inel/)
 - [WCMA Collection Explorer](http://wcma-explorer.williams.edu/) by [WCMA Digital](https://artmuseum.williams.edu/wcma-digital-project/)
+- [Linked Stage Graph](http://slod.fiz-karlsruhe.de/vikus/) by [slod](http://slod.fiz-karlsruhe.de/)
+- [New World Nature Exploration Tool](https://vikus.hamilton.edu/cooley/) by [dhinitiative](https://nwn.dhinitiative.org/portfolio-items/seeing-new-world-nature/)
