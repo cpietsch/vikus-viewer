@@ -1,0 +1,267 @@
+{
+  "meta": {
+    "type": "sharpsheet",
+    "version": "1",
+    "app": "https://github.com/cpietsch/sharpsheet"
+  },
+  "spritesheets": [
+    {
+      "image": "sprite-2048-0.jpg",
+      "sprites": [
+        {
+          "name": "MLB-001",
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "dimension": {
+            "w": 169,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005_1",
+          "position": {
+            "x": 172,
+            "y": 1
+          },
+          "dimension": {
+            "w": 183,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005_2",
+          "position": {
+            "x": 357,
+            "y": 1
+          },
+          "dimension": {
+            "w": 188,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005_3",
+          "position": {
+            "x": 547,
+            "y": 1
+          },
+          "dimension": {
+            "w": 190,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005_4",
+          "position": {
+            "x": 739,
+            "y": 1
+          },
+          "dimension": {
+            "w": 189,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005_5",
+          "position": {
+            "x": 930,
+            "y": 1
+          },
+          "dimension": {
+            "w": 187,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005_6",
+          "position": {
+            "x": 1119,
+            "y": 1
+          },
+          "dimension": {
+            "w": 188,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-005",
+          "position": {
+            "x": 1309,
+            "y": 1
+          },
+          "dimension": {
+            "w": 189,
+            "h": 256
+          }
+        },
+        {
+          "name": "MLB-004",
+          "position": {
+            "x": 1500,
+            "y": 1
+          },
+          "dimension": {
+            "w": 256,
+            "h": 203
+          }
+        },
+        {
+          "name": "MLB-003_3",
+          "position": {
+            "x": 1758,
+            "y": 1
+          },
+          "dimension": {
+            "w": 256,
+            "h": 188
+          }
+        },
+        {
+          "name": "MLB-003_5",
+          "position": {
+            "x": 1,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 188
+          }
+        },
+        {
+          "name": "MLB-003_8",
+          "position": {
+            "x": 259,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 188
+          }
+        },
+        {
+          "name": "MLB-003_1",
+          "position": {
+            "x": 517,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 187
+          }
+        },
+        {
+          "name": "MLB-003_10",
+          "position": {
+            "x": 775,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 187
+          }
+        },
+        {
+          "name": "MLB-003_2",
+          "position": {
+            "x": 1033,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 187
+          }
+        },
+        {
+          "name": "MLB-003_4",
+          "position": {
+            "x": 1291,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 187
+          }
+        },
+        {
+          "name": "MLB-003_6",
+          "position": {
+            "x": 1549,
+            "y": 259
+          },
+          "dimension": {
+            "w": 256,
+            "h": 187
+          }
+        },
+        {
+          "name": "MLB-003_7",
+          "position": {
+            "x": 1,
+            "y": 449
+          },
+          "dimension": {
+            "w": 256,
+            "h": 187
+          }
+        },
+        {
+          "name": "MLB-003_11",
+          "position": {
+            "x": 259,
+            "y": 449
+          },
+          "dimension": {
+            "w": 256,
+            "h": 186
+          }
+        },
+        {
+          "name": "MLB-003_9",
+          "position": {
+            "x": 517,
+            "y": 449
+          },
+          "dimension": {
+            "w": 256,
+            "h": 186
+          }
+        },
+        {
+          "name": "MLB-003",
+          "position": {
+            "x": 775,
+            "y": 449
+          },
+          "dimension": {
+            "w": 256,
+            "h": 185
+          }
+        },
+        {
+          "name": "MLB-002_1",
+          "position": {
+            "x": 1033,
+            "y": 449
+          },
+          "dimension": {
+            "w": 256,
+            "h": 184
+          }
+        },
+        {
+          "name": "MLB-002",
+          "position": {
+            "x": 1291,
+            "y": 449
+          },
+          "dimension": {
+            "w": 256,
+            "h": 182
+          }
+        }
+      ]
+    }
+  ]
+}

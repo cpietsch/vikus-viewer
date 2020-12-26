@@ -1,0 +1,84 @@
+{
+  "project": {
+    "name": "Museu da Literatura Brasileira",
+    "quality": 1,
+    "multiple": true
+  },
+  "loader": {
+    "info": "data/info.md",
+    "timeline": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTdDffZDH8HT7VO3vwAKHTo8onw6w2Gtspih4Xde_jLMNL2E25HcNjceW9NU_tWbcfOHIGmwpoVXxgK/pub?gid=1617736747&single=true&output=csv",
+    "items": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTdDffZDH8HT7VO3vwAKHTo8onw6w2Gtspih4Xde_jLMNL2E25HcNjceW9NU_tWbcfOHIGmwpoVXxgK/pub?gid=1936547086&single=true&output=csv",
+    "tsne": "",
+    "textures": {
+      "medium": {
+        "size": 256,
+        "url": "data/sprites/spritesheet.json"
+      },
+      "detail": {
+        "size": 1024,
+        "url": "data/1024/"
+      },
+      "big": {
+        "size": 4096,
+        "url": "data/4096/"
+      }
+    }
+  },
+  "style": {
+    "fontColor": "#fff",
+    "fontColorActive": "#fff",
+    "linkColor": "#fff",
+    "fontBackground": "#4c4c47",
+    "textShadow": "1px 1px 1px #66665b",
+    "canvasBackground": "#6d918e",
+    "timelineBackground": "#f2f2e6",
+    "timelineFontColor": "#000",
+    "detailBackground": "#edf4fa",
+    "infoBackground": "#51706e",
+    "infoFontColor": "#fff",
+    "searchbarBackground": "#51706e"
+  },
+  "projection": {
+    "columns": 1
+  },
+  "detail": {
+    "structure": [
+      {
+        "name": "Identificador",
+        "source": "_id",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Título",
+        "source": "_title",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Descrição",
+        "source": "_description",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Tipo",
+        "source": "_type",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Data",
+        "source": "_date",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Palavras-chave",
+        "source": "_keywords",
+        "display": "column",
+        "type": "array"
+      }
+    ]
+  }
+}

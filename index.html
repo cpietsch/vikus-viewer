@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>VikusViewer</title>
+    <title>Museu da Literatura Brasileira</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui"
@@ -40,44 +40,7 @@
         type="text/javascript"
       ></script>
     <![endif]-->
-
-    <!-- 
-
-                           ,--.                                     
-               ,---,   ,--/  /|               .--.--.               
-       ,---.,`--.' |,---,': / '         ,--, /  /    '.             
-      /__./||   :  ::   : '/ /        ,'_ /||  :  /`. /             
- ,---.;  ; |:   |  '|   '   ,    .--. |  | :;  |  |--`              
-/___/ \  | ||   :  |'   |  /   ,'_ /| :  . ||  :  ;_                
-\   ;  \ ' |'   '  ;|   ;  ;   |  ' | |  . . \  \    `.             
- \   \  \: ||   |  |:   '   \  |  | ' |  | |  `----.   \            
-  ;   \  ' .'   :  ;|   |    ' :  | | :  ' ;  __ \  \  |            
-   \   \   '|   |  ''   : |.  \|  ; ' |  | ' /  /`--'  /            
-    \   `  ;'   :  ||   | '_\.':  | : ;  ; |'--'.     /             
-     :   \ |;   |.' '   : |    '  :  `--'   \ `--'---'              
-      '---" '---'   ;   |,'    :  ,      .-./                       
-                    '---'       `--`----'                           
-               ,---,    ,---,.           .---.    ,---,.,-.----.    
-       ,---.,`--.' |  ,'  .' |          /. ./|  ,'  .' |\    /  \   
-      /__./||   :  :,---.'   |      .--'.  ' ;,---.'   |;   :    \  
- ,---.;  ; |:   |  '|   |   .'     /__./ \ : ||   |   .'|   | .\ :  
-/___/ \  | ||   :  |:   :  |-, .--'.  '   \' .:   :  |-,.   : |: |  
-\   ;  \ ' |'   '  ;:   |  ;/|/___/ \ |    ' ':   |  ;/||   |  \ :  
- \   \  \: ||   |  ||   :   .';   \  \;      :|   :   .'|   : .  /  
-  ;   \  ' .'   :  ;|   |  |-, \   ;  `      ||   |  |-,;   | |  \  
-   \   \   '|   |  ''   :  ;/|  .   \    .\  ;'   :  ;/||   | ;\  \ 
-    \   `  ;'   :  ||   |    \   \   \   ' \ ||   |    \:   ' | \.' 
-     :   \ |;   |.' |   :   .'    :   '  |--" |   :   .':   : :-'   
-      '---" '---'   |   | ,'       \   \ ;    |   | ,'  |   |.'     
-                    `----'          '---"     `----'    `---'       
-                                                                    
-
-
-christopher pietsch
-cpietsch@gmail.com
-2015-2018
-
- --></head>
+  </head>
 
   <body>
     <div id="hiddenreload"></div>
@@ -104,7 +67,7 @@ cpietsch@gmail.com
           <div id="detail" class="inner">
             <div class="entries" v-if="item">
               <div v-if="item._imagenum > 1" class="entry wide pages">
-                <div class="label">Seite</div>
+                <div class="label">Páginas</div>
                 <div class="content">
                   <span
                     v-for="i in parseInt(item._imagenum)"
@@ -143,9 +106,7 @@ cpietsch@gmail.com
                   <span v-else-if="entry.type === 'function'">
                     <span v-html="getContent(entry)"></span>
                   </span>
-                  <span v-else>
-                    {{ getContent(entry) }}
-                  </span>
+                  <span v-else> {{ getContent(entry) }} </span>
                 </div>
               </div>
             </div>
@@ -174,7 +135,8 @@ cpietsch@gmail.com
             <div id="infobar" class="infosidebar">
               <span v-html="marked(info)"></span>
               <div class="credit">
-                Powered by
+                Projeto de <strong>Elizama Almeida</strong> <br />
+                construído com
                 <a href="https://vikusviewer.fh-potsdam.de/" target="_blank"
                   >VIKUS Viewer</a
                 >
