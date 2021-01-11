@@ -78,6 +78,7 @@ function Canvas() {
 
   var bottomPadding = 70;
   var extent = [0, 0];
+  var bottomZooming = true;
 
   var touchstart = 0;
   var vizContainer;
@@ -353,7 +354,8 @@ function Canvas() {
 
     selectedImageDistance = best.d;
 
-    if (rangeBandImage * scale + p[1] && state.mode == "time") {
+
+    if (state.mode == "time" && rangeBandImage * scale + p[1] > 0 && selectedImageDistance > rangeBandImage / 2) {
       selectedImage = null;
       zoom.center(null);
       container.style("cursor", "default");
