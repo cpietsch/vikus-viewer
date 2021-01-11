@@ -62,7 +62,7 @@ function Canvas() {
   var imageSize = 256;
   var imageSize2 = 1024;
   var imageSize3 = 4000;
-  var collumns = 4;
+  var columns = 4;
   var renderer, stage;
 
   var svgscale, voronoi;
@@ -78,7 +78,6 @@ function Canvas() {
 
   var bottomPadding = 70;
   var extent = [0, 0];
-  var bottomZooming = true;
 
   var touchstart = 0;
   var vizContainer;
@@ -106,7 +105,7 @@ function Canvas() {
   var tsne = [];
   var tsneIndex = {};
 
-  function canvas() {}
+  function canvas() { }
 
   canvas.rangeBand = function () {
     return rangeBand;
@@ -140,13 +139,13 @@ function Canvas() {
     x.rangeBands([margin.left, width + margin.left], 0.2);
 
     rangeBand = x.rangeBand();
-    rangeBandImage = x.rangeBand() / collumns;
+    rangeBandImage = x.rangeBand() / columns;
 
-    imgPadding = rangeBand / collumns / 2;
+    imgPadding = rangeBand / columns / 2;
 
-    scale1 = imageSize / (x.rangeBand() / collumns);
-    scale2 = imageSize2 / (x.rangeBand() / collumns);
-    scale3 = imageSize3 / (x.rangeBand() / collumns);
+    scale1 = imageSize / (x.rangeBand() / columns);
+    scale2 = imageSize2 / (x.rangeBand() / columns);
+    scale3 = imageSize3 / (x.rangeBand() / columns);
 
     stage3.scale.x = 1 / scale1;
     stage3.scale.y = 1 / scale1;
@@ -163,7 +162,7 @@ function Canvas() {
     timeline.rescale(scale1);
 
     cursorCutoff = (1 / scale1) * imageSize * 0.48;
-    zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width);
+    zoomedToImageScale = 0.8 / (x.rangeBand() / columns / width);
     // console.log("zoomedToImageScale", zoomedToImageScale)
   };
 
@@ -174,7 +173,7 @@ function Canvas() {
     container = d3.select(".page").append("div").classed("viz", true);
     detailVue._data.structure = config.detail.structure;
 
-    collumns = config.projection.columns;
+    columns = config.projection.columns;
     imageSize = config.loader.textures.medium.size;
     imageSize2 = config.loader.textures.detail.size;
 
@@ -353,9 +352,8 @@ function Canvas() {
     );
 
     selectedImageDistance = best.d;
-    // console.log(cursorCutoff,scale, scale1,  selectedImageDistance)
 
-    if (bottomZooming && best.p && best.p.ii < 3 && selectedImageDistance > 7) {
+    if (rangeBandImage * scale + p[1] && state.mode == "time") {
       selectedImage = null;
       zoom.center(null);
       container.style("cursor", "default");
@@ -394,11 +392,11 @@ function Canvas() {
       });
 
       year.values.forEach(function (d, i) {
-        var row = Math.floor(i / collumns) + 2;
+        var row = Math.floor(i / columns) + 2;
         d.ii = i;
 
-        d.x = startX + (i % collumns) * (rangeBand / collumns);
-        d.y = (invert ? 1 : -1) * (row * (rangeBand / collumns));
+        d.x = startX + (i % columns) * (rangeBand / columns);
+        d.y = (invert ? 1 : -1) * (row * (rangeBand / columns));
 
         d.x1 = d.x * scale1 + imageSize / 2;
         d.y1 = d.y * scale1 + imageSize / 2;
@@ -507,9 +505,9 @@ function Canvas() {
     zoom.center(null);
     loadMiddleImage(d);
     d3.select(".tagcloud").classed("hide", true);
-    var padding = x.rangeBand() / collumns / 2;
+    var padding = x.rangeBand() / columns / 2;
     var sidbar = width / 8;
-    var scale = 0.8 / (x.rangeBand() / collumns / width);
+    var scale = 0.8 / (x.rangeBand() / columns / width);
     var translateNow = [
       -scale * (d.x - padding / 2) - sidbar,
       -scale * (height + d.y),
@@ -868,7 +866,7 @@ function Canvas() {
       var size = Math.max(texture.width, texture.height);
       sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
       sleep = false;
-      if(t.valid){
+      if (t.valid) {
         d.alpha = 0;
         d.alpha2 = 0;
       }
