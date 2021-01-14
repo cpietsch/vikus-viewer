@@ -98,6 +98,7 @@ canvas {
    font-weight: bold;
    height: 100%;
    width: 30px;
+  pointer-events: none;
    /* background: rgb(55, 55, 55); */
 }
 .sideLoader .indicator{
