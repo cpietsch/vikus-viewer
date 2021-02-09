@@ -71,3 +71,4 @@ Copyright (C) 2017-2019 Christopher Pietsch, and contributors
 - [WCMA Collection Explorer](http://wcma-explorer.williams.edu/) by [WCMA Digital](https://artmuseum.williams.edu/wcma-digital-project/)
 - [Linked Stage Graph](http://slod.fiz-karlsruhe.de/vikus/) by [slod](http://slod.fiz-karlsruhe.de/)
 - [New World Nature Exploration Tool](https://vikus.hamilton.edu/cooley/) by [dhinitiative](https://nwn.dhinitiative.org/portfolio-items/seeing-new-world-nature/)
+- [Kunst im öffentlichen Raum Pankow](https://vikus.kunst-im-oeffentlichen-raum-pankow.de)
