@@ -65,7 +65,6 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 
 ## Gallery
 
-- [Lego Sets 1955-2019](http://nijdam.nu/vikus-viewer/) by [Pin0](https://github.com/Pin0)
 - [Swedish Nationalmuseum](https://riksantikvarieambetet.github.io/VIKUS-Viewer-Nationalmuseum/) by [Swedish National Heritage Board](https://www.raa.se/)
 - [INEL Project](https://inel.corpora.uni-hamburg.de/vikus_viewer/selkup-1.0/) [[2](https://inel.corpora.uni-hamburg.de/vikus_viewer/dolgan-1.0/), [3](https://inel.corpora.uni-hamburg.de/vikus_viewer/kamas-1.0/)] by [Anne Ferger & Daniel Jettka](https://www.slm.uni-hamburg.de/inel/)
 - [WCMA Collection Explorer](http://wcma-explorer.williams.edu/) by [WCMA Digital](https://artmuseum.williams.edu/wcma-digital-project/)
