@@ -55,11 +55,11 @@ function init() {
 	d3.json("data/config.json", function (config) {
 
 		utils.initConfig(config)
-
+		
 		Loader(config.loader.timeline).finished(function (timeline) {
 			Loader(config.loader.items).finished(function (data) {
 
-				utils.clean(data);
+				utils.clean(data, config.metadataSeparator);
 
 				tags.init(data, config);
 				search.init();
