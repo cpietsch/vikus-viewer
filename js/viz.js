@@ -59,7 +59,7 @@ function init() {
 		Loader(config.loader.timeline).finished(function (timeline) {
 			Loader(config.loader.items).finished(function (data) {
 
-				utils.clean(data, config.metadataSeparator);
+				utils.clean(data, config.keywordsSeparator);
 
 				tags.init(data, config);
 				search.init();
