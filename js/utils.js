@@ -103,7 +103,7 @@ utils.clean = function(data, separator) {
 		d.i = i;
 		d.keywords = _(d.keywords)
 		  .chain()
-		  .split(separator)
+		  .split(separator || ",")
 		  .map(_.trim)
 		  .uniq()
 		  .filter(function(d) { return d !== "" })
