@@ -225,7 +225,7 @@ function Canvas() {
       })
       .entries(_data.concat(_timeline))
       .sort(function (a, b) {
-        return a.key - b.key;
+        return d3.ascending(a.key,b.key);
       })
       .map(function (d) {
         return d.key;
