@@ -368,7 +368,7 @@ function Canvas() {
       }
 
       container.style("cursor", function () {
-        return selectedImageDistance < cursorCutoff && selectedImage.active
+        return selectedImageDistance < cursorCutoff && selectedImage && selectedImage.active
           ? "pointer"
           : "default";
       });
@@ -653,7 +653,7 @@ function Canvas() {
     filterVisible();
 
     if (
-      zoomedToImage &&
+      zoomedToImage && selectedImage &&
       !selectedImage.big &&
       state.lastZoomed != selectedImage.id &&
       !state.zoomingToImage
