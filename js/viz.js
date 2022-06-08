@@ -67,7 +67,6 @@ function init() {
 
 				if (config.loader.tsne) {
 					d3.csv(config.loader.tsne, function (tsne) {
-						console.log(tsne)
 						d3.select(".navi").classed("hide", false)
 						canvas.addTsneData(tsne)
 					})
