@@ -27,7 +27,6 @@ function Loader(url) {
 
     indicator.style("height", progress + "%");
 
-    //console.log(progress);
   };
   loader.load = function () {
     container = d3.select(".detailLoader");
@@ -70,7 +69,6 @@ function LoaderSprites() {
 
   var pixiloader = new PIXI.Loader();
   pixiloader.use(pixiPackerParser(PIXI)).on("progress", function (p, r) {
-    // console.log("progress", p.progress);
     indicator.style("height", p.progress + "%");
     if (!r.textures) return;
     progress(r.textures);
@@ -84,7 +82,6 @@ function LoaderSprites() {
 
   loader.load = function (url) {
     pixiloader.add(url).load(function (r) {
-      console.log("done", r);
       container.selectAll("div").remove();
     });
   };
@@ -111,13 +108,11 @@ function LoaderSingleImage() {
 
   var pixiloader = new PIXI.loaders.Loader();
   pixiloader.on("progress", function (p, r) {
-    console.log("progress", p.progress);
     indicator.style("height", p.progress + "%");
   });
 
   loader.load = function (url) {
     pixiloader.add(url).load(function (r, s) {
-      // console.log("done", r, s);
       container.selectAll("div").remove();
       finished(s[url].texture);
     });
@@ -148,6 +143,7 @@ function LoaderBlob(url) {
     finished = value;
     return loader;
   };
+
   loader.progress = function () {
     total = d3.event.total == 0 ? 80333701 : d3.event.total;
     loaded = d3.event.loaded;
@@ -155,11 +151,9 @@ function LoaderBlob(url) {
 
     indicator.style("height", progress + "%");
 
-    //console.log(progress);
   };
-  loader.load = function () {
-    //console.log("load", url)
 
+  loader.load = function () {
     container = d3.select(".sideLoader");
     container.selectAll("div").remove();
 
@@ -208,7 +202,6 @@ function LoaderMultiple(url) {
   };
 
   loader.progress = function () {
-    //console.log(d3.event.total, d3.event.loaded)
     total = d3.event.total == 0 ? 8497147 : d3.event.total;
     loaded = d3.event.loaded;
     progress = parseInt((loaded / total) * 100);
@@ -216,16 +209,14 @@ function LoaderMultiple(url) {
 
     label.text("loading " + totalProgress + " sketches");
     indicator.style("height", totalProgress / 15 + "%");
-
-    // console.log(totalProgress,progress);
   };
+
   loader.load = function (url) {
-    //console.log("loading", url);
 
     d3.csv(url)
       .on("progress", loader.progress)
       .on("load", function (data) {
-        // console.log(data[0]);
+  
         finished(data);
 
         itemsLoaded += data.length;

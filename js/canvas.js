@@ -164,7 +164,6 @@ function Canvas() {
 
     cursorCutoff = (1 / scale1) * imageSize * 0.48;
     zoomedToImageScale = 0.8 / (x.rangeBand() / columns / width);
-    // console.log("zoomedToImageScale", zoomedToImageScale)
   };
 
   canvas.init = function (_data, _timeline, _config) {
@@ -280,7 +279,6 @@ function Canvas() {
         zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
       })
       .on("click", function () {
-        console.log("click");
         if (spriteClick) {
           spriteClick = false;
           return;
@@ -291,7 +289,6 @@ function Canvas() {
         if (selectedImageDistance > cursorCutoff) return;
         if (selectedImage && !selectedImage.active) return;
         if (timelineHover) return;
-        // console.log(selectedImage)
 
         if (Math.abs(zoomedToImageScale - scale) < 0.1) {
           canvas.resetZoom();
@@ -371,7 +368,7 @@ function Canvas() {
       }
 
       container.style("cursor", function () {
-        return selectedImageDistance < cursorCutoff && selectedImage.active
+        return selectedImageDistance < cursorCutoff && selectedImage && selectedImage.active
           ? "pointer"
           : "default";
       });
@@ -537,7 +534,6 @@ function Canvas() {
   }
 
   function showDetail(d) {
-    // console.log("show detail", d)
 
     detailContainer.select(".outer").node().scrollTop = 0;
 
@@ -558,7 +554,6 @@ function Canvas() {
   }
 
   canvas.changePage = function (id, page) {
-    console.log("changePage", id, page, selectedImage);
     selectedImage.page = page;
     detailVue._data.page = page;
     clearBigImages();
@@ -618,7 +613,6 @@ function Canvas() {
     }
 
     if (zoomedToImage && zoomedToImageScale * 0.8 > scale) {
-      // console.log("clear")
       zoomedToImage = false;
       state.lastZoomed = 0;
       showAllImages();
@@ -659,7 +653,7 @@ function Canvas() {
     filterVisible();
 
     if (
-      zoomedToImage &&
+      zoomedToImage && selectedImage &&
       !selectedImage.big &&
       state.lastZoomed != selectedImage.id &&
       !state.zoomingToImage
@@ -823,7 +817,6 @@ function Canvas() {
       return;
     }
 
-    // console.log("load", d)
     var url = config.loader.textures.detail.url + d.id + ".jpg";
     var texture = new PIXI.Texture.from(url);
     var sprite = new PIXI.Sprite(texture);
@@ -936,8 +929,7 @@ function Canvas() {
       x2 = node.x2,
       y2 = node.y2;
     node.visited = true;
-    //console.log(node, x , x1 , best.d);
-    //return;
+
     // exclude node if point is farther away than best distance in either axis
     if (
       x < x1 - best.d ||
