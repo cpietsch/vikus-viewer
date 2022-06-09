@@ -816,8 +816,13 @@ function Canvas() {
       d.alpha2 = 1;
       return;
     }
+    var url = ""
+    if (typeof config.loader.textures.detail == "string") {
+      url = d[config.loader.textures.detail]
+    } else {
+      url = config.loader.textures.detail.url + d.id + ".jpg";
+    }
 
-    var url = config.loader.textures.detail.url + d.id + ".jpg";
     var texture = new PIXI.Texture.from(url);
     var sprite = new PIXI.Sprite(texture);
 
@@ -851,7 +856,12 @@ function Canvas() {
 
     state.lastZoomed = d.id;
     var page = d.page ? "_" + d.page : "";
-    var url = config.loader.textures.big.url + d.id + page + ".jpg";
+    var url = ""
+    if (typeof config.loader.textures.big == "string") {
+      url = d[config.loader.textures.big]
+    } else {
+      url = config.loader.textures.big.url + d.id + page + ".jpg";
+    }
 
     var texture = new PIXI.Texture.from(url);
     var sprite = new PIXI.Sprite(texture);

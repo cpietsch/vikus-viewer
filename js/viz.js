@@ -52,12 +52,17 @@ function init() {
 	timeline = Timeline()
 	ping = utils.ping();
 
-	d3.json("data/config.json", function (config) {
+	var baseUrl = utils.getDataBaseUrl()
+	console.log(baseUrl)
 
+	d3.json(baseUrl.config || "data/config.json", function (config) {
+
+		config.baseUrl = baseUrl
 		utils.initConfig(config)
-		
-		Loader(config.loader.timeline).finished(function (timeline) {
-			Loader(config.loader.items).finished(function (data) {
+
+		Loader(baseUrl.path + config.loader.timeline).finished(function (timeline) {
+			Loader(baseUrl.path + config.loader.items).finished(function (data) {
+				console.log(data)
 
 				utils.clean(data, config.delimiter);
 
@@ -66,7 +71,7 @@ function init() {
 				canvas.init(data, timeline, config);
 
 				if (config.loader.tsne) {
-					d3.csv(config.loader.tsne, function (tsne) {
+					d3.csv(baseUrl.path + config.loader.tsne, function (tsne) {
 						d3.select(".navi").classed("hide", false)
 						canvas.addTsneData(tsne)
 					})
@@ -85,7 +90,7 @@ function init() {
 						})
 						canvas.wakeup()
 					})
-					.load(config.loader.textures.medium.url)
+					.load(baseUrl.path + config.loader.textures.medium.url)
 			});
 		});
 	});

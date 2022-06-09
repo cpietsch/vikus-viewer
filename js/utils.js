@@ -6,28 +6,45 @@
 
 window.utils = {};
 
-utils.isMobile = function(){
-  return (window.innerWidth
-  || document.documentElement.clientWidth
-  || document.body.clientWidth) < 500;
+utils.getDataBaseUrl = function () {
+	var params = new URLSearchParams(window.location.search)
+	var config = params.get('config')
+	var path = ""
+	if (config) {
+		path = config.split("/")
+		path.pop()
+		path = path.join("/") + "/"
+		console.log("url", path)
+	}
+	return { path, config }
 }
 
-utils.isSafari = function(){
+utils.isMobile = function () {
+	return (window.innerWidth
+		|| document.documentElement.clientWidth
+		|| document.body.clientWidth) < 500;
+}
+
+utils.isSafari = function () {
 	return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
 
-utils.welcome = function(){
+utils.welcome = function () {
 	// who needs this fancy console styles
-    if (window.console)
-    {
-        window.console.log('\n _   ________ ____  ______ \n| | / /  _/ //_/ / / / __/ \n| |/ // // ,< / /_/ /\ \ \n|___/___/_/|_|\____/___/_______ \n| | / /  _/ __/ | /| / / __/ _ \ \n| |/ // // _/ | |/ |/ / _// , _/ \n|___/___/___/ |__/|__/___/_/|_| \n')
-    }	
+	if (window.console) {
+		window.console.log('\n _   ________ ____  ______ \n| | / /  _/ //_/ / / / __/ \n| |/ // // ,< / /_/ /\ \ \n|___/___/_/|_|\____/___/_______ \n| | / /  _/ __/ | /| / / __/ _ \ \n| |/ // // _/ | |/ |/ / _// , _/ \n|___/___/___/ |__/|__/___/_/|_| \n')
+	}
 }
 
-utils.initConfig = function(config){
+utils.initConfig = function (config) {
 
 	// load infosidebar info.md
-	d3.text(config.loader.info, function(text){ if(text) infoVue.info = text })
+	d3.text(config.loader.info, function (error, text) {
+		// console.log(error, text)
+		if (text) infoVue.info = text
+	})
+
+	// d3.text(config.loader.info, function (text) { if (text) infoVue.info = text })
 
 	// set window title
 	document.title = config.project.name
@@ -52,65 +69,65 @@ utils.initConfig = function(config){
 }
 
 // exhibition installations, will reinitialize the vis after x seconds
-utils.ping = function(){
+utils.ping = function () {
 	var time = +new Date();
 	var timeout = 2 * 60 * 1000;
-	var interval = setInterval(function() {
-		if(new Date() - time > timeout ){
+	var interval = setInterval(function () {
+		if (new Date() - time > timeout) {
 			//location.reload();
 		}
 	}, 1000);
 
-	return function(){
+	return function () {
 		time = +new Date();
 	}
 }
 
-utils.printkeywords = function(data){
+utils.printkeywords = function (data) {
 	var keywords = {};
-	data.forEach(function(d){
-		d.keywords.forEach(function(d){
-		  keywords[d] = 0;
+	data.forEach(function (d) {
+		d.keywords.forEach(function (d) {
+			keywords[d] = 0;
 		})
 	})
-	d3.keys(keywords).forEach(function(d){
+	d3.keys(keywords).forEach(function (d) {
 		console.log(d);
 	})
 }
 
-utils.fullscreen = function(){
+utils.fullscreen = function () {
 	document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
 
 	function requestFullscreen(element) {
-	    if (element.requestFullscreen) {
-	        element.requestFullscreen();
-	    } else if (element.mozRequestFullScreen) {
-	        element.mozRequestFullScreen();
-	    } else if (element.webkitRequestFullScreen) {
-	        element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-	    }
+		if (element.requestFullscreen) {
+			element.requestFullscreen();
+		} else if (element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+		} else if (element.webkitRequestFullScreen) {
+			element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+		}
 	}
 
 	if (document.fullscreenEnabled) {
-	    requestFullscreen(document.documentElement);
+		requestFullscreen(document.documentElement);
 	}
-}	
+}
 
-utils.clean = function(data, separator) {
+utils.clean = function (data, separator) {
 
-	data.forEach(function(d,i){
-		d.search = Object.keys(d).map(function(e) { return d[e] }).join(' - ').toUpperCase()
+	data.forEach(function (d, i) {
+		d.search = Object.keys(d).map(function (e) { return d[e] }).join(' - ').toUpperCase()
 		d.i = i;
-		d.keywords = _(d.keywords)
-		  .chain()
-		  .split(separator || ",")
-		  .map(_.trim)
-		  .uniq()
-		  .filter(function(d) { return d !== "" })
-		  .value()
+		d.keywords = _(d.keywords || "None")
+			.chain()
+			.split(separator || ",")
+			.map(_.trim)
+			.uniq()
+			.filter(function (d) { return d !== "" })
+			.value()
 
 		// for proper sorting
-		d.keywords = d.keywords.map(function(d){ 
+		d.keywords = d.keywords.map(function (d) {
 			return d.charAt(0).toUpperCase() + d.slice(1);
 		});
 
@@ -131,9 +148,9 @@ utils.clean = function(data, separator) {
 
 }
 
-utils.simulateLargeDatasets = function(data){
+utils.simulateLargeDatasets = function (data) {
 	Array.prototype.push.apply(data, _.clone(data, true))
 	Array.prototype.push.apply(data, _.clone(data, true))
-	Array.prototype.push.apply(data, _.clone(data, true).slice(0,1036))
+	Array.prototype.push.apply(data, _.clone(data, true).slice(0, 1036))
 }
 
