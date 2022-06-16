@@ -810,6 +810,9 @@ function Canvas() {
       });
     }
   }
+  function update() {
+    sleep = false;
+  };
 
   function loadMiddleImage(d) {
     if (d.loaded) {
@@ -817,18 +820,14 @@ function Canvas() {
       return;
     }
     var url = ""
-    if (typeof config.loader.textures.detail == "string") {
-      url = d[config.loader.textures.detail]
+    if (config.loader.textures.detail.csv) {
+      url = d[config.loader.textures.detail.csv]
     } else {
       url = config.loader.textures.detail.url + d.id + ".jpg";
     }
 
     var texture = new PIXI.Texture.from(url);
     var sprite = new PIXI.Sprite(texture);
-
-    var update = function () {
-      sleep = false;
-    };
 
     sprite.on("added", update);
     texture.once("update", update);
@@ -857,8 +856,8 @@ function Canvas() {
     state.lastZoomed = d.id;
     var page = d.page ? "_" + d.page : "";
     var url = ""
-    if (typeof config.loader.textures.big == "string") {
-      url = d[config.loader.textures.big]
+    if (config.loader.textures.big.csv) {
+      url = d[config.loader.textures.big.csv]
     } else {
       url = config.loader.textures.big.url + d.id + page + ".jpg";
     }
