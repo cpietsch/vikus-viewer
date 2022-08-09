@@ -695,6 +695,10 @@ function Canvas() {
       d.scaleFactor = state.mode == "time" ? 0.9 : 0.5;
       d.sprite.scale.x = d.scaleFactor;
       d.sprite.scale.y = d.scaleFactor;
+      if (d.sprite2) {
+        d.sprite2.scale.x = d.scaleFactor;
+        d.sprite2.scale.y = d.scaleFactor;
+      }
     });
 
     if (state.mode == "time") {
