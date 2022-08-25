@@ -73,3 +73,4 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 - [Kunst im öffentlichen Raum Pankow](https://vikus.kunst-im-oeffentlichen-raum-pankow.de)
 - [Nico and the Navigators](https://archiv.navigators.de)
 - [corona-memory.ch](https://vikus.dh.unibe.ch)
+- [Digitale Safari - FAU Universitätsbibliothek](http://digitale-safari.com/vikus/)
