@@ -74,7 +74,7 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 - [Nico and the Navigators](https://archiv.navigators.de)
 - [corona-memory.ch](https://vikus.dh.unibe.ch)
 - [Digitale Safari - FAU Universitätsbibliothek](http://digitale-safari.com/vikus/)
-- [Cars, Visual Contagions] in [Article by Nicola Carboni, University of Geneva](https://www.unige.ch/visualcontagions/expositions/jeu-de-paume-le-projet/blockbusters/car))
+- [Cars, Visual Contagions](https://jdp.visualcontagions.net/vikus/) in [Article by Nicola Carboni, University of Geneva](https://www.unige.ch/visualcontagions/expositions/jeu-de-paume-le-projet/blockbusters/car))
 - [The Sphere Tables - MPIWG Berlin](https://sphaera.mpiwg-berlin.mpg.de/vikusTables/)
 - [Oil Paintings - Statens Museum for Kunst](https://byabbe.se/smk-vikus-viewer/)
 - [imagineRio - Rice University](https://imaginerio.github.io/vikus-viewer/)
