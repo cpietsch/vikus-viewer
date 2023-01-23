@@ -78,4 +78,4 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 - [The Sphere Tables - MPIWG Berlin](https://sphaera.mpiwg-berlin.mpg.de/vikusTables/)
 - [Oil Paintings - Statens Museum for Kunst](https://byabbe.se/smk-vikus-viewer/)
 - [imagineRio - Rice University](https://imaginerio.github.io/vikus-viewer/)
-- [MUSEU DA LITERATURA BRASILEIRA](https://museudaliteratura.com.br/)
+- [Museu da Literatura Brasileira](https://museudaliteratura.com.br/)
