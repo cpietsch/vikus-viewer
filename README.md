@@ -51,7 +51,7 @@ You can also create the layout through a Jupyter Notebook in python using CLIP.
 
 ### Layouts
 
-You can add layouts or remove the lime layout in the loader.layout section of the config.json.
+You can add layouts or remove the lime layout in the [loader.layout](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json#L10) section of the config.json.
 Add a custom layout in this format: `{"title": "UMAP", "url": "umap.csv" }`
 
 ## Credits
