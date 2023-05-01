@@ -17,6 +17,7 @@
     /* overflow: auto; */
     /*direction: rtl;*/
     z-index: 1000;
+    word-break: break-all;
 }
 
 .menu {

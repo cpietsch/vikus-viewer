@@ -52,12 +52,17 @@ function init() {
 	timeline = Timeline()
 	ping = utils.ping();
 
-	d3.json("data/config.json", function (config) {
+	var baseUrl = utils.getDataBaseUrl()
+	console.log(baseUrl)
 
+	d3.json(baseUrl.config || "data/config.json", function (config) {
+
+		config.baseUrl = baseUrl
 		utils.initConfig(config)
-		
-		Loader(config.loader.timeline).finished(function (timeline) {
-			Loader(config.loader.items).finished(function (data) {
+
+		Loader(baseUrl.path + config.loader.timeline).finished(function (timeline) {
+			Loader(baseUrl.path + config.loader.items).finished(function (data) {
+				console.log(data)
 
 				utils.clean(data, config.delimiter);
 
@@ -65,11 +70,8 @@ function init() {
 				search.init();
 				canvas.init(data, timeline, config);
 
-				if (config.loader.tsne) {
-					d3.csv(config.loader.tsne, function (tsne) {
-						d3.select(".navi").classed("hide", false)
-						canvas.addTsneData(tsne)
-					})
+				if (config.loader.layouts) {
+					initLayouts(config);
 				}
 
 				LoaderSprites()
@@ -85,7 +87,8 @@ function init() {
 						})
 						canvas.wakeup()
 					})
-					.load(config.loader.textures.medium.url)
+					//.finished() recalculate sizes
+					.load(baseUrl.path + config.loader.textures.medium.url)
 			});
 		});
 	});
@@ -130,6 +133,41 @@ function init() {
 				return that === this
 			});
 		})
+
+	function initLayouts(config) {
+		d3.select(".navi").classed("hide", false);
+
+		config.loader.layouts.forEach((d) => {
+			if (d.title === "time") return;
+			d3.csv(baseUrl.path + d.url, function (tsne) {
+				console.log(tsne)
+				canvas.addTsneData(d.title, tsne);
+			});
+		});
+
+		var layouts = config.loader.layouts;
+		// layouts.unshift({ title: "time" });
+
+		var s = d3.select(".navi").selectAll(".button").data(config.loader.layouts);
+		s.enter()
+			.append("div")
+			.classed("button", true)
+			.classed("space", (d) => d.space)
+			.text((d) => d.title);
+		s.on("click", function (d) {
+			console.log(d.title)
+			canvas.setMode(d.title);
+			timeline.setDisabled(d.title != "time");
+			d3.selectAll(".navi .button").classed(
+				"active",
+				(d) => d.title == canvas.getMode()
+			);
+		});
+		d3.selectAll(".navi .button").classed(
+			"active",
+			(d) => d.title == canvas.getMode()
+		);
+	}
 }
 
 d3.select(".browserInfo").classed("show", utils.isMobile());

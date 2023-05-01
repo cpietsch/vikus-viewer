@@ -13,7 +13,7 @@ function Loader(url) {
   var container, indicator;
 
   var loader = {};
-  var finished = function () {};
+  var finished = function () { };
 
   loader.finished = function (value) {
     if (!arguments.length) return finished;
@@ -42,10 +42,15 @@ function Loader(url) {
         finished(data);
         container.selectAll("div"); //.remove();
       })
+      .on("error", function (err) {
+        console.warn("error loading", url)
+        finished([])
+      })
       .get();
   };
 
-  loader.load(url);
+  if (url) loader.load(url);
+  else finished([]);
 
   return loader;
 }
@@ -65,7 +70,7 @@ function LoaderSprites() {
   indicator = container.append("div").classed("indicator", true);
 
   var loader = {};
-  var progress = function () {};
+  var progress = function () { };
 
   var pixiloader = new PIXI.Loader();
   pixiloader.use(pixiPackerParser(PIXI)).on("progress", function (p, r) {
@@ -104,7 +109,7 @@ function LoaderSingleImage() {
   indicator = container.append("div").classed("indicator", true);
 
   var loader = {};
-  var finished = function () {};
+  var finished = function () { };
 
   var pixiloader = new PIXI.loaders.Loader();
   pixiloader.on("progress", function (p, r) {
@@ -136,7 +141,7 @@ function LoaderBlob(url) {
   var container, indicator;
 
   var loader = {};
-  var finished = function () {};
+  var finished = function () { };
 
   loader.finished = function (value) {
     if (!arguments.length) return finished;
@@ -193,7 +198,7 @@ function LoaderMultiple(url) {
   var container, indicator, label;
 
   var loader = {};
-  var finished = function () {};
+  var finished = function () { };
 
   loader.finished = function (value) {
     if (!arguments.length) return finished;
@@ -216,7 +221,7 @@ function LoaderMultiple(url) {
     d3.csv(url)
       .on("progress", loader.progress)
       .on("load", function (data) {
-  
+
         finished(data);
 
         itemsLoaded += data.length;
