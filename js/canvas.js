@@ -726,19 +726,6 @@ function Canvas() {
     var active = data.filter(function (d) {
       return d.active;
     });
-  }
-
-  canvas.projectTSNE = function () {
-    var marginBottom = -height / 2.5;
-
-    var inactive = data.filter(function (d) {
-      return !d.active;
-    });
-    var inactiveSize = inactive.length;
-
-    var active = data.filter(function (d) {
-      return d.active;
-    });
 
     // inactive.sort(function (a, b) {
     //     return a.rTSNE - b.rTSNE
