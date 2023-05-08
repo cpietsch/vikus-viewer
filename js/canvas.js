@@ -106,7 +106,7 @@ function Canvas() {
   var tsne = [];
   var tsneIndex = {};
 
-  function canvas() { }
+  function canvas() {}
 
   canvas.rangeBand = function () {
     return rangeBand;
@@ -163,7 +163,9 @@ function Canvas() {
     timeline.rescale(scale1);
 
     cursorCutoff = (1 / scale1) * imageSize * 0.48;
-    zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width) * (state.mode == "time" ? 1 : 0.5)
+    zoomedToImageScale =
+      (0.8 / (x.rangeBand() / collumns / width)) *
+      (state.mode == "time" ? 1 : 0.5);
     // console.log("zoomedToImageScale", zoomedToImageScale)
   };
 
@@ -330,7 +332,6 @@ function Canvas() {
     d.forEach(function (d) {
       tsneIndex[name][d.id] = [x(d.x), y(d.y)];
     });
-    console.log(tsneIndex)
   };
 
   function mousemove(d) {
@@ -508,15 +509,15 @@ function Canvas() {
   }
 
   function zoomToImage(d, duration) {
-
     state.zoomingToImage = true;
     zoom.center(null);
     loadMiddleImage(d);
     d3.select(".tagcloud").classed("hide", true);
     var padding = (state.mode == "time" ? 0.1 : 0.8) * rangeBandImage;
     var sidbar = width / 8;
-    var scale = 0.8 / (rangeBandImage / width) * (state.mode == "time" ? 1 : 0.4);
-    console.log(d, padding)
+    var scale =
+      (0.8 / (rangeBandImage / width)) * (state.mode == "time" ? 1 : 0.4);
+    console.log(d, padding);
     //* (state.mode == "time" ? 1 : 0.5)
     var translateNow = [
       -scale * (d.x - padding),
@@ -667,7 +668,8 @@ function Canvas() {
     filterVisible();
 
     if (
-      zoomedToImage && selectedImage &&
+      zoomedToImage &&
+      selectedImage &&
       !selectedImage.big &&
       state.lastZoomed != selectedImage.id &&
       !state.zoomingToImage
@@ -711,9 +713,10 @@ function Canvas() {
 
     canvas.resetZoom();
 
-    zoomedToImageScale = 0.8 / (x.rangeBand() / collumns / width) * (state.mode == "time" ? 1 : 0.5)
+    zoomedToImageScale =
+      (0.8 / (x.rangeBand() / collumns / width)) *
+      (state.mode == "time" ? 1 : 0.5);
   };
-
 
   canvas.projectTSNE = function () {
     var marginBottom = -height / 2.5;
@@ -726,10 +729,6 @@ function Canvas() {
     var active = data.filter(function (d) {
       return d.active;
     });
-
-    // inactive.sort(function (a, b) {
-    //     return a.rTSNE - b.rTSNE
-    // });
 
     var dimension = Math.min(width, height) * 0.8;
 
@@ -750,7 +749,7 @@ function Canvas() {
         d.y = tsneEntry[1] * dimension - dimension / 2 + marginBottom;
       } else {
         // console.log("not found", d)
-        d.alpha = 0
+        d.alpha = 0;
       }
       // var tsneEntry = tsne.find(function (t) {
       //     return t.id == d.id
@@ -849,9 +848,9 @@ function Canvas() {
       d.alpha2 = 1;
       return;
     }
-    var url = ""
+    var url = "";
     if (config.loader.textures.detail.csv) {
-      url = d[config.loader.textures.detail.csv]
+      url = d[config.loader.textures.detail.csv];
     } else {
       url = config.loader.textures.detail.url + d.id + ".jpg";
     }
@@ -889,9 +888,9 @@ function Canvas() {
 
     state.lastZoomed = d.id;
     var page = d.page ? "_" + d.page : "";
-    var url = ""
+    var url = "";
     if (config.loader.textures.big.csv) {
-      url = d[config.loader.textures.big.csv]
+      url = d[config.loader.textures.big.csv];
     } else {
       url = config.loader.textures.big.url + d.id + page + ".jpg";
     }
