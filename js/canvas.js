@@ -244,7 +244,7 @@ function Canvas() {
 
     timeline.init(timeDomain);
     x.domain(canvasDomain);
-    canvas.makeScales();
+    //canvas.makeScales();
 
     // add preview pics
     data.forEach(function (d, i) {
@@ -302,7 +302,8 @@ function Canvas() {
         }
       });
 
-    canvas.project();
+    //canvas.makeScales();
+    //canvas.project();
     animate();
 
     // selectedImage = data.find(d => d.id == 88413)
@@ -480,6 +481,8 @@ function Canvas() {
 
   canvas.setMode = function (mode) {
     state.mode = mode;
+    timeline.setDisabled(mode != "time");
+    canvas.makeScales();
     canvas.project();
   };
 

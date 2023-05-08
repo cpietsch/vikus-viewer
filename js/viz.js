@@ -68,6 +68,8 @@ function init() {
 
         if (config.loader.layouts) {
           initLayouts(config);
+        } else {
+          canvas.setMode("time");
         }
 
         LoaderSprites()
@@ -134,11 +136,19 @@ function init() {
 
     config.loader.layouts.forEach((d, i) => {
       d.title = d.title.toLowerCase();
-      if (d.title === "time") return;
-      d3.csv(baseUrl.path + d.url, function (tsne) {
-        canvas.addTsneData(d.title, tsne);
-      });
+      if (d.title === "time") {
+        canvas.setMode(d.title);
+      } else {
+        d3.csv(baseUrl.path + d.url, function (tsne) {
+          canvas.addTsneData(d.title, tsne);
+          if (i == 0) canvas.setMode(d.title);
+        });
+      }
     });
+
+    if (config.loader.layouts.length == 1) {
+      d3.select(".navi").classed("hide", true);
+    }
 
     var s = d3.select(".navi").selectAll(".button").data(config.loader.layouts);
     s.enter()
@@ -148,9 +158,7 @@ function init() {
       .text((d) => d.title);
 
     s.on("click", function (d) {
-      console.log(d.title);
       canvas.setMode(d.title);
-      timeline.setDisabled(d.title != "time");
       d3.selectAll(".navi .button").classed(
         "active",
         (d) => d.title == canvas.getMode()
