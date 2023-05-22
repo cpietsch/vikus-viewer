@@ -49,6 +49,10 @@ utils.initConfig = function (config) {
 	// set window title
 	document.title = config.project.name
 
+	if (config.searchEnabled !== undefined) {
+		!config.searchEnabled ? document.querySelector('.searchbar').style.display = 'none' : null;
+	}
+
 	// puh thats kind of nasty, lets call it oldschool...
 	var length = document.styleSheets[0].cssRules.length
 	document.styleSheets[0].insertRule('.close::before { background-color: ' + config.style.fontColorActive + '}', length);
