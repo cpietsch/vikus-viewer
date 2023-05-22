@@ -111,7 +111,7 @@ cpietsch@gmail.com
             </div>
             <div v-for="entry in structure" v-bind:key="entry.name" v-bind:class="entry.display" class="entry"
               v-if="hasData(entry)">
-              <div class="label">{{ entry.name }}</div>
+              <div v-if="entry.name" class="label">{{ entry.name }}</div>
               <div class="content">
                 <span v-if="entry.type === 'keywords'">
                   <span v-for="keyword in item[entry.source]" v-bind:key="keyword" class="keyword">
