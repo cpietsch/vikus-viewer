@@ -103,10 +103,10 @@ function Canvas() {
   var timelineData;
   var stage, stage1, stage2, stage3, stage4, stage5;
   var timelineHover = false;
-  var tsne = [];
   var tsneIndex = {};
+  var tsneScale = {}
 
-  function canvas() {}
+  function canvas() { }
 
   canvas.rangeBand = function () {
     return rangeBand;
@@ -311,8 +311,9 @@ function Canvas() {
     state.init = true;
   };
 
-  canvas.addTsneData = function (name, d) {
+  canvas.addTsneData = function (name, d, scale) {
     tsneIndex[name] = {};
+    tsneScale[name] = scale;
     var clean = d.map(function (d) {
       return {
         id: d.id,
@@ -696,8 +697,9 @@ function Canvas() {
 
   canvas.project = function () {
     sleep = false;
+    var scaleFactor = state.mode == "time" ? 0.9 : tsneScale[state.mode] || 0.5;
     data.forEach(function (d) {
-      d.scaleFactor = state.mode == "time" ? 0.9 : 0.5;
+      d.scaleFactor = scaleFactor;
       d.sprite.scale.x = d.scaleFactor;
       d.sprite.scale.y = d.scaleFactor;
       if (d.sprite2) {

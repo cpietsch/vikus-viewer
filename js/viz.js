@@ -140,7 +140,7 @@ function init() {
         canvas.setMode(d.title);
       } else {
         d3.csv(baseUrl.path + d.url, function (tsne) {
-          canvas.addTsneData(d.title, tsne);
+          canvas.addTsneData(d.title, tsne, d.scale);
           if (i == 0) canvas.setMode(d.title);
         });
       }
