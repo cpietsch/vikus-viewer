@@ -13,6 +13,7 @@ function Tags() {
   var keywords = [];
   var wordBackground;
   var keywordsNestGlobal;
+  var sortKeywords = "alphabetical";
 
   // var filterWords = ["Potsdam"];
   var filterWords = [];
@@ -42,6 +43,10 @@ function Tags() {
       .append("div")
       //.attr("transform", "translate("+ margin.left +","+ margin.top +")")
       
+    if (config.sortKeywords != undefined) {
+      sortKeywords = config.sortKeywords;
+    }
+
     tags.update();
   }
 
@@ -103,10 +108,33 @@ function Tags() {
   // c("num",sliceNum)
 
    var keywordsNest = keywordsNestGlobal
-      .slice(0,sliceNum)
-      .sort(function(a,b){
+      .slice(0,sliceNum);
+
+    if (sortKeywords == "alphabetical") {
+      keywordsNest = keywordsNest.sort(function(a,b){
         return d3.ascending(a.key[0], b.key[0]);
-      })
+      });
+    } else if (sortKeywords == "alfabetical-reverse") {
+      keywordsNest = keywordsNest.sort(function(a,b){
+        return d3.descending(a.key[0], b.key[0]);
+      });
+    } else if (sortKeywords == "count") {
+      keywordsNest = keywordsNest.sort(function(a,b){
+        return d3.descending(a.values.length, b.values.length);
+      });
+    } else if (sortKeywords == "count-reverse") {
+      keywordsNest = keywordsNest.sort(function(a,b){
+        return d3.ascending(a.values.length, b.values.length);
+      });
+    } else if (Array.isArray(sortKeywords)) {
+      keywordsNest = keywordsNest.sort(function(a,b){
+        var indexA = sortKeywords.indexOf(a.key);
+        var indexB = sortKeywords.indexOf(b.key);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      });
+    }
 
     // c("keywordsNest", keywordsNest);
 
