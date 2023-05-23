@@ -166,7 +166,7 @@ function init() {
     });
     d3.selectAll(".navi .button").classed(
       "active",
-      (d) => d.title == canvas.getMode()
+      (d) => d.title == config.loader.layouts[0].title
     );
   }
 }
