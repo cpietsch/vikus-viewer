@@ -354,7 +354,7 @@ function Canvas() {
       quadtree
     );
 
-    selectedImageDistance = best.d;
+    selectedImageDistance = best && best.d || 1000;
     // console.log(cursorCutoff, scale, scale1, selectedImageDistance)
 
     // if (best.p && selectedImageDistance > 7) {
@@ -362,7 +362,7 @@ function Canvas() {
     //   //zoom.center(null);
     //   container.style("cursor", "default");
     // } else {
-    if (best.p && !zoomedToImage) {
+    if (best && best.p && !zoomedToImage) {
       var d = best.p;
       var center = [
         (d.x + imgPadding) * scale + translate[0],
@@ -789,6 +789,8 @@ function Canvas() {
 
     var y = -extent[1] - bottomPadding;
     y = extent[1] / -3 - bottomPadding;
+    // this needs a major cleanup
+    y = Math.max(y, -bottomPadding);
 
     vizContainer
       .call(zoom.translate(translate).event)

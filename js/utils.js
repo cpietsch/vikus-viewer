@@ -18,7 +18,13 @@ utils.getDataBaseUrl = function () {
 	}
 	return { path, config }
 }
-
+utils.makeUrl = function makeUrl(path, url) {
+	// console.log("make", path, url);
+	if (url.startsWith("http")) {
+		return url;
+	}
+	return path + url;
+}
 utils.isMobile = function () {
 	return (window.innerWidth
 		|| document.documentElement.clientWidth
@@ -39,7 +45,7 @@ utils.welcome = function () {
 utils.initConfig = function (config) {
 
 	// load infosidebar info.md
-	d3.text(config.baseUrl.path + config.loader.info, function (error, text) {
+	d3.text(utils.makeUrl(config.baseUrl.path, config.loader.info), function (error, text) {
 		// console.log(error, text)
 		if (text) infoVue.info = text
 	})

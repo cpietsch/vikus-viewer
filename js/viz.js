@@ -42,6 +42,7 @@ if (Modernizr.webgl && !utils.isMobile()) {
   init();
 }
 
+
 function init() {
   tags = Tags();
   canvas = Canvas();
@@ -50,14 +51,16 @@ function init() {
   ping = utils.ping();
 
   var baseUrl = utils.getDataBaseUrl();
+  var makeUrl = utils.makeUrl;
+
   console.log(baseUrl);
 
   d3.json(baseUrl.config || "data/config.json", function (config) {
     config.baseUrl = baseUrl;
     utils.initConfig(config);
 
-    Loader(baseUrl.path + config.loader.timeline).finished(function (timeline) {
-      Loader(baseUrl.path + config.loader.items).finished(function (data) {
+    Loader(makeUrl(baseUrl.path, config.loader.timeline)).finished(function (timeline) {
+      Loader(makeUrl(baseUrl.path, config.loader.items)).finished(function (data) {
         console.log(data);
 
         utils.clean(data, config.delimiter);
@@ -86,7 +89,7 @@ function init() {
             canvas.wakeup();
           })
           //.finished() recalculate sizes
-          .load(baseUrl.path + config.loader.textures.medium.url);
+          .load(makeUrl(baseUrl.path, config.loader.textures.medium.url));
       });
     });
   });
@@ -139,7 +142,7 @@ function init() {
       if (d.title === "time") {
         canvas.setMode(d.title);
       } else {
-        d3.csv(baseUrl.path + d.url, function (tsne) {
+        d3.csv(utils.makeUrl(baseUrl.path, d.url), function (tsne) {
           canvas.addTsneData(d.title, tsne, d.scale);
           if (i == 0) canvas.setMode(d.title);
         });
