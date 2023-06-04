@@ -20,7 +20,7 @@ utils.getDataBaseUrl = function () {
 }
 utils.makeUrl = function makeUrl(path, url) {
 	// console.log("make", path, url);
-	if (url.startsWith("http")) {
+	if (url && url.startsWith("http")) {
 		return url;
 	}
 	return path + url;
