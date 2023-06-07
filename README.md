@@ -8,6 +8,9 @@
 
 This repo contains the HTML, CSS and JS of the VIKUS Viewer software. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any web server will work too. There is no server-side logic necessary. To minimize the loading time your should make use of GZIP compression on JS and CSV files. Also enable HTTP/2, since Multiplexing will heavily help with loading all those image assets.
 
+### IIIF
+We now have support for (IIIF Collections)[https://github.com/cpietsch/vikus-IIIF-generator].
+
 ### Metadata
 
 To use the VIKUS Viewer for a custom image collection, you need to prepare metadata files that describe the collection and objects, and configure the visualization. To get started, you first need to create a ```/data``` folder which will contain all metadata and image files. Have a look at the metadata generated for the [Van Gogh collection](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) (Van Gogh Museum) as a reference for the following descriptions.
