@@ -9,7 +9,7 @@
 This repo contains the HTML, CSS and JS of the VIKUS Viewer software. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any web server will work too. There is no server-side logic necessary. To minimize the loading time your should make use of GZIP compression on JS and CSV files. Also enable HTTP/2, since Multiplexing will heavily help with loading all those image assets.
 
 ### IIIF
-We now have support for (IIIF Collections)[https://github.com/cpietsch/vikus-IIIF-generator].
+VIKUS Viewer can be used with IIIF Collections throught the [vikus-IIIF-generator](https://github.com/cpietsch/vikus-IIIF-generator).
 
 ### Metadata
 
