@@ -90,3 +90,4 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 - [imagineRio - Rice University](https://imaginerio.github.io/vikus-viewer/)
 - [Museu da Literatura Brasileira](https://museudaliteratura.com.br/)
 - [Africa Art Archive Viewer](https://africa-art-archive.ch/archive-viewer)
+- [NGA Recent Aquisitions](https://bzweig633.github.io/vikus-nga/)
