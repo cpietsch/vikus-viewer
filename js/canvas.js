@@ -517,6 +517,7 @@ function Canvas() {
     zoom.center(null);
     loadMiddleImage(d);
     d3.select(".tagcloud").classed("hide", true);
+    /*
     var padding = (state.mode == "time" ? 0.1 : 0.8) * rangeBandImage;
     var sidbar = width / 8;
     var scale =
@@ -526,6 +527,14 @@ function Canvas() {
     var translateNow = [
       -scale * (d.x - padding),
       -margin.bottom - scale * (height + d.y - padding),
+    ];
+    */
+
+    var padding = rangeBandImage / 2;
+    var scale = 1 / (rangeBandImage / (width*0.8));
+    var translateNow = [
+      -scale * (d.x - padding) - (width*0.8) / 2 + margin.left,
+      -scale * (height + d.y + padding) - margin.top + height / 2,
     ];
 
     zoomedToImageScale = scale;
