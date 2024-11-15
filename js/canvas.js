@@ -1046,15 +1046,16 @@ function Canvas() {
 
     data.forEach(function (d, i) {
       var p = d.sprite.position;
+
       var x = p.x / scale1 + translate[0] / zoomScale;
       var y = p.y / scale1 + translate[1] / zoomScale;
-      var padding = 5;
+      var padding = 2;
 
       if (
-        x > -padding &&
-        x < width / zoomScale + padding &&
-        y + height < height / zoomScale + padding &&
-        y > height * -1 - padding
+        x > -padding
+        && x < width / zoomScale + padding 
+        && y + height < height / zoomScale + padding
+        && y > height * -1 - padding
       ) {
         d.visible = true;
       } else {
@@ -1065,8 +1066,6 @@ function Canvas() {
     var visible = data.filter(function (d) {
       return d.visible;
     });
-
-    console.log(visible)
 
     if (visible.length < 40) {
       data.forEach(function (d) {
