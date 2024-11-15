@@ -2,7 +2,7 @@ function Timeline() {
   var fontScaleYear = d3.scale
     .linear()
     .domain([1, 9])
-    .range([9, 20])
+    .range([7, 20])
     .clamp(true);
 
   var timelineFontScale = d3.scale
@@ -22,15 +22,19 @@ function Timeline() {
   var fontSize = 1;
   var disabled = false;
 
-  function timeline() {}
+  function timeline() { }
 
   timeline.init = function (_timeDomain) {
     timeDomain = _timeDomain;
+    if (!d3.select(".timeline").empty()) {
+      d3.select(".timeline").remove();
+    }
     container = d3.select(".viz").append("div").classed("timeline", true);
     container.style(
       "transform",
       "translate(" + 0 + "px," + (canvas.height() - 30) + "px)"
     );
+
   };
 
   timeline.rescale = function (scale) {
@@ -152,3 +156,4 @@ function Timeline() {
 
   return timeline;
 }
+

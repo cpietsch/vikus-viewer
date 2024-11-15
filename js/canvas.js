@@ -14,6 +14,8 @@ function Canvas() {
   var width = window.innerWidth - margin.left - margin.right;
   var widthOuter = window.innerWidth;
   var height = window.innerHeight < minHeight ? minHeight : window.innerHeight;
+  console.log("height", height)
+  console.log("width", width)
 
   var scale;
   var scale1 = 1;
@@ -24,11 +26,16 @@ function Canvas() {
   var translate = [0, 0];
   var scale = 1;
   var timeDomain = [];
+  var canvasDomain = [];
   var loadImagesCue = [];
+
+  var resolution = 1; // window.devicePixelRatio || 1;
 
   var x = d3.scale
     .ordinal()
     .rangeBands([margin.left, width + margin.left], 0.2);
+
+  var yscale = d3.scale.linear()
 
   var Quadtree = d3.geom
     .quadtree()
@@ -87,8 +94,8 @@ function Canvas() {
   var state = {
     lastZoomed: 0,
     zoomingToImage: false,
-    mode: "time",
     init: false,
+    mode: "time",
   };
 
   var zoomedToImage = false;
@@ -108,6 +115,8 @@ function Canvas() {
 
   function canvas() { }
 
+  canvas.margin = margin;
+
   canvas.rangeBand = function () {
     return rangeBand;
   };
@@ -125,6 +134,7 @@ function Canvas() {
     return selectedImage;
   };
   canvas.x = x;
+  canvas.y = yscale;
 
   canvas.resize = function () {
     if (!state.init) return;
@@ -144,9 +154,9 @@ function Canvas() {
 
     imgPadding = rangeBand / collumns / 2;
 
-    scale1 = imageSize / (x.rangeBand() / collumns);
-    scale2 = imageSize2 / (x.rangeBand() / collumns);
-    scale3 = imageSize3 / (x.rangeBand() / collumns);
+    scale1 = imageSize / rangeBandImage;
+    scale2 = imageSize2 / rangeBandImage;
+    scale3 = imageSize3 / rangeBandImage;
 
     stage3.scale.x = 1 / scale1;
     stage3.scale.y = 1 / scale1;
@@ -165,13 +175,77 @@ function Canvas() {
     cursorCutoff = (1 / scale1) * imageSize * 0.48;
     zoomedToImageScale =
       (0.8 / (x.rangeBand() / collumns / width)) *
-      (state.mode == "time" ? 1 : 0.5);
+      (state.mode.type === "group" ? 1 : 0.5);
     // console.log("zoomedToImageScale", zoomedToImageScale)
   };
+
+  canvas.initGroupLayout = function () {
+    var groupKey = state.mode.groupKey
+    console.log("initGroupLayout", groupKey);
+    canvasDomain = d3
+      .nest()
+      .key(function (d) {
+        return d[groupKey];
+      })
+      .entries(data.concat(timelineData))
+      .sort(function (a, b) {
+        return a.key - b.key;
+      })
+      .map(function (d) {
+        return d.key;
+      });
+
+    // if (groupKey == "stadt") {
+    //   console.log("stadt", canvasDomain)
+    //   const missing = canvasDomain.filter(d => !utils.citiesOrder.includes(d))
+    //   console.log("missing", missing)
+    //   canvasDomain = utils.citiesOrder
+    // }
+
+    timeDomain = canvasDomain.map(function (d) {
+      return {
+        key: d,
+        values: timelineData
+          .filter(function (e) {
+            return d == e[groupKey];
+          }).map(function (e) {
+            e.type = "timeline";
+            return e;
+          })
+      };
+    });
+    console.log("canvasDomain", canvasDomain);
+    console.log("timeDomain", timeDomain);
+
+
+    timeline.init(timeDomain);
+
+    x.domain(canvasDomain);
+
+  };
+
+  // canvas.setCustomTimelineData = function () {
+  //   timelineData = [{ "x": "54", "key": "200" }, { "x": "182", "key": "1k" }, { "x": "237", "key": "2k" }, { "x": "365", "key": "10k" }, { "x": "420", "key": "20k" }, { "x": "548", "key": "100k" }, { "x": "603", "key": "200k" }, { "x": "731", "key": "1M" }, { "x": "786", "key": "2M" }]
+  //   canvasDomain = timelineData.map(d => d.key)
+  //   timeDomain = timelineData.map(function (d) {
+  //     return {
+  //       key: d.key,
+  //       values: [],
+  //       type: "static",
+
+  //     };
+  //   });
+  //   timeline.init(timeDomain);
+  //   x.domain(canvasDomain);
+
+  //   console.log("canvasDomain", canvasDomain);
+  //   console.log("timeDomain", timeDomain);
+  // }
 
   canvas.init = function (_data, _timeline, _config) {
     data = _data;
     config = _config;
+    timelineData = _timeline;
 
     container = d3.select(".page").append("div").classed("viz", true);
     detailVue._data.structure = config.detail.structure;
@@ -184,15 +258,15 @@ function Canvas() {
       imageSize3 = config.loader.textures.big.size;
     }
 
-    PIXI.settings.SCALE_MODE = 1;
-    PIXI.settings.SPRITE_MAX_TEXTURES = Math.min(
-      PIXI.settings.SPRITE_MAX_TEXTURES,
-      16
-    );
+    // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+    // PIXI.settings.SPRITE_MAX_TEXTURES = Math.min(
+    //   PIXI.settings.SPRITE_MAX_TEXTURES,
+    //   16
+    // );
 
     var renderOptions = {
-      resolution: 1,
-      antialiasing: false,
+      resolution: resolution,
+      antialiasing: true,
       width: width + margin.left + margin.right,
       height: height,
     };
@@ -216,34 +290,8 @@ function Canvas() {
     stage2.addChild(stage4);
     stage2.addChild(stage5);
 
-    _timeline.forEach(function (d) {
-      d.type = "timeline";
-    });
+    canvas.initGroupLayout();
 
-    var canvasDomain = d3
-      .nest()
-      .key(function (d) {
-        return d.year;
-      })
-      .entries(_data.concat(_timeline))
-      .sort(function (a, b) {
-        return a.key - b.key;
-      })
-      .map(function (d) {
-        return d.key;
-      });
-
-    timeDomain = canvasDomain.map(function (d) {
-      return {
-        key: d,
-        values: _timeline.filter(function (e) {
-          return d == e.year;
-        }),
-      };
-    });
-
-    timeline.init(timeDomain);
-    x.domain(canvasDomain);
     //canvas.makeScales();
 
     // add preview pics
@@ -262,26 +310,52 @@ function Canvas() {
       stage3.addChild(sprite);
     });
 
+    var lastClick = 0;
+
     vizContainer = d3
       .select(".viz")
       .call(zoom)
       .on("mousemove", mousemove)
       .on("dblclick.zoom", null)
+      .on("dblclick", null)
       .on("touchstart", function (d) {
         mousemove(d);
         touchstart = new Date() * 1;
       })
-      .on("touchend", function (d) {
-        var touchtime = new Date() * 1 - touchstart;
-        if (touchtime > 250) return;
-        if (selectedImageDistance > 15) return;
-        if (selectedImage && !selectedImage.id) return;
-        if (selectedImage && !selectedImage.active) return;
-        if (drag) return;
+      // .on("touchend", function (d, i, nodes, event) {
+      //   var touchtime = new Date() * 1 - touchstart;
+      //   if (touchtime < 20) {
+      //     console.log("touched", touchtime, d, i, nodes, event);
+      //     return;
+      //   }
+      // })
+      // .on("touchend", function (d) {
+      //   var touchtime = new Date() * 1 - touchstart;
+      //   if (touchtime > 250) {
+      //     console.log("longtouch", touchtime);
+      //     return;
+      //   }
+      //   if (selectedImageDistance > 15) return;
+      //   if (selectedImage && !selectedImage.id) return;
+      //   if (selectedImage && !selectedImage.active) return;
+      //   if (drag) return;
 
-        zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
-      })
+      //   console.log("touch zoom")
+
+      //   // if (Math.abs(zoomedToImageScale - scale) < 0.1) {
+      //   //   canvas.resetZoom();
+      //   // } else {
+      //   //   zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
+      //   // }
+
+      //   // zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
+      // })
       .on("click", function () {
+
+        var clicktime = new Date() * 1 - lastClick;
+        if (clicktime < 250) return;
+        lastClick = new Date() * 1;
+
         console.log("click");
         if (spriteClick) {
           spriteClick = false;
@@ -297,10 +371,19 @@ function Canvas() {
 
         if (Math.abs(zoomedToImageScale - scale) < 0.1) {
           canvas.resetZoom();
+          // console.log("reset zoom")
         } else {
+          // console.log("zoom to image", zoomedToImageScale, scale)
           zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
         }
       });
+
+    // disable right click
+    vizContainer.on("contextmenu", function () {
+      d3.event.preventDefault();
+    });
+
+
 
     //canvas.makeScales();
     //canvas.project();
@@ -381,10 +464,11 @@ function Canvas() {
   }
 
   function stackLayout(data, invert) {
+    var groupKey = state.mode.groupKey
     var years = d3
       .nest()
       .key(function (d) {
-        return d.year;
+        return d[groupKey];
       })
       .entries(data);
 
@@ -418,6 +502,70 @@ function Canvas() {
         d.order = (invert ? 1 : 1) * (total - i);
       });
     });
+
+  }
+
+  function stackYLayout(data, invert) {
+    if (data.length == 0) return
+    var groupKey = state.mode.groupKey
+    var years = d3
+      .nest()
+      .key(function (d) {
+        return d[groupKey];
+      })
+      .entries(data);
+
+    // y scale for state.mode.y (e.g. "kaufpreis")
+    var yExtent = d3.extent(data, function (d) { return +d[state.mode.y]; })
+    var yRange = [2 * (rangeBand / collumns), height * 0.7]
+
+    yExtent[0] = 0;
+
+    var yscale = d3.scale.linear()
+      .domain(yExtent)
+      .range(yRange);
+
+    // console.log("yscale", yscale.domain(), yscale.range())
+
+    years.forEach(function (year) {
+      var startX = x(year.key);
+
+      year.values.sort(function (a, b) {
+        return b[state.mode.y] - a[state.mode.y];
+      });
+
+      year.values.forEach(function (d, i) {
+        d.ii = i;
+
+        d.x = startX + (i % collumns) * (rangeBand / collumns);
+        d.y = (invert ? 1 : -1) * yscale(d[state.mode.y]);
+        //d.y = (invert ? 1 : -1) * (row * (rangeBand / collumns));
+
+        d.x1 = d.x * scale1 + imageSize / 2;
+        d.y1 = d.y * scale1 + imageSize / 2;
+
+        if (d.sprite.position.x == 0) {
+          d.sprite.position.x = d.x1;
+          d.sprite.position.y = d.y1;
+        }
+
+        if (d.sprite2) {
+          d.sprite2.position.x = d.x * scale2 + imageSize2 / 2;
+          d.sprite2.position.y = d.y * scale2 + imageSize2 / 2;
+        }
+
+        //d.order = (invert ? 1 : 1) * (total - i);
+      });
+    });
+
+    // data.filter(d => !d[state.mode.y]).forEach(function (d, i) {
+    //   d.x = 0;
+    //   d.y = 0;
+    //   d.active = false;
+    //   // d.sprite.visible = false;
+    //   // if (d.sprite2) d.sprite2.visible = false;
+    // })
+
   }
 
   canvas.distance = function (a, b) {
@@ -435,7 +583,7 @@ function Canvas() {
     return p2;
   }
 
-  var speed = 0.02;
+  var speed = 0.03;
 
   function imageAnimation() {
     var sleep = true;
@@ -480,9 +628,17 @@ function Canvas() {
     sleep = false;
   };
 
-  canvas.setMode = function (mode) {
-    state.mode = mode;
-    timeline.setDisabled(mode != "time");
+  canvas.setMode = function (layout) {
+    state.mode = layout;
+
+    if (layout.type == "group") {
+      canvas.initGroupLayout();
+    }
+    // if (layout.timeline) {
+    //   canvas.setCustomTimelineData()
+    // }
+
+    timeline.setDisabled(layout.type != "group" && !layout.timeline);
     canvas.makeScales();
     canvas.project();
   };
@@ -499,43 +655,47 @@ function Canvas() {
     renderer.render(stage);
   }
 
-  function zoomToYear(d) {
-    var xYear = x(d.year);
-    var scale = 1 / ((rangeBand * 4) / width);
-    var padding = rangeBand * 1.5;
-    var translateNow = [-scale * (xYear - padding), -scale * (height + d.y)];
+  // function zoomToYear(d) {
+  //   var xYear = x(d.year);
+  //   var scale = 1 / ((rangeBand * 4) / width);
+  //   var padding = rangeBand * 1.5;
+  //   var translateNow = [-scale * (xYear - padding), -scale * (height + d.y)];
 
-    vizContainer
-      .call(zoom.translate(translate).event)
-      .transition()
-      .duration(2000)
-      .call(zoom.scale(scale).translate(translateNow).event);
-  }
+  //   vizContainer
+  //     .call(zoom.translate(translate).event)
+  //     .transition()
+  //     .duration(2000)
+  //     .call(zoom.scale(scale).translate(translateNow).event);
+  // }
 
   function zoomToImage(d, duration) {
     state.zoomingToImage = true;
+    vizContainer.style("pointer-events", "none");
     zoom.center(null);
     loadMiddleImage(d);
     d3.select(".tagcloud").classed("hide", true);
-    /*
-    var padding = (state.mode == "time" ? 0.1 : 0.8) * rangeBandImage;
-    var sidbar = width / 8;
-    var scale =
-      (0.8 / (rangeBandImage / width)) * (state.mode == "time" ? 1 : 0.4);
-    console.log(d, padding);
-    //* (state.mode == "time" ? 1 : 0.5)
-    var translateNow = [
-      -scale * (d.x - padding),
-      -margin.bottom - scale * (height + d.y - padding),
-    ];
-    */
+    
+    // var padding = (state.mode.type === "group" ? 0.1 : 0.8) * rangeBandImage;
+    // var sidbar = width / 8;
+    // // var scale = d.sprite.width / rangeBandImage * collumns * 1.3;
+    // var scale = scale1 * 4;
+    // console.log(d, imgPadding, scale, scale1, padding, scale1, d.x, d.sprite.width);
+
+    // var translateNow = [
+    //   -scale * (d.x + margin.left / scale1 / 6 ),
+    //   -scale * (height + d.y + (margin.top / scale1 / 2)),
+    // ];
 
     var padding = rangeBandImage / 2;
-    var scale = 1 / (rangeBandImage / (width*0.8));
+    //var scale = 1 / (rangeBandImage / (width * 0.8));
+    var max = Math.max(width, height);
+    var scale = 1 / (rangeBandImage / (max * 0.6));
     var translateNow = [
-      -scale * (d.x - padding) - (width*0.8) / 2 + margin.left,
+      -scale * (d.x - padding) - (max * 0.3) / 2 + margin.left,
       -scale * (height + d.y + padding) - margin.top + height / 2,
     ];
+
+    // console.log(translateNow)
 
     zoomedToImageScale = scale;
 
@@ -555,29 +715,59 @@ function Canvas() {
         showDetail(d);
         loadBigImage(d, "click");
         state.zoomingToImage = false;
+        console.log("zoomedToImage", zoomedToImage);
+        vizContainer.style("pointer-events", "auto");
       });
   }
+  canvas.zoomToImage = zoomToImage;
 
   function showDetail(d) {
     // console.log("show detail", d)
+    // console.log(detailVue, detailVue._data.item)
 
     detailContainer.select(".outer").node().scrollTop = 0;
 
     detailContainer.classed("hide", false).classed("sneak", utils.isMobile());
 
     // needs to be done better
+    // for (field in selectedImage) {
+    //   if (field[0] === "_") detailData[field] = selectedImage[field];
+    // }
+
     var detailData = {};
-    for (field in selectedImage) {
-      if (field[0] === "_") detailData[field] = selectedImage[field];
-    }
+    // var activeFields = config.detail.structure
+    //   .filter(function (field, index) {
+    //     return selectedImage[field.source] && selectedImage[field.source] !== "";
+    //   })
+    // console.log("activeFields", activeFields)
+
+    config.detail.structure.forEach(function (field) {
+      var val = selectedImage[field.source];
+      if (val && val !== "") detailData[field.source] = val;
+      else detailData[field.source] = "0";
+      if (field.fields && field.fields.length) {
+        field.fields.forEach(function (subfield) {
+          var val = selectedImage[subfield];
+          // console.log("subfield", subfield, val)
+          if (val && val !== "") detailData[subfield] = val;
+        })
+      }
+      // detailData[field.source] = selectedImage[field.source];
+    })
+    // console.log("showDetail", detailData)
+
+    // detailVue._data.structure = activeFields;
+
     detailData["_id"] = selectedImage.id;
-    detailData["_keywords"] = selectedImage.keywords;
+    detailData["_keywords"] = selectedImage.keywords || "None";
     detailData["_year"] = selectedImage.year;
     detailData["_imagenum"] = selectedImage.imagenum || 1;
-    detailVue._data.item = detailData;
-    detailVue._data.id = d.id;
-    detailVue._data.page = d.page;
+    detailVue.id = d.id;
+    detailVue.page = d.page;
+    detailVue.item = detailData;
   }
+
+  canvas.showDetail = showDetail;
 
   canvas.changePage = function (id, page) {
     console.log("changePage", id, page, selectedImage);
@@ -602,6 +792,8 @@ function Canvas() {
       d.alpha2 = d.visible ? 1 : 0;
     });
   }
+
+  var zoomBarrierState = false;
 
   function zoomed() {
     translate = d3.event.translate;
@@ -651,13 +843,28 @@ function Canvas() {
     timeline.update(x1, x2, scale, translate, scale1);
 
     // toggle zoom overlays
-    if (scale > zoomBarrier) {
+    if (scale > zoomBarrier && !zoomBarrierState) {
+      zoomBarrierState = true;
       d3.select(".tagcloud").classed("hide", true);
+      //d3.select(".filter").classed("hide", true);
       d3.select(".searchbar").classed("hide", true);
       d3.select(".infobar").classed("sneak", true);
-    } else {
+      // d3.select(".filterReset").classed("hide", true);
+      //d3.select(".filterReset").text("Zur Übersicht")
+      // console.log("zoomBarrierState", zoomBarrierState)
+    }
+    if (scale < zoomBarrier && zoomBarrierState) {
+      zoomBarrierState = false;
       d3.select(".tagcloud").classed("hide", false);
+      //d3.select(".filter").classed("hide", false);
+      d3.select(".vorbesitzerinOuter").classed("hide", false);
+      // d3.select(".infobar").classed("sneak", false);
       d3.select(".searchbar").classed("hide", false);
+      //d3.select(".filterReset").text("Filter zurücksetzen")
+
+      // d3.select(".filterReset").classed("hide", false);
+      // console.log("zoomBarrierState", zoomBarrierState)
+
     }
 
     stage2.scale.x = d3.event.scale;
@@ -705,8 +912,9 @@ function Canvas() {
   // }
 
   canvas.project = function () {
+    ping();
     sleep = false;
-    var scaleFactor = state.mode == "time" ? 0.9 : tsneScale[state.mode] || 0.5;
+    var scaleFactor = state.mode.type == "group" ? 0.9 : tsneScale[state.mode.title] || 0.5;
     data.forEach(function (d) {
       d.scaleFactor = scaleFactor;
       d.sprite.scale.x = d.scaleFactor;
@@ -717,9 +925,9 @@ function Canvas() {
       }
     });
 
-    if (state.mode == "time") {
+    if (state.mode.type === "group") {
       canvas.split();
-      cursorCutoff = (1 / scale1) * imageSize * 0.48;
+      cursorCutoff = (1 / scale1) * imageSize * 1;
     } else {
       canvas.projectTSNE();
       cursorCutoff = (1 / scale1) * imageSize * 1;
@@ -729,7 +937,7 @@ function Canvas() {
 
     zoomedToImageScale =
       (0.8 / (x.rangeBand() / collumns / width)) *
-      (state.mode == "time" ? 1 : 0.5);
+      (state.mode.type === "group" ? 1 : 0.5);
   };
 
   canvas.projectTSNE = function () {
@@ -747,7 +955,7 @@ function Canvas() {
     var dimension = Math.min(width, height) * 0.8;
 
     inactive.forEach(function (d, i) {
-      var r = dimension / 1.9 + Math.random() * 40;
+      var r = dimension / 1.4 + Math.random() * 40;
       var a = -Math.PI / 2 + (i / inactiveSize) * 2 * Math.PI;
 
       d.x = r * Math.cos(a) + width / 2 + margin.left;
@@ -756,14 +964,17 @@ function Canvas() {
 
     active.forEach(function (d) {
       var factor = height / 2;
-      var tsneEntry = tsneIndex[state.mode][d.id];
+      var tsneEntry = tsneIndex[state.mode.title][d.id];
       if (tsneEntry) {
         d.x =
           tsneEntry[0] * dimension + width / 2 - dimension / 2 + margin.left;
-        d.y = tsneEntry[1] * dimension - dimension / 2 + marginBottom;
+        d.y = -1 * tsneEntry[1] * dimension;
       } else {
         // console.log("not found", d)
         d.alpha = 0;
+        d.x = 0;
+        d.y = 0;
+        d.active = false;
       }
       // var tsneEntry = tsne.find(function (t) {
       //     return t.id == d.id
@@ -789,34 +1000,43 @@ function Canvas() {
     //chart.resetZoom();
   };
 
-  canvas.resetZoom = function () {
-    var duration = 1400;
+  canvas.resetZoom = function (callback) {
+    console.log(scale)
+    var duration = scale > 1 ? 1000 : 0;
 
     extent = d3.extent(data, function (d) {
       return d.y;
     });
 
-    var y = -extent[1] - bottomPadding;
-    y = extent[1] / -3 - bottomPadding;
-    // this needs a major cleanup
-    y = Math.max(y, -bottomPadding);
+    // var y = -extent[1] - bottomPadding;
+    // y = extent[1] / -3 - bottomPadding;
+    // // this needs a major cleanup
+    // y = Math.max(y, -bottomPadding);
+    var y = -bottomPadding;
+
+    // console.log("resetZoom", y,extent)
 
     vizContainer
       .call(zoom.translate(translate).event)
       .transition()
       .duration(duration)
-      .call(zoom.translate([0, y]).scale(1).event);
+      .call(zoom.translate([0, y]).scale(1).event)
+      .each("end", function () {
+        if (callback && scale < zoomBarrier) callback();
+      })
   };
 
   canvas.split = function () {
+    var layout = state.mode.y ? stackYLayout : stackLayout;
     var active = data.filter(function (d) {
       return d.active;
     });
-    stackLayout(active, false);
+    layout(active, false);
     var inactive = data.filter(function (d) {
       return !d.active;
     });
-    stackLayout(inactive, true);
+    console.log("inactive", inactive);
+    layout(inactive, true);
     quadtree = Quadtree(data);
   };
 
@@ -845,6 +1065,8 @@ function Canvas() {
     var visible = data.filter(function (d) {
       return d.visible;
     });
+
+    console.log(visible)
 
     if (visible.length < 40) {
       data.forEach(function (d) {
