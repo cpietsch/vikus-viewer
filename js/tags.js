@@ -127,9 +127,13 @@ function Tags() {
         return d3.ascending(a.values.length, b.values.length);
       });
     } else if (Array.isArray(sortKeywords)) {
+      // compare keywords as lower case in case of mismatch
+      sortKeywords = sortKeywords.map(function (d) {
+			  return d.toLowerCase();
+      });
       keywordsNest = keywordsNest.sort(function(a,b){
-        var indexA = sortKeywords.indexOf(a.key);
-        var indexB = sortKeywords.indexOf(b.key);
+        var indexA = sortKeywords.indexOf(a.key.toLowerCase());
+        var indexB = sortKeywords.indexOf(b.key.toLowerCase());
         if (indexA === -1) return 1;
         if (indexB === -1) return -1;
         return indexA - indexB;
