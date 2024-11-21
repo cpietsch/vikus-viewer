@@ -1,0 +1,121 @@
+{
+  "project": {
+    "name": "Stadtmuseum",
+    "quality": 1
+},
+  "loader": {
+    "info": "data/info.md",
+    "items": "data/data.csv",
+    "textures": {
+      "preview": "data/sprites/menu_small_web.json",
+      "medium": {
+        "size": 200,
+        "url": "data/sprites/spritesheet.json"
+      },
+      "detail": {
+        "size": 1024,
+        "url": "data/1024/"
+      }
+    },
+    "layouts": [
+      {
+        "title": "Zeit",
+        "type": "group",
+        "groupKey": "year"
+      },
+      {
+        "title": "Color",
+        "type": "group",
+        "groupKey": "_Colors Color Name 1"
+      },
+      {
+        "title": "KI Emotions",
+        "type": "group",
+        "groupKey": "_KI Emotion",
+        "columns": 3
+      },
+      {
+        "title": "KI Style",
+        "type": "group",
+        "groupKey": "_KI Style Tag 1",
+        "columns": 3
+      }
+    ]
+  },
+  "style": {
+    "fontColor": "#2b2b2b",
+    "fontColorActive": "#ffffff",
+    "fontBackground": "#2b2b2b",
+    "textShadow": "none",
+    "canvasBackground": "#f8f9fa",
+    "timelineBackground": "#f8f9fa",
+    "timelineFontColor": "#000",
+    "backgroundHeader": "#035151",
+    "fontColorHeader": "#fffefa",
+    "detailBackground": "#f8f9fa",
+    "infoBackground": "#f8f9fa",
+    "infoFontColor": "#2b2b2b",
+    "searchbarBackground": "#353535"
+  },
+  "projection": {
+    "columns": 2
+  },
+  "detail": {
+    "structure": [
+      {
+        "name": "Titel",
+        "source": "_Titel",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Künstler:in",
+        "source": "_Künstler:in",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Inventarnummer",
+        "source": "_Inventarnummer",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Dateiname",
+        "source": "_id",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Datierung Von",
+        "source": "_Datierung Von",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Datierung Bis",
+        "source": "_Datierung Bis",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Techniken",
+        "source": "_Techniken",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Keywords",
+        "source": "_keywords",
+        "display": "column",
+        "type": "keywords"
+      },
+      {
+        "name": "Schlagworte von Museumsmitarbeiter:innen",
+        "source": "_keywords2",
+        "display": "column",
+        "type": "text"
+      }
+    ]
+  }
+}
