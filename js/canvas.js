@@ -749,7 +749,7 @@ function Canvas() {
     config.detail.structure.forEach(function (field) {
       var val = selectedImage[field.source];
       if (val && val !== "") detailData[field.source] = val;
-      else detailData[field.source] = "0";
+      else detailData[field.source] = "";
       if (field.fields && field.fields.length) {
         field.fields.forEach(function (subfield) {
           var val = selectedImage[subfield];
