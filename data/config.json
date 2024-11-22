@@ -19,7 +19,7 @@
     },
     "layouts": [
       {
-        "title": "Zeit",
+        "title": "Datierung",
         "type": "group",
         "groupKey": "year"
       },
