@@ -31,14 +31,12 @@
       {
         "title": "Emotionen",
         "type": "group",
-        "groupKey": "_KI Emotion",
-        "columns": 3
+        "groupKey": "_KI Emotion"
       },
       {
         "title": "Stil",
         "type": "group",
-        "groupKey": "_KI Style Tag 1",
-        "columns": 3
+        "groupKey": "_KI Style Tag 1"
       }
     ]
   },
