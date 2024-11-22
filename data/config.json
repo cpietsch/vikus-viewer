@@ -24,18 +24,18 @@
         "groupKey": "year"
       },
       {
-        "title": "Color",
+        "title": "Farbe",
         "type": "group",
         "groupKey": "_Colors Color Name 1"
       },
       {
-        "title": "KI Emotions",
+        "title": "Emotionen",
         "type": "group",
         "groupKey": "_KI Emotion",
         "columns": 3
       },
       {
-        "title": "KI Style",
+        "title": "Stil",
         "type": "group",
         "groupKey": "_KI Style Tag 1",
         "columns": 3
