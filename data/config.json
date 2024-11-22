@@ -79,12 +79,6 @@
         "type": "text"
       },
       {
-        "name": "Dateiname",
-        "source": "_id",
-        "display": "column",
-        "type": "text"
-      },
-      {
         "name": "Datierung Von",
         "source": "_Datierung Von",
         "display": "column",
@@ -97,22 +91,16 @@
         "type": "text"
       },
       {
-        "name": "Techniken",
+        "name": "Technik",
         "source": "_Techniken",
         "display": "column",
         "type": "text"
       },
       {
-        "name": "Keywords",
+        "name": "KI-Schlagworte",
         "source": "_keywords",
         "display": "column",
         "type": "keywords"
-      },
-      {
-        "name": "Schlagworte von Museumsmitarbeiter:innen",
-        "source": "_keywords2",
-        "display": "column",
-        "type": "text"
       }
     ]
   }
