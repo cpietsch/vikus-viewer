@@ -19,6 +19,19 @@ To use the VIKUS Viewer for a custom image collection, you need to prepare metad
 
 This is the configuration file that defines the project name, data URLs, columns, styles, and what is shown in the detail sidebar of your collection. The URLs don't have to be absolute, but it can be handy if your assets are not hosted on the same server.
 
+#### detail.structure
+
+The detail.structure defines the structure of the detail view. If there is no data for a field, it will not be displayed.
+
+You can use the following types in combination with the metadata fields from data.csv. defined in `source`:
+- `text`: renders simple text
+- `markdown`: renders markdown
+- `keywords`: renders an array
+- `function`: a custom function that can be defined in the `source` field. Example: "column._width + 'mm * ' + column._height + 'mm'"
+
+You can choose `display` to define the display of the field. Possible values are: `column` and `wide`.
+
+
 #### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.csv)
 
 The data.csv holds all the metadata information for each object in the collection. The following fields are mandatory: `id
