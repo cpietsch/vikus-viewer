@@ -45,7 +45,6 @@ if (Modernizr.webgl && !utils.isMobile()) {
 
 
 function init() {
-  tags = Tags();
   canvas = Canvas();
   search = Search();
   timeline = Timeline();
@@ -65,7 +64,12 @@ function init() {
         console.log(data);
 
         utils.clean(data, config.delimiter);
-
+        
+        if(config.filter && config.filter.type === "crossfilter") {
+          tags = Crossfilter();
+        } else {
+          tags = Tags();
+        }
         tags.init(data, config);
         search.init();
         canvas.init(data, timeline, config);

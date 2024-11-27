@@ -87,8 +87,8 @@ canvas {
     transform-origin: left bottom;
 }
 
-.sideLoader {//
-   box-shadow: 0 0px 56px rgba(0, 0, 0, 0.66), 0 0px 6px rgba(0, 0, 0, 0.23);
+.sideLoader {
+   /* box-shadow: 0 0px 56px rgba(0, 0, 0, 0.66), 0 0px 6px rgba(0, 0, 0, 0.23); */
    opacity: 1;
    color: #C1C1C1;
    z-index: 900;
@@ -103,7 +103,6 @@ canvas {
 }
 .sideLoader .indicator{
   background: rgba(0, 0, 0, 0.24);
-  // background: #C1C1C1;
   width: 100%;
   position: relative;
   transition: height 1s;
@@ -235,7 +234,7 @@ canvas {
 }
 
 .language-container div {
-    text-transform: uppercase;*/;
+    text-transform: uppercase;
     padding-left: 7px;
     float: left;
     padding-right: 6px;
@@ -602,7 +601,6 @@ svg {
   content: ' ';
   height: 100%;
   width: 3px;
-  // background-color: #000;
 }
 .close:before {
   transform: rotate(45deg);
@@ -950,3 +948,68 @@ textarea:focus, input:focus{
     outline: none;
 }
 
+
+
+
+
+.crossfilter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 1em;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9em;
+  width: 100%;
+  /* transition: opacity 0.2s; */
+}
+
+.crossfilter.hide {
+  display: none;
+  pointer-events:none !important;
+}
+
+
+.crossfilter>div {
+  margin: 0.5em;
+  display: flex;
+  flex-direction: column;
+}
+
+.crossfilter .label {
+  margin-bottom: 0.5em;
+  /* margin-left: 0.5em; */
+  cursor: pointer;
+}
+.crossfilter .label:hover::after {
+  content: '×';
+  margin-left: 0.5em;
+  line-height: 1;
+}
+
+.crossfilter .keys {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.crossfilter .keys .item {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  margin-right: 0.25em;
+  margin-bottom: 0.5em;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.crossfilter .keys .item.hide {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.crossfilter .keys .item:hover, .crossfilter .keys .item.active {
+  background: #e0e0e0;
+}

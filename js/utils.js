@@ -65,6 +65,11 @@ utils.initConfig = function (config) {
 	document.styleSheets[0].insertRule('.close::after { background-color: ' + config.style.fontColorActive + '}', length);
 	document.styleSheets[0].insertRule('.tag.active { color: ' + config.style.fontColorActive + '}', length);
 	document.styleSheets[0].insertRule('.tag.active { background: ' + config.style.fontBackground + '}', length);
+	document.styleSheets[0].insertRule('.crossfilter .keys .item.active { color: ' + config.style.fontColorActive + '}', length);
+	document.styleSheets[0].insertRule('.crossfilter .keys .item.active { background: ' + config.style.fontBackground + '}', length);
+	document.styleSheets[0].insertRule('.crossfilter .keys .item:hover { color: ' + config.style.fontColorActive + '}', length);
+	document.styleSheets[0].insertRule('.crossfilter .keys .item:hover { background: ' + config.style.fontBackground + '}', length);
+	document.styleSheets[0].insertRule('.crossfilter .keys .item { background: ' + config.style.textShadow + '}', length);
 	document.styleSheets[0].insertRule('.timeline .entry { background: ' + config.style.timelineBackground + '}', length);
 	document.styleSheets[0].insertRule('.timeline .entry { color: ' + config.style.timelineFontColor + '}', length);
 	document.styleSheets[0].insertRule('.timeline .year { color: ' + config.style.fontColor + '}', length);

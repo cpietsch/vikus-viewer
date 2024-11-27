@@ -850,7 +850,7 @@ function Canvas() {
     // toggle zoom overlays
     if (scale > zoomBarrier && !zoomBarrierState) {
       zoomBarrierState = true;
-      d3.select(".tagcloud").classed("hide", true);
+      d3.select(".tagcloud, .crossfilter").classed("hide", true);
       //d3.select(".filter").classed("hide", true);
       d3.select(".searchbar").classed("hide", true);
       d3.select(".infobar").classed("sneak", true);
@@ -860,7 +860,7 @@ function Canvas() {
     }
     if (scale < zoomBarrier && zoomBarrierState) {
       zoomBarrierState = false;
-      d3.select(".tagcloud").classed("hide", false);
+      d3.select(".tagcloud, .crossfilter").classed("hide", false);
       //d3.select(".filter").classed("hide", false);
       d3.select(".vorbesitzerinOuter").classed("hide", false);
       // d3.select(".infobar").classed("sneak", false);
