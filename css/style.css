@@ -1001,8 +1001,10 @@ textarea:focus, input:focus{
   padding-bottom: 0.25em;
   margin-right: 0.25em;
   margin-bottom: 0.5em;
-  background: #f0f0f0;
+  /* background: #f0f0f0; */
   cursor: pointer;
+  border-radius: 1em;
+  border: 1px solid #583700;
 }
 
 .crossfilter .keys .item.hide {
