@@ -1,45 +1,66 @@
-function Search() {
+// VIKUS Viewer Search Component
+// Author: Christopher Pietsch
+// Email: cpietsch@gmail.com
+// 2015-2018
 
-	var container = d3.select(".searchbar");
-	var state = {
-		open: false
-	}
-	
-	function search() { }
-
-	search.init = function(){
-		container.select(".openbutton")
-		  .on("click", function(){
-		    state.open = !state.open
-        container.classed("open", state.open)
-		    d3.select(".tagcloud").classed("open", state.open)
-        if(state.open){
-          container.select("input").node().focus()
-        } else {
-          tags.search("")
-          container.select("input").node().value = ""
-        }
-		  })
-
-    var debounced = _.debounce(function(value) {
-      tags.search(value.toUpperCase())
-    },300)
-
-    container.select("input")
-      .on("keyup", function(s){
-        var value = container.select("input").node().value
-        debounced(value)
-      })
-	}
-
-  search.reset = function (value) {
-    state.open = false
-    container
-      .classed("open", state.open)
-      .select("input").node().value = ""
-    d3.select(".tagcloud").classed("open", state.open)
-    tags.search("")
+class SearchComponent {
+  constructor() {
+    this.container = d3.select(".searchbar");
+    this.state = {
+      isOpen: false
+    };
+    this.searchDebounceDelay = 300;
   }
 
-	return search;
+  initialize() {
+    this.setupSearchToggle();
+    this.setupSearchInput();
+  }
+
+  setupSearchToggle() {
+    this.container.select(".openbutton")
+      .on("click", () => {
+        this.toggleSearch();
+      });
+  }
+
+  setupSearchInput() {
+    const debouncedSearch = _.debounce(searchTerm => {
+      tags.search(searchTerm.toUpperCase());
+    }, this.searchDebounceDelay);
+
+    this.container.select("input")
+      .on("keyup", () => {
+        const searchTerm = this.container.select("input").node().value;
+        debouncedSearch(searchTerm);
+      });
+  }
+
+  toggleSearch() {
+    this.state.isOpen = !this.state.isOpen;
+    this.container.classed("open", this.state.isOpen);
+    d3.select(".tagcloud").classed("open", this.state.isOpen);
+
+    if (this.state.isOpen) {
+      this.container.select("input").node().focus();
+    } else {
+      this.resetSearch();
+    }
+  }
+
+  resetSearch() {
+    this.state.isOpen = false;
+    this.container
+      .classed("open", false)
+      .select("input")
+      .node().value = "";
+    d3.select(".tagcloud").classed("open", false);
+    tags.search("");
+  }
+}
+
+// Initialize search functionality
+function initializeSearch() {
+  const searchComponent = new SearchComponent();
+  return searchComponent;
 }

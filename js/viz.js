@@ -1,208 +1,255 @@
-//                            ,--.
-//                ,---,   ,--/  /|               .--.--.
-//        ,---.,`--.' |,---,': / '         ,--, /  /    '.
-//       /__./||   :  ::   : '/ /        ,'_ /||  :  /`. /
-//  ,---.;  ; |:   |  '|   '   ,    .--. |  | :;  |  |--`
-// /___/ \  | ||   :  |'   |  /   ,'_ /| :  . ||  :  ;_
-// \   ;  \ ' |'   '  ;|   ;  ;   |  ' | |  . . \  \    `.
-//  \   \  \: ||   |  |:   '   \  |  | ' |  | |  `----.   \
-//   ;   \  ' .'   :  ;|   |    ' :  | | :  ' ;  __ \  \  |
-//    \   \   '|   |  ''   : |.  \|  ; ' |  | ' /  /`--'  /
-//     \   `  ;'   :  ||   | '_\.':  | : ;  ; |'--'.     /
-//      :   \ |;   |.' '   : |    '  :  `--'   \ `--'---'
-//       '---" '---'   ;   |,'    :  ,      .-./
-//                     '---'       `--`----'
-//                ,---,    ,---,.           .---.    ,---,.,-.----.
-//        ,---.,`--.' |  ,'  .' |          /. ./|  ,'  .' |\    /  \
-//       /__./||   :  :,---.'   |      .--'.  ' ;,---.'   |;   :    \
-//  ,---.;  ; |:   |  '|   |   .'     /__./ \ : ||   |   .'|   | .\ :
-// /___/ \  | ||   :  |:   :  |-, .--'.  '   \' .:   :  |-,.   : |: |
-// \   ;  \ ' |'   '  ;:   |  ;/|/___/ \ |    ' ':   |  ;/||   |  \ :
-//  \   \  \: ||   |  ||   :   .';   \  \;      :|   :   .'|   : .  /
-//   ;   \  ' .'   :  ;|   |  |-, \   ;  `      ||   |  |-,;   | |  \
-//    \   \   '|   |  ''   :  ;/|  .   \    .\  ;'   :  ;/||   | ;\  \
-//     \   `  ;'   :  ||   |    \   \   \   ' \ ||   |    \:   ' | \.'
-//      :   \ |;   |.' |   :   .'    :   '  |--" |   :   .':   : :-'
-//       '---" '---'   |   | ,'       \   \ ;    |   | ,'  |   |.'
-//                     `----'          '---"     `----'    `---'
-
-// christopher pietsch
-// @chrispiecom
+// VIKUS Viewer Main Visualization
+// Author: Christopher Pietsch
+// Email: cpietsch@gmail.com
 // 2015-2018
 
-utils.welcome();
+class VikusViewer {
+  constructor() {
+    this.data = null;
+    this.tags = null;
+    this.canvas = null;
+    this.search = null;
+    this.ping = null;
+    this.timeline = null;
+  }
 
-var data;
-var tags;
-var canvas;
-var search;
-var ping;
-var timeline;
-
-if (Modernizr.webgl && !utils.isMobile()) {
-  init();
-}
-
-
-function init() {
-  canvas = Canvas();
-  search = Search();
-  timeline = Timeline();
-  ping = utils.ping();
-
-  var baseUrl = utils.getDataBaseUrl();
-  var makeUrl = utils.makeUrl;
-
-  console.log(baseUrl);
-
-  d3.json(baseUrl.config || "data/config.json", function (config) {
-    config.baseUrl = baseUrl;
-    utils.initConfig(config);
-
-    Loader(makeUrl(baseUrl.path, config.loader.timeline)).finished(function (timeline) {
-      Loader(makeUrl(baseUrl.path, config.loader.items)).finished(function (data) {
-        console.log(data);
-
-        utils.clean(data, config.delimiter);
-        
-        if(config.filter && config.filter.type === "crossfilter") {
-          tags = Crossfilter();
-        } else {
-          tags = Tags();
-        }
-        tags.init(data, config);
-        search.init();
-        canvas.init(data, timeline, config);
-
-        if (config.loader.layouts) {
-          initLayouts(config);
-        } else {
-          canvas.setMode({
-            title: "Time",
-            type: "group",
-            groupKey: "year"
-          })
-        }
-
-        // setTimeout(function () {
-        //   var idx = 102
-        //   canvas.zoomToImage(data[idx], 100)
-        // }, 100);
-
-        LoaderSprites()
-          .progress(function (textures) {
-            // Create a lookup map for faster access
-            const dataMap = new Map(
-              data
-                .filter(d => d.sprite) // Ensure sprite exists
-                .map(d => [d.id, d])
-            );
-            
-            Object.keys(textures).forEach(id => {
-              const item = dataMap.get(id);
-              if (item) item.sprite.texture = textures[id];
-            });
-            canvas.wakeup();
-          })
-          //.finished() recalculate sizes
-          .load(makeUrl(baseUrl.path, config.loader.textures.medium.url));
-      });
-    });
-  });
-
-  d3.select(window)
-    .on("resize", function () {
-      if (canvas !== undefined && tags !== undefined) {
-        clearTimeout(window.resizedFinished);
-        window.resizedFinished = setTimeout(function () {
-          canvas.resize();
-          tags.resize();
-        }, 250);
-      }
-    })
-    .on("keydown", function (e) {
-      if (d3.event.keyCode != 27) return;
-      search.reset();
-      tags.reset();
-      canvas.split();
-    });
-
-  d3.select(".filterReset").on("click", function () {
-    canvas.resetZoom(function () {
-      tags.reset();
-      //canvas.split();
-    })
-  });
-  d3.select(".filterReset").on("dblclick", function () {
-    console.log("dblclick");
-    location.reload();
-  });
-
-  d3.select(".slidebutton").on("click", function () {
-    var s = !d3.select(".sidebar").classed("sneak");
-    d3.select(".sidebar").classed("sneak", s);
-  });
-
-  d3.select(".infobutton").on("click", function () {
-    var s = !d3.select(".infobar").classed("sneak");
-    d3.select(".infobar").classed("sneak", s);
-  });
-
-  // d3.selectAll(".navi .button").on("click", function () {
-  //   var that = this;
-  //   var mode = d3.select(this).attr("data");
-  //   canvas.setMode(mode);
-  //   timeline.setDisabled(mode != "time");
-
-  //   d3.selectAll(".navi .button").classed("active", function () {
-  //     return that === this;
-  //   });
-  // });
-
-  function initLayouts(config) {
-    d3.select(".navi").classed("hide", false);
-
-    //console.log(config.loader.layouts);
-    config.loader.layouts.forEach((d, i) => {
-      // d.title = d.title.toLowerCase();
-      // legacy fix for time scales
-      if (!d.type && !d.url) {
-        d.type = "group"
-        d.groupKey = "year"
-      }
-      if (d.type === "group" && i == 0) {
-        canvas.setMode(d);
-      } else if (d.url) {
-        d3.csv(utils.makeUrl(baseUrl.path, d.url), function (tsne) {
-          canvas.addTsneData(d.title, tsne, d.scale);
-          if (i == 0) canvas.setMode(d);
-        });
-      }
-    });
-
-    if (config.loader.layouts.length == 1) {
-      d3.select(".navi").classed("hide", true);
+  initialize() {
+    if (!this.checkBrowserCompatibility()) {
+      return;
     }
 
-    var s = d3.select(".navi").selectAll(".button").data(config.loader.layouts);
-    s.enter()
+    utils.displayWelcomeMessage();
+    this.initializeComponents();
+    this.loadConfiguration();
+  }
+
+  checkBrowserCompatibility() {
+    return Modernizr.webgl && !utils.isMobile();
+  }
+
+  initializeComponents() {
+    this.canvas = Canvas();
+    this.search = Search();
+    this.timeline = Timeline();
+    this.ping = utils.createExhibitionPing();
+  }
+
+  loadConfiguration() {
+    const baseUrl = utils.getDataBaseUrl();
+    const configUrl = baseUrl.config || "data/config.json";
+
+    d3.json(configUrl, config => {
+      config.baseUrl = baseUrl;
+      this.initializeVisualization(config);
+    });
+  }
+
+  initializeVisualization(config) {
+    utils.initializeConfig(config);
+    this.loadTimelineData(config)
+      .then(timelineData => this.loadItemData(config, timelineData))
+      .then(() => this.loadTextures(config));
+  }
+
+  loadTimelineData(config) {
+    return new Promise(resolve => {
+      const timelineUrl = utils.makeUrl(config.baseUrl.path, config.loader.timeline);
+      new ResourceLoader(timelineUrl).setCompletionCallback(resolve);
+    });
+  }
+
+  loadItemData(config, timelineData) {
+    return new Promise(resolve => {
+      const itemsUrl = utils.makeUrl(config.baseUrl.path, config.loader.items);
+      new ResourceLoader(itemsUrl)
+        .setCompletionCallback(data => {
+          this.initializeDataAndComponents(data, timelineData, config);
+          resolve();
+        });
+    });
+  }
+
+  initializeDataAndComponents(data, timelineData, config) {
+    console.log("Loaded item data:", data);
+    utils.cleanData(data, config.delimiter);
+    
+    this.initializeTags(data, config);
+    this.search.initialize();
+    this.canvas.init(data, timelineData, config);
+
+    if (config.loader.layouts) {
+      this.initializeLayouts(config);
+    } else {
+      this.setDefaultMode();
+    }
+  }
+
+  initializeTags(data, config) {
+    this.tags = config.filter && config.filter.type === "crossfilter" 
+      ? Crossfilter()
+      : Tags();
+    this.tags.init(data, config);
+  }
+
+  setDefaultMode() {
+    this.canvas.setMode({
+      title: "Time",
+      type: "group",
+      groupKey: "year"
+    });
+  }
+
+  loadTextures(config) {
+    const textureUrl = utils.makeUrl(
+      config.baseUrl.path, 
+      config.loader.textures.medium.url
+    );
+
+    new SpriteLoader()
+      .setProgressCallback(textures => this.updateTextures(textures))
+      .loadSprites(textureUrl);
+  }
+
+  updateTextures(textures) {
+    // Create a lookup map for faster access
+    const dataMap = new Map(
+      this.data
+        .filter(d => d.sprite)
+        .map(d => [d.id, d])
+    );
+    
+    Object.keys(textures).forEach(id => {
+      const item = dataMap.get(id);
+      if (item) {
+        item.sprite.texture = textures[id];
+      }
+    });
+
+    this.canvas.wakeup();
+  }
+
+  initializeLayouts(config) {
+    const { path } = config.baseUrl;
+    d3.select(".navi").classed("hide", false);
+
+    config.loader.layouts.forEach((layout, index) => {
+      this.processLayout(layout, index, path);
+    });
+
+    this.setupLayoutNavigation(config);
+  }
+
+  processLayout(layout, index, basePath) {
+    // Handle legacy time scales
+    if (!layout.type && !layout.url) {
+      layout.type = "group";
+      layout.groupKey = "year";
+    }
+
+    if (layout.type === "group" && index === 0) {
+      this.canvas.setMode(layout);
+    } else if (layout.url) {
+      this.loadLayoutData(layout, basePath);
+    }
+  }
+
+  loadLayoutData(layout, basePath) {
+    d3.csv(utils.makeUrl(basePath, layout.url), tsneData => {
+      this.canvas.addTsneData(layout.title, tsneData, layout.scale);
+      if (index === 0) {
+        this.canvas.setMode(layout);
+      }
+    });
+  }
+
+  setupLayoutNavigation(config) {
+    if (config.loader.layouts.length === 1) {
+      d3.select(".navi").classed("hide", true);
+      return;
+    }
+
+    const navigationButtons = d3.select(".navi")
+      .selectAll(".button")
+      .data(config.loader.layouts);
+
+    navigationButtons.enter()
       .append("div")
       .classed("button", true)
-      .classed("space", (d) => d.space)
-      .text((d) => d.title);
+      .classed("space", d => d.space)
+      .text(d => d.title);
 
-    s.on("click", function (d) {
-      canvas.setMode(d);
-      d3.selectAll(".navi .button").classed(
-        "active",
-        (d) => d.title == canvas.getMode().title
-      );
+    navigationButtons.on("click", d => {
+      this.canvas.setMode(d);
+      this.updateActiveButton();
     });
+
+    this.updateActiveButton();
+  }
+
+  updateActiveButton() {
     d3.selectAll(".navi .button").classed(
       "active",
-      (d) => d.title == config.loader.layouts[0].title
+      d => d.title === this.canvas.getMode().title
     );
   }
 }
 
+// Initialize event listeners
+function initializeEventListeners() {
+  // Window resize handler
+  d3.select(window).on("resize", () => {
+    if (canvas && tags) {
+      clearTimeout(window.resizedFinished);
+      window.resizedFinished = setTimeout(() => {
+        canvas.resize();
+        tags.resize();
+      }, 250);
+    }
+  });
+
+  // Keyboard handler
+  d3.select(window).on("keydown", () => {
+    if (d3.event.keyCode !== 27) return; // ESC key
+    search.reset();
+    tags.reset();
+    canvas.split();
+  });
+
+  // Filter reset button handlers
+  d3.select(".filterReset")
+    .on("click", () => {
+      canvas.resetZoom(() => {
+        tags.reset();
+      });
+    })
+    .on("dblclick", () => {
+      console.log("Reloading page...");
+      location.reload();
+    });
+
+  // Sidebar toggle handlers
+  d3.select(".slidebutton").on("click", () => {
+    const sidebar = d3.select(".sidebar");
+    sidebar.classed("sneak", !sidebar.classed("sneak"));
+  });
+
+  d3.select(".infobutton").on("click", () => {
+    const infobar = d3.select(".infobar");
+    infobar.classed("sneak", !infobar.classed("sneak"));
+  });
+}
+
+// Initialize the visualization
+function init() {
+  const viewer = new VikusViewer();
+  viewer.initialize();
+  initializeEventListeners();
+}
+
+// Show browser compatibility message if needed
 d3.select(".browserInfo").classed("show", utils.isMobile());
+
+// Start the application if browser is compatible
+if (Modernizr.webgl && !utils.isMobile()) {
+  init();
+}
