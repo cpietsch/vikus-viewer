@@ -109,3 +109,4 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 - [Africa Art Archive Viewer](https://africa-art-archive.ch/archive-viewer)
 - [NGA Recent Aquisitions](https://bzweig633.github.io/vikus-nga/)
 - [Die Sammlung Emil Bührle](https://cpietsch.github.io/kunsthaus-viewer/)
+- [Veros geheime Bibliothek](https://veronika-szuecs.com/vis/)
