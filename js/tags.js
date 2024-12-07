@@ -16,7 +16,7 @@ function Crossfilter() {
   var lock = false;
   var data;
   var sortArrays = {
-    // verkaufland: ["CH", "FR", "USA", "Raubkunst"],
+    // columnName: ["first", "second", "third"],
   }
   var search = ""
   var searchedData = []
@@ -44,6 +44,10 @@ function Crossfilter() {
       acc[cur] = [];
       return acc;
     }, {});
+
+    if(config.sortArrays) {
+      sortArrays = config.sortArrays;
+    }
 
     container = d3.select(".page").append("div").classed("crossfilter", true)
 
