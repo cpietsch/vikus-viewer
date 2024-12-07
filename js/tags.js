@@ -19,6 +19,7 @@ function Crossfilter() {
     // verkaufland: ["CH", "FR", "USA", "Raubkunst"],
   }
   var search = ""
+  var searchedData = []
 
   function addOrRemove(array, value) {
     array = array.slice();
@@ -32,6 +33,22 @@ function Crossfilter() {
   }
 
   function tags() { }
+
+  tags.init = function (_data, config) {
+    // console.log("init tags", _data, config)
+    data = _data;
+    searchedData = _data;
+
+    options = config.filter;
+    filter = options.dimensions.map(d => d.source).reduce((acc, cur) => {
+      acc[cur] = [];
+      return acc;
+    }, {});
+
+    container = d3.select(".page").append("div").classed("crossfilter", true)
+
+    tags.update()
+  }
 
   tags.updateDom = function updateDom(key, filteredData) {
 
@@ -108,7 +125,7 @@ function Crossfilter() {
         lock = false;
       })
       // .filter(function (d) {
-      //   return key === "vorbesitzerin"
+      //   return key === "scale"
       // })
       // .style("font-size", function (d) {
       //   return fontsize(d.size) + "px";
@@ -119,7 +136,7 @@ function Crossfilter() {
       .classed("active", false)
       .classed("hide", true)
       // .filter(function (d) {
-      //   return key === "vorbesitzerin"
+      //   return key === "scale"
       // })
       // .remove()
       // .style("font-size", function (d) {
@@ -133,7 +150,7 @@ function Crossfilter() {
       })
       .classed("hide", false)
       // .filter(function (d) {
-      //   return key === "vorbesitzerin"
+      //   return key === "scale"
       // })
       // .style("font-size", function (d) {
       //   return fontsize(d.size) + "px";
@@ -147,19 +164,19 @@ function Crossfilter() {
 
   }
 
-  tags.updateFilters = function updateFilters() {
+  tags.update = function update() {
 
     var filters = Object.entries(filter) //.filter(function (d) { return d[1].length; })
 
-    console.log("updateFilters", filters)
+    console.log("update", filters)
 
     for (var a = 0; a < filters.length; a++) {
       var filterCur = filters[a];
       var index = {}
       var otherFilter = filters.filter(function (d) { return d != filterCur; })
       // console.log(filter, "otherFilter", otherFilter)
-      for (var i = 0; i < data.length; i++) {
-        var d = data[i];
+      for (var i = 0; i < searchedData.length; i++) {
+        var d = searchedData[i];
         var hit = otherFilter.filter(function (otherFilter) {
           return otherFilter[1].length === 0 || otherFilter[1].indexOf(d[otherFilter[0]]) > -1;
         })
@@ -173,32 +190,11 @@ function Crossfilter() {
         .sort(function (a, b) { return b.size - a.size; })
         .filter(function (d) { return d.key != "" && d.key != "undefined"; });
 
-      // console.log("done", filterCur[0], filteredData)
+      console.log("done", filterCur[0], filteredData)
 
       tags.updateDom(filterCur[0], filteredData)
 
     }
-  }
-
-
-  tags.init = function (_data, config) {
-    // console.log("init tags", _data, config)
-    data = _data;
-
-    options = config.filter;
-    filter = options.dimensions.map(d => d.source).reduce((acc, cur) => {
-      acc[cur] = [];
-      return acc;
-    }, {});
-
-    container = d3.select(".page").append("div").classed("crossfilter", true)
-
-    tags.updateFilters()
-  }
-
-
-  tags.update = function () {
-    tags.updateFilters();
   }
 
   tags.reset = function () {
@@ -215,12 +211,19 @@ function Crossfilter() {
 
     d3.select(".infobar").classed("sneak", true);
 
+    searchedData = []
+
     var filters = Object.entries(highlight || filter).filter(function (d) { return d[1].length; })
     // console.log(filters)
     data.forEach(function (d) {
+      var searched = search !== "" ? d.search.indexOf(search) > -1 : true
       var active = filters.filter(function (f) {
         return f[1].indexOf(d[f[0]]) > -1;
-      }).length == filters.length;
+      }).length == filters.length && searched;
+
+      if (active) {
+        searchedData.push(d)
+      }
 
       if (highlight) {
         d.highlight = active;
@@ -236,10 +239,8 @@ function Crossfilter() {
 
     search = query
     
-    // tags.filter(filterWords, true);
-    // tags.update();
-    // canvas.highlight();
-    // canvas.project()
+    tags.filter();
+    tags.update();
   }
 
 
