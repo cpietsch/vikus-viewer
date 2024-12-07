@@ -118,7 +118,7 @@ function Crossfilter() {
         var tempFilter = JSON.parse(JSON.stringify(filter));
         tempFilter[key] = addOrRemove(tempFilter[key], d.key);
         tags.filter(tempFilter);
-        tags.update();
+        tags.update(tempFilter);
         lock = false;
       })
       .on("mouseleave", function (d) {
@@ -168,16 +168,20 @@ function Crossfilter() {
 
   }
 
-  tags.update = function update() {
+  tags.update = function update(tempFilter) {
 
-    var filters = Object.entries(filter) //.filter(function (d) { return d[1].length; })
+    var filters = Object.entries(tempFilter || filter) //.filter(function (d) { return d[1].length; })
+
+    // if (key) {
+    //   filters = filters.filter(function (d) { return d[0] != key; })
+    // }
 
     console.log("update", filters)
 
     for (var a = 0; a < filters.length; a++) {
       var filterCur = filters[a];
       var index = {}
-      var otherFilter = filters.filter(function (d) { return d != filterCur; })
+      var otherFilter = filters.filter(function (d) { return d !== filterCur; })
       // console.log(filter, "otherFilter", otherFilter)
       for (var i = 0; i < searchedData.length; i++) {
         var d = searchedData[i];
@@ -225,7 +229,7 @@ function Crossfilter() {
         return f[1].indexOf(d[f[0]]) > -1;
       }).length == filters.length && searched;
 
-      if (active) {
+      if (searched) {
         searchedData.push(d)
       }
 
