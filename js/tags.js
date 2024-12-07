@@ -18,6 +18,7 @@ function Crossfilter() {
   var sortArrays = {
     // verkaufland: ["CH", "FR", "USA", "Raubkunst"],
   }
+  var search = ""
 
   function addOrRemove(array, value) {
     array = array.slice();
@@ -85,6 +86,23 @@ function Crossfilter() {
       .on("click", function (d) {
         lock = true;
         filter[key] = addOrRemove(filter[key], d.key);
+        tags.filter();
+        tags.update();
+        lock = false;
+      })
+      .on("mouseenter", function (d) {
+        if (lock) return;
+        lock = true;
+        // make a deep copy of the filter object
+        var tempFilter = JSON.parse(JSON.stringify(filter));
+        tempFilter[key] = addOrRemove(tempFilter[key], d.key);
+        tags.filter(tempFilter);
+        tags.update();
+        lock = false;
+      })
+      .on("mouseleave", function (d) {
+        if (lock) return;
+        lock = true;
         tags.filter();
         tags.update();
         lock = false;
@@ -214,7 +232,15 @@ function Crossfilter() {
     if (!highlight) canvas.project();
   }
 
-  tags.search = function () { }
+  tags.search = function (query) {
+
+    search = query
+    
+    // tags.filter(filterWords, true);
+    // tags.update();
+    // canvas.highlight();
+    // canvas.project()
+  }
 
 
   return tags;
