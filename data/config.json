@@ -1,0 +1,97 @@
+{
+  "project": {
+    "name": "test",
+    "quality": 1
+  },
+  "loader": {
+    "info": "data/info.md",
+    "items": "data/data.csv",
+    "textures": {
+      "medium": {
+        "size": 200,
+        "url": "data/sprites/spritesheet.json"
+      },
+      "detail": {
+        "size": 1024,
+        "url": "data/1024/"
+      }
+    },
+    "layouts": [
+      {
+        "title": "Datierung",
+        "type": "group",
+        "groupKey": "year"
+      }
+    ]
+  },
+  "style": {
+    "fontColor": "#2b2b2b",
+    "fontColorActive": "#ffffff",
+    "fontBackground": "#2b2b2b",
+    "textShadow": "none",
+    "canvasBackground": "#f8f9fa",
+    "timelineBackground": "#f8f9fa",
+    "timelineFontColor": "#000",
+    "backgroundHeader": "#035151",
+    "fontColorHeader": "#fffefa",
+    "detailBackground": "#f8f9fa",
+    "infoBackground": "#f8f9fa",
+    "infoFontColor": "#2b2b2b",
+    "searchbarBackground": "#353535"
+  },
+  "projection": {
+    "columns": 2
+  },
+  "detail": {
+    "structure": [
+      {
+        "name": "Titel",
+        "source": "_Titel",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Künstler:in",
+        "source": "_Künstler:in",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Inventarnummer",
+        "source": "_Inventarnummer",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Datierung Von",
+        "source": "_Datierung Von",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Datierung Bis",
+        "source": "_Datierung Bis",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Technik",
+        "source": "_Techniken",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "KI-Schlagworte",
+        "source": "_keywords",
+        "display": "column",
+        "type": "keywords"
+      },
+      {
+        "name": "Lizenz",
+        "source": "'<a href=https://creativecommons.org/publicdomain/mark/1.0/>Public Domain</a>'",
+        "display": "column",
+        "type": "function"
+      }
+    ]
+  }
+}
