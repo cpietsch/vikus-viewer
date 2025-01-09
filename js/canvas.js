@@ -888,6 +888,7 @@ function Canvas() {
   }
 
   function zoomend(d) {
+    console.log("zoom end d3.event", d3.event)
     drag = startTranslate && translate !== startTranslate;
     zooming = false;
     filterVisible();
@@ -900,6 +901,39 @@ function Canvas() {
       !state.zoomingToImage
     ) {
       loadBigImage(selectedImage, "zoom");
+    }
+
+    translate = translate.map(d => parseInt(d))
+    console.log("zoom end",translate, scale)
+    // update location hash to reflect the translate and scale
+    // window.location.hash = `#translate=${translate[0]},${translate[1]}&scale=${scale}`
+    window.location.replace(`#translate=${translate[0]},${translate[1]}&scale=${scale}`)
+    // push to history
+    // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
+
+  }
+
+  window.onhashchange = function () {
+    var hash = window.location.hash;
+    if (hash.indexOf("translate") > -1) {
+      var parts = hash.split("&");
+      var htranslate = parts[0].split("=")[1].split(",").map(d => parseInt(d));
+      var hscale = parseFloat(parts[1].split("=")[1])
+      console.log("hashchange", translate,htranslate, scale, hscale)
+
+      if(htranslate[0] != translate[0] || htranslate[1] != translate[1] || Math.abs(hscale - scale) > 0.2){
+        console.log("animate")
+        vizContainer
+        .call(zoom.translate(translate).event)
+        .transition()
+        .duration(1000)
+        .call(zoom.scale(hscale).translate(htranslate).event)
+        // vizContainer
+        //   .call(zoom.translate(htranslate).event)
+        //   .transition()
+        //   .duration(1000)
+        //   .call(zoom.scale(hscale).event)
+      }
     }
   }
 
