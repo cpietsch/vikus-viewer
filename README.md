@@ -110,4 +110,3 @@ Copyright (C) 2017-2021 Christopher Pietsch, and contributors
 - [NGA Recent Aquisitions](https://bzweig633.github.io/vikus-nga/)
 - [Die Sammlung Emil Bührle](https://cpietsch.github.io/kunsthaus-viewer/)
 - [Veros geheime Bibliothek](https://veronika-szuecs.com/vis/)
-- [Die Sammlung Emil Bührle](https://cpietsch.github.io/kunsthaus-viewer/)
