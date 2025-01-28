@@ -144,6 +144,7 @@ function Canvas() {
     renderer.resize(width + margin.left + margin.right, height);
     canvas.makeScales();
     canvas.project();
+    canvas.resetZoom();
   };
 
   canvas.makeScales = function () {
@@ -646,6 +647,7 @@ function Canvas() {
     timeline.setDisabled(layout.type != "group" && !layout.timeline);
     canvas.makeScales();
     canvas.project();
+    canvas.resetZoom();
   };
 
   canvas.getMode = function () {
@@ -919,9 +921,14 @@ function Canvas() {
         var hash = window.location.hash.slice(1);
         var params = new URLSearchParams(hash);
 
-        // update hash
-        params.set("translate", translate)
-        params.set("scale", scale)
+        // if(scale < 1.1){
+        //   params.delete("translate")
+        //   params.delete("scale")
+        // } else {
+          // update hash
+          params.set("translate", translate)
+          params.set("scale", scale)
+        // }
         window.location.hash = params.toString().replaceAll("%2C", ",")
         
       }, debounceHashTime)
@@ -940,9 +947,11 @@ function Canvas() {
     if(hash === ""){
       console.log("reset")
       // reset
-      canvas.resetZoom();
-      search.reset();
-      tags.reset();
+      canvas.resetZoom(function () {
+        tags.reset();
+        search.reset();
+        //canvas.split();
+      })
       return
     }
 
@@ -1006,7 +1015,7 @@ function Canvas() {
       cursorCutoff = (1 / scale1) * imageSize * 1;
     }
 
-    canvas.resetZoom();
+    //canvas.resetZoom();
 
     zoomedToImageScale =
       (0.8 / (x.rangeBand() / columns / width)) *
@@ -1087,7 +1096,7 @@ function Canvas() {
     // y = Math.max(y, -bottomPadding);
     var y = -bottomPadding;
 
-    // console.log("resetZoom", y,extent)
+    console.log("resetZoom", translate)
 
     vizContainer
       .call(zoom.translate(translate).event)
