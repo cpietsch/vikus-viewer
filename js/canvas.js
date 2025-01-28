@@ -799,8 +799,10 @@ function Canvas() {
   }
 
   var zoomBarrierState = false;
+  var lastSourceEvent = null;
 
   function zoomed() {
+    lastSourceEvent = d3.event.sourceEvent;
     translate = d3.event.translate;
     scale = d3.event.scale;
     if (!startTranslate) startTranslate = translate;
@@ -887,8 +889,11 @@ function Canvas() {
     startScale = scale;
   }
 
-  function zoomend(d) {
-    console.log("zoom end d3.event", d3.event)
+  var debounceHash = null;
+  var debounceHashTime = 400;
+
+  function zoomend() {
+    // console.log("zoom end d3.event", d3.event, lastSourceEvent)
     drag = startTranslate && translate !== startTranslate;
     zooming = false;
     filterVisible();
@@ -904,35 +909,64 @@ function Canvas() {
     }
 
     translate = translate.map(d => parseInt(d))
-    console.log("zoom end",translate, scale)
-    // update location hash to reflect the translate and scale
-    // window.location.hash = `#translate=${translate[0]},${translate[1]}&scale=${scale}`
-    window.location.replace(`#translate=${translate[0]},${translate[1]}&scale=${scale}`)
-    // push to history
-    // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
+    scale = parseFloat(scale.toFixed(2))
 
+    if(lastSourceEvent){
+      if(debounceHash) clearTimeout(debounceHash)
+        debounceHash = setTimeout(function(){
+        console.log("pushstate")
+        // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
+        var hash = window.location.hash.slice(1);
+        var params = new URLSearchParams(hash);
+
+        // update hash
+        params.set("translate", translate)
+        params.set("scale", scale)
+        window.location.hash = params.toString().replaceAll("%2C", ",")
+        
+      }, debounceHashTime)
+    }
   }
 
-  window.onhashchange = function () {
-    var hash = window.location.hash;
-    if (hash.indexOf("translate") > -1) {
-      var parts = hash.split("&");
-      var htranslate = parts[0].split("=")[1].split(",").map(d => parseInt(d));
-      var hscale = parseFloat(parts[1].split("=")[1])
-      console.log("hashchange", translate,htranslate, scale, hscale)
 
-      if(htranslate[0] != translate[0] || htranslate[1] != translate[1] || Math.abs(hscale - scale) > 0.2){
-        console.log("animate")
+
+  window.onhashchange = function () {
+    var hash = window.location.hash.slice(1);
+    console.log("hashchange", hash)
+
+    var params = new URLSearchParams(hash);
+    console.log("searchParams", [...params.entries()])
+
+    if(hash === ""){
+      console.log("reset")
+      // reset
+      canvas.resetZoom();
+      search.reset();
+      tags.reset();
+      return
+    }
+
+    if(params.has("filter")){
+      var filter = params.get("filter").split(",")
+      // console.log("filter", filter)
+      tags.setFilterWords(filter)
+    } else {
+      tags.setFilterWords([])
+    }
+    
+    if (params.has("translate") && params.has("scale")) {
+      var _translate = params.get("translate").split(",").map(d => parseInt(d));
+      var _scale = parseFloat(params.get("scale"));
+
+      console.log("parsed", translate, _translate, scale, _scale)
+
+      if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
+        console.log("animate zoom")
         vizContainer
-        .call(zoom.translate(translate).event)
-        .transition()
-        .duration(1000)
-        .call(zoom.scale(hscale).translate(htranslate).event)
-        // vizContainer
-        //   .call(zoom.translate(htranslate).event)
-        //   .transition()
-        //   .duration(1000)
-        //   .call(zoom.scale(hscale).event)
+          .call(zoom.translate(translate).event)
+          .transition()
+          .duration(1000)
+          .call(zoom.scale(_scale).translate(_translate).event)
       }
     }
   }
@@ -1229,6 +1263,7 @@ function Canvas() {
   }
 
   function loadImages() {
+    return; // remove when finished
     if (zooming) return;
     if (zoomedToImage) return;
 
