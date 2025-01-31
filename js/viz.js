@@ -38,6 +38,7 @@ var canvas;
 var search;
 var ping;
 var timeline;
+var config;
 
 if (Modernizr.webgl && !utils.isMobile()) {
   init();
@@ -191,18 +192,42 @@ function init() {
       .classed("space", (d) => d.space)
       .text((d) => d.title);
 
-    s.on("click", function (d) {
-      canvas.setMode(d);
-      d3.selectAll(".navi .button").classed(
-        "active",
-        (d) => d.title == canvas.getMode().title
-      );
-    });
+    s.on("click", function (d) { utils.setMode(d.title) });
     d3.selectAll(".navi .button").classed(
       "active",
       (d) => d.title == config.loader.layouts[0].title
     );
   }
 }
+
+utils.setMode = function(title) {
+  var currentMode = canvas.getMode().title;
+  if(currentMode === title) return;
+  var layout = utils.config.loader.layouts.find((d) => d.title == title);
+  canvas.setMode(layout);
+  d3.selectAll(".navi .button").classed(
+    "active",
+    (d) => d.title == title
+  );
+  updateHash("mode", layout.title)
+}
+
+function updateHash(name, value){
+  console.log("updateHashtags", name, value);
+  var hash = window.location.hash.slice(1);
+  var params = new URLSearchParams(hash);
+
+  params.set(name, value);
+  // if value is am array and is empty remove the filter
+  if(typeof value === "object" && value.length === 0) params.delete(name);
+  if(typeof value === "string" && value === "") params.delete(name);
+  
+  var newHash = params.toString().replaceAll("%2C", ",")
+
+  if(newHash !== hash){
+    window.location.hash = params.toString().replaceAll("%2C", ",")
+  }
+}
+
 
 d3.select(".browserInfo").classed("show", utils.isMobile());

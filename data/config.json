@@ -21,6 +21,11 @@
         "title": "Datierung",
         "type": "group",
         "groupKey": "year"
+      },
+      {
+        "title": "Test",
+        "type": "group",
+        "groupKey": "Column"
       }
     ]
   },

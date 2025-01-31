@@ -962,6 +962,10 @@ function Canvas() {
     } else {
       tags.setFilterWords([])
     }
+
+    if(params.has("mode")){
+      utils.setMode(params.get("mode"))
+    }
     
     if (params.has("translate") && params.has("scale")) {
       var _translate = params.get("translate").split(",").map(d => parseInt(d));
@@ -1083,7 +1087,6 @@ function Canvas() {
   };
 
   canvas.resetZoom = function (callback) {
-    console.log(scale)
     var duration = scale > 1 ? 1000 : 0;
 
     extent = d3.extent(data, function (d) {
@@ -1117,7 +1120,6 @@ function Canvas() {
     var inactive = data.filter(function (d) {
       return !d.active;
     });
-    console.log("inactive", inactive);
     layout(inactive, true);
     quadtree = Quadtree(data);
   };

@@ -4,7 +4,7 @@
 // 2015-2018
 
 
-window.utils = {};
+window.utils = { config: {} };
 
 utils.getDataBaseUrl = function () {
 	var params = new URLSearchParams(window.location.search)
@@ -43,6 +43,8 @@ utils.welcome = function () {
 }
 
 utils.initConfig = function (config) {
+
+	this.config = config;
 
 	// load infosidebar info.md
 	d3.text(utils.makeUrl(config.baseUrl.path, config.loader.info), function (error, text) {
