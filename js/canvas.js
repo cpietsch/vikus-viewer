@@ -142,6 +142,7 @@ function Canvas() {
     height = window.innerHeight < minHeight ? minHeight : window.innerHeight;
     widthOuter = window.innerWidth;
     renderer.resize(width + margin.left + margin.right, height);
+    zoom.size([width, height]);
     canvas.makeScales();
     canvas.project();
     canvas.resetZoom();
