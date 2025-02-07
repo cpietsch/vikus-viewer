@@ -145,6 +145,7 @@ function Canvas() {
     canvas.makeScales();
     canvas.project();
     canvas.resetZoom();
+    console.log("dimensions", width, height)
   };
 
   canvas.makeScales = function () {
