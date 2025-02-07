@@ -769,7 +769,7 @@ svg {
   line-height: 100%;
   margin: 2px;
   float: left;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .detail .entry .content .keyword.active {
