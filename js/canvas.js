@@ -353,6 +353,12 @@ function Canvas() {
       // })
       .on("click", function () {
 
+        if (d3.event.shiftKey) {
+          console.log("shift click", selectedImage);
+          canvas.addBorderToImage(selectedImage);
+          return 
+        }
+
         var clicktime = new Date() * 1 - lastClick;
         if (clicktime < 250) return;
         lastClick = new Date() * 1;
@@ -394,6 +400,58 @@ function Canvas() {
     // showDetail(selectedImage)
     state.init = true;
   };
+
+  var imageBorders = new Map();
+
+  canvas.removeBorder = function (id) {
+    if (imageBorders.has(id)) {
+      stage3.removeChild(imageBorders.get(id));
+      imageBorders.delete(id);
+      sleep = false;
+    }
+  }
+
+  canvas.removeAllBorders = function () {
+    imageBorders.forEach(function (d) {
+      stage3.removeChild(d);
+    });
+    imageBorders.clear();
+    sleep = false;
+  }
+
+  canvas.addBorder = function (d) {
+    sleep = false;
+    var sprite = d.sprite;
+    var graphics = new PIXI.Graphics();
+    graphics.lineStyle(4, 0x0000ff, 1);
+    graphics.drawRect(
+      sprite.position.x - sprite.width / 2,
+      sprite.position.y - sprite.height / 2,
+      sprite.width,
+      sprite.height
+    );
+    stage3.addChild(graphics);
+    imageBorders.set(d.id, graphics);
+  }
+
+
+  canvas.addBorderToImage = function (d) {
+    sleep = false;
+    if (imageBorders.has(d.id)) {
+      stage3.removeChild(imageBorders.get(d.id));
+      imageBorders.delete(d.id);
+      updateHashBorders();
+      return;
+    }
+    canvas.addBorder(d);
+    updateHashBorders();
+  }
+
+  function updateHashBorders() {
+    if(!d3.event) return;
+    var borders = Array.from(imageBorders.keys());
+    utils.updateHash("borders", borders);
+  }
 
   canvas.addTsneData = function (name, d, scale) {
     tsneIndex[name] = {};
@@ -977,6 +1035,27 @@ function Canvas() {
       utils.setMode()
     }
 
+    if(params.has("borders")){
+      var borderIds = params.get("borders").split(",")
+      console.log("borders", borderIds)
+      // check if borderIds are in imageBorders
+      var enter = borderIds.filter(d => !imageBorders.has(d))
+      var exit = Array.from(imageBorders.keys()).filter(d => !borderIds.includes(d))
+
+      enter.forEach(function (id) {
+        var d = data.find(d => d.id == id)
+        canvas.addBorderToImage(d)
+      })
+
+      exit.forEach(function (id) {
+        canvas.removeBorder(id)
+      })
+    } else {
+      canvas.removeAllBorders()
+    }
+
+
+
     if(params.has("selected")){
       var id = params.get("selected")
       var d = data.find(d => d.id == id)
@@ -1012,9 +1091,9 @@ function Canvas() {
           .call(zoom.scale(_scale).translate(_translate).event)
       }
     } else {
-      if(scale > 1.1){
-        canvas.resetZoom();
-      }
+      // if(scale > 1.1){
+      //   canvas.resetZoom();
+      // }
     }
   }
 

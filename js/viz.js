@@ -88,9 +88,9 @@ function init() {
         window.onhashchange = function () {
           canvas.onhashchange();
         }
-        setTimeout(function () {
-          canvas.onhashchange();
-        }, 100);
+        // setTimeout(function () {
+        //   canvas.onhashchange();
+        // }, 100);
 
         // setTimeout(function () {
         //   var idx = 102
@@ -112,7 +112,9 @@ function init() {
             });
             canvas.wakeup();
           })
-          //.finished() recalculate sizes
+          .finished(function () {
+            canvas.onhashchange();
+          })
           .load(makeUrl(baseUrl.path, config.loader.textures.medium.url));
       });
     });
@@ -227,9 +229,9 @@ utils.setMode = function(title) {
 function updateHash(name, value, clear = undefined) {
   console.log("updateHashtags", name, value);
   var hash = window.location.hash.slice(1);
-  if(clear.length === 0) hash = "";
+  if(clear && clear.length === 0) hash = "";
   var params = new URLSearchParams(hash);
-  if(clear.length > 0) {
+  if(clear && clear.length > 0) {
     clear.forEach((d) => params.delete(d));
   }
 

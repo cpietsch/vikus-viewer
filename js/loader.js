@@ -60,6 +60,8 @@ function LoaderSprites() {
     loaded = 0,
     total = 0;
 
+  var finished = function () { };
+
   var container, indicator;
 
   container = d3.select(".detailLoader");
@@ -89,7 +91,17 @@ function LoaderSprites() {
     pixiloader.add(url).load(function (r) {
       container.selectAll("div").remove();
     });
+    pixiloader.on("complete", function (loader, resources) {
+      console.log("complete pixiloader", resources);
+      finished(resources);
+    });
   };
+
+  loader.finished = function (value) {
+    if (!arguments.length) return finished;
+    finished = value;
+    return loader;
+  }
 
   return loader;
 }
