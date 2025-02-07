@@ -215,8 +215,8 @@ function Canvas() {
           })
       };
     });
-    console.log("canvasDomain", canvasDomain);
-    console.log("timeDomain", timeDomain);
+    // console.log("canvasDomain", canvasDomain);
+    // console.log("timeDomain", timeDomain);
 
 
     timeline.init(timeDomain);
@@ -724,6 +724,7 @@ function Canvas() {
         state.zoomingToImage = false;
         console.log("zoomedToImage", zoomedToImage);
         vizContainer.style("pointer-events", "auto");
+        utils.updateHash("selected", d.id, ["translate","scale"]);
       });
   }
   canvas.zoomToImage = zoomToImage;
@@ -913,23 +914,29 @@ function Canvas() {
     translate = translate.map(d => parseInt(d))
     scale = parseFloat(scale.toFixed(2))
 
+    // console.log("##1", translate, scale, scale1)
+    // console.log("##2", translate.map(d => d / scale1), Math.log(scale) / Math.log(scale1))
+
     if(lastSourceEvent){
       if(debounceHash) clearTimeout(debounceHash)
         debounceHash = setTimeout(function(){
-        console.log("pushstate")
+        if(zooming) return
         // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
-        var hash = window.location.hash.slice(1);
-        var params = new URLSearchParams(hash);
+          var hash = window.location.hash.slice(1);
+          var params = new URLSearchParams(hash);
 
-        // if(scale < 1.1){
-        //   params.delete("translate")
-        //   params.delete("scale")
-        // } else {
-          // update hash
-          params.set("translate", translate)
-          params.set("scale", scale)
-        // }
-        window.location.hash = params.toString().replaceAll("%2C", ",")
+          // var _translate = translate.map(d => parseInt(d / scale1))
+          var _height = height - margin.top - margin.bottom
+          var _translate = [
+            parseInt(translate[0] / width * 1000 / scale1),
+            parseInt(translate[1] / height * 1000 / scale1)
+          ]
+          var _scale = (Math.log(scale) / Math.log(scale1)).toFixed(2)
+
+          params.set("translate", _translate)
+          params.set("scale", _scale)
+          params.delete("selected")
+          window.location.hash = params.toString().replaceAll("%2C", ",")
         
       }, debounceHashTime)
     }
@@ -937,7 +944,7 @@ function Canvas() {
 
 
 
-  window.onhashchange = function () {
+  canvas.onhashchange = function () {
     var hash = window.location.hash.slice(1);
     console.log("hashchange", hash)
 
@@ -949,6 +956,7 @@ function Canvas() {
       // reset
       canvas.resetZoom(function () {
         tags.reset();
+        utils.setMode()
         search.reset();
         //canvas.split();
       })
@@ -965,15 +973,37 @@ function Canvas() {
 
     if(params.has("mode")){
       utils.setMode(params.get("mode"))
+    } else {
+      utils.setMode()
+    }
+
+    if(params.has("selected")){
+      var id = params.get("selected")
+      var d = data.find(d => d.id == id)
+      if(d){
+        zoomToImage(d, 1000)
+      }
     }
     
     if (params.has("translate") && params.has("scale")) {
-      var _translate = params.get("translate").split(",").map(d => parseInt(d));
-      var _scale = parseFloat(params.get("scale"));
+      var _translate = params.get("translate").split(",")
+        // .map(d => parseInt(d * scale1));
+      var _height = height - margin.top - margin.bottom
+
+      _translate = [
+        parseInt(_translate[0] * width / 1000 * scale1),
+        parseInt(_translate[1] * height / 1000 * scale1)
+      ]
+      var _scale = Math.pow(scale1, +params.get("scale"));
 
       console.log("parsed", translate, _translate, scale, _scale)
 
-      if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
+      // if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
+      if(
+        Math.abs(_scale - scale) > 0.2 ||
+        Math.abs(_translate[0] - translate[0]) > 10 ||
+        Math.abs(_translate[1] - translate[1]) > 10
+      ) {
         console.log("animate zoom")
         vizContainer
           .call(zoom.translate(translate).event)

@@ -235,9 +235,10 @@ function Tags() {
       // .style("opacity", function(d){ return keywordsOpacityScale(d.values.length); })
 
 
-    e.transition()
-      .delay(400)
-      .duration(0)
+    e
+      // .transition()
+      // .delay(400)
+      // .duration(0)
       .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
       .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
       .style("opacity", 1)

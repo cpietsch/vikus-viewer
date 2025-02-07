@@ -85,6 +85,13 @@ function init() {
           })
         }
 
+        window.onhashchange = function () {
+          canvas.onhashchange();
+        }
+        setTimeout(function () {
+          canvas.onhashchange();
+        }, 100);
+
         // setTimeout(function () {
         //   var idx = 102
         //   canvas.zoomToImage(data[idx], 100)
@@ -201,7 +208,12 @@ function init() {
 }
 
 utils.setMode = function(title) {
+  console.log("setMode", title);
+  if(utils.config.loader.layouts === undefined) return;
   var currentMode = canvas.getMode().title;
+  if(title === undefined){
+    title = utils.config.loader.layouts[0].title;
+  }
   if(currentMode === title) return;
   var layout = utils.config.loader.layouts.find((d) => d.title == title);
   canvas.setMode(layout);
@@ -209,13 +221,17 @@ utils.setMode = function(title) {
     "active",
     (d) => d.title == title
   );
-  updateHash("mode", layout.title)
+  updateHash("mode", layout.title, []);
 }
 
-function updateHash(name, value){
+function updateHash(name, value, clear = undefined) {
   console.log("updateHashtags", name, value);
   var hash = window.location.hash.slice(1);
+  if(clear.length === 0) hash = "";
   var params = new URLSearchParams(hash);
+  if(clear.length > 0) {
+    clear.forEach((d) => params.delete(d));
+  }
 
   params.set(name, value);
   // if value is am array and is empty remove the filter
@@ -228,6 +244,8 @@ function updateHash(name, value){
     window.location.hash = params.toString().replaceAll("%2C", ",")
   }
 }
+
+utils.updateHash = updateHash;
 
 
 d3.select(".browserInfo").classed("show", utils.isMobile());
