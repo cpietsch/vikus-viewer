@@ -145,7 +145,7 @@ function init() {
   });
   d3.select(".filterReset").on("dblclick", function () {
     console.log("dblclick");
-    location.reload();
+    //location.reload();
   });
 
   d3.select(".slidebutton").on("click", function () {
@@ -223,7 +223,7 @@ utils.setMode = function(title) {
     "active",
     (d) => d.title == title
   );
-  updateHash("mode", layout.title, []);
+  updateHash("mode", layout.title, ["translate", "scale"]);
 }
 
 function updateHash(name, value, clear = undefined) {
@@ -244,6 +244,7 @@ function updateHash(name, value, clear = undefined) {
 
   if(newHash !== hash){
     window.location.hash = params.toString().replaceAll("%2C", ",")
+    // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
   }
 }
 

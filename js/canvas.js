@@ -995,6 +995,7 @@ function Canvas() {
           params.set("scale", _scale)
           params.delete("selected")
           window.location.hash = params.toString().replaceAll("%2C", ",")
+          // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
         
       }, debounceHashTime)
     }
