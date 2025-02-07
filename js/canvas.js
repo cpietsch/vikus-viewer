@@ -1011,6 +1011,10 @@ function Canvas() {
           .duration(1000)
           .call(zoom.scale(_scale).translate(_translate).event)
       }
+    } else {
+      if(scale > 1.1){
+        canvas.resetZoom();
+      }
     }
   }
 
