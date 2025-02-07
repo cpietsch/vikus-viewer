@@ -1036,20 +1036,22 @@ function Canvas() {
     }
 
     if(params.has("borders")){
-      var borderIds = params.get("borders").split(",")
-      console.log("borders", borderIds)
-      // check if borderIds are in imageBorders
-      var enter = borderIds.filter(d => !imageBorders.has(d))
-      var exit = Array.from(imageBorders.keys()).filter(d => !borderIds.includes(d))
+      setTimeout(function(){
+        var borderIds = params.get("borders").split(",")
+        console.log("borders", borderIds)
+        // check if borderIds are in imageBorders
+        var enter = borderIds.filter(d => !imageBorders.has(d))
+        var exit = Array.from(imageBorders.keys()).filter(d => !borderIds.includes(d))
 
-      enter.forEach(function (id) {
-        var d = data.find(d => d.id == id)
-        canvas.addBorderToImage(d)
-      })
+        enter.forEach(function (id) {
+          var d = data.find(d => d.id == id)
+          canvas.addBorderToImage(d)
+        })
 
-      exit.forEach(function (id) {
-        canvas.removeBorder(id)
-      })
+        exit.forEach(function (id) {
+          canvas.removeBorder(id)
+        })
+      }, params.has("filter") ? 2000 : 0)
     } else {
       canvas.removeAllBorders()
     }
