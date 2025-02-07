@@ -969,8 +969,8 @@ function Canvas() {
       loadBigImage(selectedImage, "zoom");
     }
 
-    translate = translate.map(d => parseInt(d))
-    scale = parseFloat(scale.toFixed(2))
+    // translate = translate.map(d => parseInt(d))
+    // scale = parseFloat(scale.toFixed(2))
 
     // console.log("##1", translate, scale, scale1)
     // console.log("##2", translate.map(d => d / scale1), Math.log(scale) / Math.log(scale1))
@@ -984,12 +984,11 @@ function Canvas() {
           var params = new URLSearchParams(hash);
 
           // var _translate = translate.map(d => parseInt(d / scale1))
-          var _height = height - margin.top - margin.bottom
           var _translate = [
-            parseInt(translate[0] / width * 1000 / scale1),
-            parseInt(translate[1] / height * 1000 / scale1)
+            parseInt((translate[0]/scale)/outerWidth*10000),
+            parseInt((translate[1]/scale)/height*10000)
           ]
-          var _scale = (Math.log(scale) / Math.log(scale1)).toFixed(2)
+          var _scale = scale / Math.log(outerWidth * height)
 
           params.set("translate", _translate)
           params.set("scale", _scale)
@@ -1070,11 +1069,12 @@ function Canvas() {
         // .map(d => parseInt(d * scale1));
       var _height = height - margin.top - margin.bottom
 
+      var _scale = (params.get("scale")) * Math.log(outerWidth * height)
       _translate = [
-        parseInt(_translate[0] * width / 1000 * scale1),
-        parseInt(_translate[1] * height / 1000 * scale1)
+        parseFloat(_translate[0]) / 10000 * outerWidth * _scale,
+        parseFloat(_translate[1]) / 10000 * height * _scale
       ]
-      var _scale = Math.pow(scale1, +params.get("scale"));
+      
 
       console.log("parsed", translate, _translate, scale, _scale)
 
