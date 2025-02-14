@@ -987,11 +987,14 @@ function Canvas() {
           var params = new URLSearchParams(hash);
 
           // var _translate = translate.map(d => parseInt(d / scale1))
+          // console.log("outerWidth", outerWidth)
+          // console.log("widthOuter", widthOuter)
+          
           var _translate = [
-            parseInt((translate[0]/scale)/outerWidth*10000),
+            parseInt((translate[0]/scale)/widthOuter*10000),
             parseInt((translate[1]/scale)/height*10000)
           ]
-          var _scale = scale / Math.log(outerWidth * height)
+          var _scale = scale / Math.log(widthOuter * height)
 
           params.set("translate", _translate)
           params.set("scale", _scale)
@@ -1074,9 +1077,9 @@ function Canvas() {
         // .map(d => parseInt(d * scale1));
       var _height = height - margin.top - margin.bottom
 
-      var _scale = (params.get("scale")) * Math.log(outerWidth * height)
+      var _scale = (params.get("scale")) * Math.log(widthOuter * height)
       _translate = [
-        parseFloat(_translate[0]) / 10000 * outerWidth * _scale,
+        parseFloat(_translate[0]) / 10000 * widthOuter * _scale,
         parseFloat(_translate[1]) / 10000 * height * _scale
       ]
       
