@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Iframe Test</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+        iframe {
+            width: 50%;
+            height: 100%;
+            border: none;
+        }
+        .links {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .links a {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="index.html" id="iframe"></iframe>
+    <div class="links">
+        <a href="index.html#">Initial</a>
+        <a href="index.html#mode=Test">Test Layout</a>
+        <a href="index.html#mode=Test&translate=0,-857&scale=0.071905843633175&filter=Gebäude,Zaun">Filters</a>
+        <a href="index.html#translate=-3842,-9074&scale=0.8246924442330598">Zoom</a>
+        <a href="index.html#mode=Datierung&translate=-2641,-9435&scale=1.4358729437462965">Zoom2</a>
+
+    </div>
+    <script>
+        const iframe = document.getElementById('iframe');
+        document.querySelectorAll('.links a').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                iframe.src = this.href;
+            });
+        });
+    </script>
+</body>
+</html>
