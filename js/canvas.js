@@ -994,7 +994,9 @@ function Canvas() {
 
           var _translate = [
             parseInt((translate[0]/scale)/window.innerWidth*10000),
-            parseInt((translate[1]/scale)/window.innerHeight*10000)
+            parseInt(
+              ((translate[1]/scale)-(window.innerHeight/2))/window.innerHeight*10000
+            )
           ]
           var _scale = scale / Math.log(window.innerWidth * window.innerHeight)
 
@@ -1081,7 +1083,7 @@ function Canvas() {
       var _scale = (params.get("scale")) * Math.log(window.innerWidth * window.innerHeight)
       _translate = [
         parseFloat(_translate[0]) / 10000 * window.innerWidth * _scale,
-        parseFloat(_translate[1]) / 10000 * window.innerHeight * _scale
+        _scale * (parseFloat(_translate[1]) / 10000 * window.innerHeight + window.innerHeight/2)
       ]
       
 
