@@ -426,7 +426,9 @@ function Canvas() {
     sleep = false;
     var sprite = d.sprite;
     var graphics = new PIXI.Graphics();
-    graphics.lineStyle(4, 0x0000ff, 1);
+    var borderColorHash = config.style?.selectionColor || "#ff0000";
+    var borderColor = parseInt(borderColorHash.substring(1), 16);
+    graphics.lineStyle(4, borderColor, 1);
     graphics.drawRect(
       sprite.position.x - sprite.width / 2,
       sprite.position.y - sprite.height / 2,
@@ -989,7 +991,7 @@ function Canvas() {
           // var _translate = translate.map(d => parseInt(d / scale1))
           // console.log("outerWidth", outerWidth)
           // console.log("widthOuter", widthOuter)
-          
+
           var _translate = [
             parseInt((translate[0]/scale)/widthOuter*10000),
             parseInt((translate[1]/scale)/height*10000)
