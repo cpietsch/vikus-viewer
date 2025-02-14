@@ -30,7 +30,7 @@
     ]
   },
   "style": {
-    "borderColor": "#2b2b2b",
+    "selectionColor": "#00FF00",
     "fontColor": "#2b2b2b",
     "fontColorActive": "#ffffff",
     "fontBackground": "#2b2b2b",
