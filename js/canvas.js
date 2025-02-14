@@ -993,10 +993,10 @@ function Canvas() {
           // console.log("widthOuter", widthOuter)
 
           var _translate = [
-            parseInt((translate[0]/scale)/widthOuter*10000),
-            parseInt((translate[1]/scale)/height*10000)
+            parseInt((translate[0]/scale)/window.innerWidth*10000),
+            parseInt((translate[1]/scale)/window.innerHeight*10000)
           ]
-          var _scale = scale / Math.log(widthOuter * height)
+          var _scale = scale / Math.log(window.innerWidth * window.innerHeight)
 
           params.set("translate", _translate)
           params.set("scale", _scale)
@@ -1077,12 +1077,11 @@ function Canvas() {
     if (params.has("translate") && params.has("scale")) {
       var _translate = params.get("translate").split(",")
         // .map(d => parseInt(d * scale1));
-      var _height = height - margin.top - margin.bottom
 
-      var _scale = (params.get("scale")) * Math.log(widthOuter * height)
+      var _scale = (params.get("scale")) * Math.log(window.innerWidth * window.innerHeight)
       _translate = [
-        parseFloat(_translate[0]) / 10000 * widthOuter * _scale,
-        parseFloat(_translate[1]) / 10000 * height * _scale
+        parseFloat(_translate[0]) / 10000 * window.innerWidth * _scale,
+        parseFloat(_translate[1]) / 10000 * window.innerHeight * _scale
       ]
       
 
