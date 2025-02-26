@@ -13,7 +13,7 @@ function Canvas() {
   var minHeight = 400;
   var width = window.innerWidth - margin.left - margin.right;
   var widthOuter = window.innerWidth;
-  var height = window.innerHeight < minHeight ? minHeight : window.innerHeight;
+  var height = window.innerHeight // < minHeight ? minHeight : window.innerHeight;
   console.log("height", height)
   console.log("width", width)
 
@@ -139,7 +139,7 @@ function Canvas() {
   canvas.resize = function () {
     if (!state.init) return;
     width = window.innerWidth - margin.left - margin.right;
-    height = window.innerHeight < minHeight ? minHeight : window.innerHeight;
+    height = window.innerHeight // < minHeight ? minHeight : window.innerHeight;
     widthOuter = window.innerWidth;
     renderer.resize(width + margin.left + margin.right, height);
     zoom.size([width, height]);
@@ -359,7 +359,7 @@ function Canvas() {
         if (d3.event.shiftKey) {
           console.log("shift click", selectedImage);
           canvas.addBorderToImage(selectedImage);
-          return 
+          return
         }
 
         var clicktime = new Date() * 1 - lastClick;
@@ -453,7 +453,7 @@ function Canvas() {
   }
 
   function updateHashBorders() {
-    if(!d3.event) return;
+    if (!d3.event) return;
     var borders = Array.from(imageBorders.keys());
     utils.updateHash("borders", borders);
   }
@@ -638,14 +638,6 @@ function Canvas() {
     );
   };
 
-  function toScreenPoint(p) {
-    var p2 = [0, 0];
-
-    p2[0] = p[0] / scale - translate[0] / scale;
-    p2[1] = p[1] / scale - height - translate[1] / scale;
-
-    return p2;
-  }
 
   var speed = 0.03;
 
@@ -697,7 +689,7 @@ function Canvas() {
 
     if (layout.type == "group") {
       canvas.initGroupLayout();
-      if(layout.columns){
+      if (layout.columns) {
         columns = layout.columns;
       } else {
         columns = config.projection.columns;
@@ -725,18 +717,20 @@ function Canvas() {
     renderer.render(stage);
   }
 
-  // function zoomToYear(d) {
-  //   var xYear = x(d.year);
-  //   var scale = 1 / ((rangeBand * 4) / width);
-  //   var padding = rangeBand * 1.5;
-  //   var translateNow = [-scale * (xYear - padding), -scale * (height + d.y)];
+  function zoomToYear(d) {
+    var xYear = x(d.year);
+    var scale = 1 / ((rangeBand * 4) / width);
+    var padding = rangeBand * 1.5;
+    var translateNow = [-scale * (xYear - padding), -scale * (height + d.y)];
 
-  //   vizContainer
-  //     .call(zoom.translate(translate).event)
-  //     .transition()
-  //     .duration(2000)
-  //     .call(zoom.scale(scale).translate(translateNow).event);
-  // }
+    vizContainer
+      .call(zoom.translate(translate).event)
+      .transition()
+      .duration(2000)
+      .call(zoom.scale(scale).translate(translateNow).event);
+  }
+
+  window.zoomToYear = zoomToYear;
 
   function zoomToImage(d, duration) {
     state.zoomingToImage = true;
@@ -744,7 +738,7 @@ function Canvas() {
     zoom.center(null);
     loadMiddleImage(d);
     d3.select(".tagcloud").classed("hide", true);
-    
+
     // var padding = (state.mode.type === "group" ? 0.1 : 0.8) * rangeBandImage;
     // var sidbar = width / 8;
     // // var scale = d.sprite.width / rangeBandImage * columns * 1.3;
@@ -787,7 +781,7 @@ function Canvas() {
         state.zoomingToImage = false;
         console.log("zoomedToImage", zoomedToImage);
         vizContainer.style("pointer-events", "auto");
-        utils.updateHash("selected", d.id, ["translate","scale"]);
+        utils.updateHash("selected", d.id, ["translate", "scale"]);
       });
   }
   canvas.zoomToImage = zoomToImage;
@@ -946,6 +940,14 @@ function Canvas() {
     stage2.y = d3.event.translate[1];
 
     sleep = false;
+
+    var pc = [
+      (window.innerWidth / 2 - translate[0]) / scale / window.innerWidth,
+      (window.innerHeight / 2 - translate[1]) / scale / window.innerHeight
+    ]
+
+
+    console.log(window.innerHeight, pc)
   }
 
   function zoomstart(d) {
@@ -959,7 +961,7 @@ function Canvas() {
   var debounceHashTime = 400;
 
   function zoomend() {
-    // console.log("zoom end d3.event", d3.event, lastSourceEvent)
+    console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
     drag = startTranslate && translate !== startTranslate;
     zooming = false;
     filterVisible();
@@ -980,46 +982,96 @@ function Canvas() {
     // console.log("##1", translate, scale, scale1)
     // console.log("##2", translate.map(d => d / scale1), Math.log(scale) / Math.log(scale1))
 
-    if(lastSourceEvent){
-      if(debounceHash) clearTimeout(debounceHash)
-        debounceHash = setTimeout(function(){
-        if(zooming) return
+    if (lastSourceEvent) {
+      if (debounceHash) clearTimeout(debounceHash)
+      debounceHash = setTimeout(function () {
+        if (zooming) return
         // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
-          var hash = window.location.hash.slice(1);
-          var params = new URLSearchParams(hash);
+        var hash = window.location.hash.slice(1);
+        var params = new URLSearchParams(hash);
 
-          // var _translate = translate.map(d => parseInt(d / scale1))
-          // console.log("outerWidth", outerWidth)
-          // console.log("widthOuter", widthOuter)
+        // var _translate = translate.map(d => parseInt(d / scale1))
+        // console.log("outerWidth", outerWidth)
+        // console.log("widthOuter", widthOuter)
 
-          var _translate = [
-            parseInt((translate[0]/scale)/window.innerWidth*10000),
-            parseInt(
-              ((translate[1]/scale)-(window.innerHeight/2))/window.innerHeight*10000
-            )
-          ]
-          var _scale = scale / Math.log(window.innerWidth * window.innerHeight)
+        // var _translate = [
+        //   (translate[0] / scale),
+        //   (translate[1] / scale) - (window.innerHeight / 2)
+        // ]
+        var _translate = [
+          ((window.innerWidth / 2) - translate[0]) / scale / window.innerWidth,
+          ((window.innerHeight / 2) - translate[1]) / scale / window.innerHeight
+        ]
+        _translate = _translate //.map(d => parseInt(d))
 
-          params.set("translate", _translate)
-          params.set("scale", _scale)
-          params.delete("selected")
-          window.location.hash = params.toString().replaceAll("%2C", ",")
-          // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
-        
+        var _scale = scale / scale1
+
+        params.set("translate", _translate)
+        params.set("scale", _scale)
+        params.delete("selected")
+        window.location.hash = params.toString().replaceAll("%2C", ",")
+        // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
+
       }, debounceHashTime)
     }
   }
 
+  function toScreenPoint(p) {
+    var p2 = [0, 0]
+
+    p2[0] = p[0] / scale - translate[0] / scale
+    p2[1] = p[1] / scale - height - translate[1] / scale
+
+    return p2
+  }
 
 
   canvas.onhashchange = function () {
     var hash = window.location.hash.slice(1);
     console.log("hashchange", hash)
 
+
     var params = new URLSearchParams(hash);
     console.log("searchParams", [...params.entries()])
 
-    if(hash === ""){
+    if (params.has("translate") && params.has("scale")) {
+      var _translate = params.get("translate").split(",").map(d => parseFloat(d));
+      // .map(d => parseInt(d * scale1));
+
+      var _scale = (params.get("scale")) * scale1
+
+      // _translate = [
+      //   _translate[0] * _scale,
+      //   (_translate[1] + (window.innerHeight / 2)) * _scale
+      // ]
+
+      _translate = [
+        -1 * _translate[0] * _scale * window.innerWidth + (window.innerWidth / 2),
+        -1 * _translate[1] * _scale * window.innerHeight + (window.innerHeight / 2)
+      ];
+
+      console.log("parsed", translate, _translate, scale, _scale)
+
+      // if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
+      if (
+        Math.abs(_scale - scale) > 0.2 ||
+        Math.abs(_translate[0] - translate[0]) > 10 ||
+        Math.abs(_translate[1] - translate[1]) > 10
+      ) {
+        console.log("animate zoom")
+        vizContainer
+          .call(zoom.translate(translate).event)
+          .transition()
+          .duration(1000)
+          .call(zoom.scale(_scale).translate(_translate).event)
+      }
+    } else {
+      // if(scale > 1.1){
+      //   canvas.resetZoom();
+      // }
+    }
+
+    if (hash === "") {
       console.log("reset")
       // reset
       canvas.resetZoom(function () {
@@ -1031,7 +1083,7 @@ function Canvas() {
       return
     }
 
-    if(params.has("filter")){
+    if (params.has("filter")) {
       var filter = params.get("filter").split(",")
       // console.log("filter", filter)
       tags.setFilterWords(filter)
@@ -1039,14 +1091,14 @@ function Canvas() {
       tags.setFilterWords([])
     }
 
-    if(params.has("mode")){
+    if (params.has("mode")) {
       utils.setMode(params.get("mode"))
     } else {
       utils.setMode()
     }
 
-    if(params.has("borders")){
-      setTimeout(function(){
+    if (params.has("borders")) {
+      setTimeout(function () {
         var borderIds = params.get("borders").split(",")
         console.log("borders", borderIds)
         // check if borderIds are in imageBorders
@@ -1068,45 +1120,15 @@ function Canvas() {
 
 
 
-    if(params.has("selected")){
+    if (params.has("selected")) {
       var id = params.get("selected")
       var d = data.find(d => d.id == id)
-      if(d){
+      if (d) {
         zoomToImage(d, 1000)
       }
     }
-    
-    if (params.has("translate") && params.has("scale")) {
-      var _translate = params.get("translate").split(",")
-        // .map(d => parseInt(d * scale1));
 
-      var _scale = (params.get("scale")) * Math.log(window.innerWidth * window.innerHeight)
-      _translate = [
-        parseFloat(_translate[0]) / 10000 * window.innerWidth * _scale,
-        _scale * (parseFloat(_translate[1]) / 10000 * window.innerHeight + window.innerHeight/2)
-      ]
-      
 
-      console.log("parsed", translate, _translate, scale, _scale)
-
-      // if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
-      if(
-        Math.abs(_scale - scale) > 0.2 ||
-        Math.abs(_translate[0] - translate[0]) > 10 ||
-        Math.abs(_translate[1] - translate[1]) > 10
-      ) {
-        console.log("animate zoom")
-        vizContainer
-          .call(zoom.translate(translate).event)
-          .transition()
-          .duration(1000)
-          .call(zoom.scale(_scale).translate(_translate).event)
-      }
-    } else {
-      // if(scale > 1.1){
-      //   canvas.resetZoom();
-      // }
-    }
   }
 
   canvas.highlight = function () {
@@ -1262,7 +1284,7 @@ function Canvas() {
 
       if (
         x > -padding
-        && x < width / zoomScale + padding 
+        && x < width / zoomScale + padding
         && y + height < height / zoomScale + padding
         && y > height * -1 - padding
       ) {
