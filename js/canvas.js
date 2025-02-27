@@ -4,10 +4,10 @@
 
 function Canvas() {
   var margin = {
-    top: 20,
-    right: 50,
-    bottom: 50,
-    left: 50,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   };
 
   var minHeight = 400;
@@ -154,7 +154,7 @@ function Canvas() {
     x.rangeBands([margin.left, width + margin.left], 0.2);
 
     rangeBand = x.rangeBand();
-    rangeBandImage = x.rangeBand() / columns;
+    rangeBandImage = rangeBand / columns;
 
     imgPadding = rangeBand / columns / 2;
 
@@ -178,7 +178,7 @@ function Canvas() {
 
     cursorCutoff = (1 / scale1) * imageSize * 0.48;
     zoomedToImageScale =
-      (0.8 / (x.rangeBand() / columns / width)) *
+      (0.8 / (rangeBand / columns / width)) *
       (state.mode.type === "group" ? 1 : 0.5);
     // console.log("zoomedToImageScale", zoomedToImageScale)
   };
@@ -515,6 +515,7 @@ function Canvas() {
         (d.x + imgPadding) * scale + translate[0],
         (height + d.y + imgPadding) * scale + translate[1],
       ];
+      // console.log("center", width, center, d.x, d.y)
       zoom.center(center);
       selectedImage = d;
     }
@@ -941,13 +942,17 @@ function Canvas() {
 
     sleep = false;
 
-    var pc = [
-      (window.innerWidth / 2 - translate[0]) / scale / window.innerWidth,
-      (window.innerHeight / 2 - translate[1]) / scale / window.innerHeight
-    ]
+    // var pc = [
+    //   (window.innerWidth / 2 - translate[0]) / scale / window.innerWidth,
+    //   (window.innerHeight / 2 - translate[1]) / scale / window.innerHeight
+    // ]
 
-
-    console.log(window.innerHeight, pc)
+    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
+    var p1 = [
+      (center[0]) * scale + translate[0],
+      (height + center[1]) * scale + translate[1],
+    ];
+    console.log(window.innerHeight, translate, scale)
   }
 
   function zoomstart(d) {
@@ -961,7 +966,7 @@ function Canvas() {
   var debounceHashTime = 400;
 
   function zoomend() {
-    console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
+    // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
     drag = startTranslate && translate !== startTranslate;
     zooming = false;
     filterVisible();
@@ -982,6 +987,11 @@ function Canvas() {
     // console.log("##1", translate, scale, scale1)
     // console.log("##2", translate.map(d => d / scale1), Math.log(scale) / Math.log(scale1))
 
+    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
+    console.log("center", center)
+
+    createRect(center[0], height + center[1], 5, 5, 0xff0000, 0.3, stage2)
+
     if (lastSourceEvent) {
       if (debounceHash) clearTimeout(debounceHash)
       debounceHash = setTimeout(function () {
@@ -998,11 +1008,28 @@ function Canvas() {
         //   (translate[0] / scale),
         //   (translate[1] / scale) - (window.innerHeight / 2)
         // ]
+
+        /*
+
+            var scale = 1 / (rangeBandImage / (max * 0.6));
+            var translateNow = [
+              -scale * (d.x - padding) - (max * 0.3) / 2 + margin.left,
+              -scale * (height + d.y + padding) - margin.top + height / 2,
+            ];
+      var center = [
+        (d.x + imgPadding) * scale + translate[0],
+        (height + d.y + imgPadding) * scale + translate[1],
+      ];
+      console.log("center", width, center, d.x, d.y)
+    */
         var _translate = [
-          ((window.innerWidth / 2) - translate[0]) / scale / window.innerWidth,
-          ((window.innerHeight / 2) - translate[1]) / scale / window.innerHeight
+          ((window.innerWidth / 2) - translate[0] + imgPadding) / scale / (window.innerWidth),
+          ((height / 2) - translate[1] + height + imgPadding) / scale / (height)
         ]
-        _translate = _translate //.map(d => parseInt(d))
+        _translate = _translate.map(d => d * 100000)
+
+        //.map(d => parseInt(d))
+
 
         var _scale = scale / scale1
 
@@ -1014,7 +1041,32 @@ function Canvas() {
 
       }, debounceHashTime)
     }
+
+    console.log("zoomend", rangeBand, imgPadding, translate, scale, scale1)
   }
+  function createRect(x, y, width, height, color, alpha, targetStage) {
+    // Create a graphics object
+    var graphics = new PIXI.Graphics();
+
+    // Set fill properties
+    graphics.beginFill(color || 0xFFFFFF, alpha || 1);
+
+    // Draw rectangle
+    graphics.drawRect(x, y, width, height);
+
+    // End fill
+    graphics.endFill();
+
+    // Add to target stage (defaulting to stage2 if none specified)
+    (targetStage || stage2).addChild(graphics);
+
+    // Wake up the renderer
+    sleep = false;
+
+    // Return the created graphics object
+    return graphics;
+  }
+
 
   function toScreenPoint(p) {
     var p2 = [0, 0]
@@ -1032,10 +1084,10 @@ function Canvas() {
 
 
     var params = new URLSearchParams(hash);
-    console.log("searchParams", [...params.entries()])
+    // console.log("searchParams", [...params.entries()])
 
     if (params.has("translate") && params.has("scale")) {
-      var _translate = params.get("translate").split(",").map(d => parseFloat(d));
+      var _translate = params.get("translate").split(",").map(d => parseFloat(d / 100000));
       // .map(d => parseInt(d * scale1));
 
       var _scale = (params.get("scale")) * scale1
@@ -1046,11 +1098,13 @@ function Canvas() {
       // ]
 
       _translate = [
-        -1 * _translate[0] * _scale * window.innerWidth + (window.innerWidth / 2),
-        -1 * _translate[1] * _scale * window.innerHeight + (window.innerHeight / 2)
+        (-1 * _translate[0] * _scale * (window.innerWidth)) + (window.innerWidth / 2) + imgPadding,
+        (-1 * _translate[1] * _scale * (height - margin.top)) + (height / 2) + height + imgPadding
       ];
 
-      console.log("parsed", translate, _translate, scale, _scale)
+      // createRect(_translate[0] * -1 * _scale, _translate[1] * -1, 5, 5, 0x00ff00, 1, stage2)
+      console.log("TRANSLATE", _translate)
+      // console.log("parsed", translate, _translate, scale, _scale)
 
       // if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
       if (
@@ -1252,7 +1306,7 @@ function Canvas() {
       .call(zoom.translate(translate).event)
       .transition()
       .duration(duration)
-      .call(zoom.translate([0, y]).scale(1).event)
+      .call(zoom.translate([0, 0]).scale(1).event)
       .each("end", function () {
         if (callback && scale < zoomBarrier) callback();
       })
