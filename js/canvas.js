@@ -952,7 +952,11 @@ function Canvas() {
       (center[0]) * scale + translate[0],
       (height + center[1]) * scale + translate[1],
     ];
-    console.log(window.innerHeight, translate, scale)
+    // console.log(window.innerHeight, translate, scale)
+    console.log(
+      ((translate[0] / scale)) / (window.innerWidth),
+      ((translate[1] / scale)) / (window.innerHeight)
+    )
   }
 
   function zoomstart(d) {
@@ -1023,15 +1027,18 @@ function Canvas() {
       console.log("center", width, center, d.x, d.y)
     */
         var _translate = [
-          ((window.innerWidth / 2) - translate[0] + imgPadding) / scale / (window.innerWidth),
-          ((height / 2) - translate[1] + height + imgPadding) / scale / (height)
+          ((translate[0] / scale)) / (window.innerWidth),
+          ((translate[1] / scale)) / (window.innerHeight)
         ]
+        console.log("############", _translate, window.innerWidth, window.innerHeight)
         _translate = _translate.map(d => d * 100000)
 
         //.map(d => parseInt(d))
 
 
         var _scale = scale / scale1
+
+        _scale = scale / Math.log(window.innerWidth * window.innerHeight)
 
         params.set("translate", _translate)
         params.set("scale", _scale)
@@ -1091,19 +1098,27 @@ function Canvas() {
       // .map(d => parseInt(d * scale1));
 
       var _scale = (params.get("scale")) * scale1
+      _scale = params.get("scale") * Math.log(window.innerWidth * window.innerHeight)
 
       // _translate = [
       //   _translate[0] * _scale,
       //   (_translate[1] + (window.innerHeight / 2)) * _scale
       // ]
 
+      /*
+      var _translate = [
+          ((translate[0] / scale) - (window.innerWidth / 2)) / (window.innerWidth),
+          ((translate[1] / scale) - (window.innerHeight / 2)) / (window.innerHeight)
+        ]
+      */
+
       _translate = [
-        (-1 * _translate[0] * _scale * (window.innerWidth)) + (window.innerWidth / 2) + imgPadding,
-        (-1 * _translate[1] * _scale * (height - margin.top)) + (height / 2) + height + imgPadding
+        ((_translate[0] * (window.innerWidth))) * _scale,
+        ((_translate[1] * (window.innerHeight))) * _scale
       ];
 
       // createRect(_translate[0] * -1 * _scale, _translate[1] * -1, 5, 5, 0x00ff00, 1, stage2)
-      console.log("TRANSLATE", _translate)
+      console.log("TRANSLATE", _translate, window.innerWidth, window.innerHeight)
       // console.log("parsed", translate, _translate, scale, _scale)
 
       // if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
