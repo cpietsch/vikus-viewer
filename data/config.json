@@ -26,6 +26,11 @@
         "title": "Test",
         "type": "group",
         "groupKey": "Column"
+      },
+      {
+        "title": "Farbe plot",
+        "url": "data/colors.csv",
+        "scale": 0.9
       }
     ]
   },

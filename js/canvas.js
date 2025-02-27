@@ -1040,6 +1040,8 @@ function Canvas() {
 
         _scale = scale / Math.log(window.innerWidth * window.innerHeight)
 
+        _scale = scale
+
         params.set("translate", _translate)
         params.set("scale", _scale)
         params.delete("selected")
@@ -1099,6 +1101,8 @@ function Canvas() {
 
       var _scale = (params.get("scale")) * scale1
       _scale = params.get("scale") * Math.log(window.innerWidth * window.innerHeight)
+
+      _scale = params.get("scale")
 
       // _translate = [
       //   _translate[0] * _scale,
