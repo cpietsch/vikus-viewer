@@ -117,6 +117,80 @@ function Canvas() {
 
   canvas.margin = margin;
 
+  canvas.getView = function () {
+    const visibleIds = [];
+  
+    const invScale = 1 / scale;
+    const viewLeft = -translate[0] * invScale;
+    const viewTop = (-translate[1] * invScale) - height;
+    const viewRight = viewLeft + width * invScale;
+    const viewBottom = viewTop + height * invScale;
+  
+    data.forEach(d => {
+      const px = d.sprite.position.x / scale1;
+      const py = d.sprite.position.y / scale1;
+  
+      if (
+        px >= viewLeft && px <= viewRight &&
+        py >= viewTop && py <= viewBottom
+      ) {
+        visibleIds.push(d.id);
+      }
+    });
+  
+    return visibleIds;
+  };
+
+  canvas.setView = function (ids, duration = 1000) {
+    const items = data.filter(d => ids.includes(d.id));
+    if (!items.length) return;
+  
+    state.zoomingToImage = true;
+    vizContainer.style("pointer-events", "none");
+    zoom.center(null);
+  
+    d3.select(".tagcloud").classed("hide", true);
+  
+    // Compute the bounding box of all selected items
+    const xs = items.map(d => d.x);
+    const ys = items.map(d => d.y);
+  
+    const minX = d3.min(xs);
+    const maxX = d3.max(xs);
+    const minY = d3.min(ys);
+    const maxY = d3.max(ys);
+  
+    // Use rangeBandImage for padding/spacing logic
+    const padding = rangeBandImage / 2;
+    const boxWidth = maxX - minX + padding * 2;
+    const boxHeight = maxY - minY + padding * 2;
+  
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+  
+    const maxDimension = Math.max(width, height);
+  
+    // Calculate scale similar to zoomToImage — how much to zoom in to fit items
+    const scale = 1 / (rangeBandImage / (maxDimension * 0.6));
+  
+    // Translate to center the bounding box
+    const translateNow = [
+      -scale * (centerX - padding) - (maxDimension * 0.3) / 2 + margin.left,
+      -scale * (height + centerY + padding) - margin.top + height / 2,
+    ];
+  
+    vizContainer
+      .call(zoom.translate(translate).event)
+      .transition()
+      .duration(duration)
+      .call(zoom.scale(scale).translate(translateNow).event)
+      .each("end", function () {
+        zoomedToImage = true;
+        state.zoomingToImage = false;
+        vizContainer.style("pointer-events", "auto");
+      });
+  };
+
   canvas.rangeBand = function () {
     return rangeBand;
   };
