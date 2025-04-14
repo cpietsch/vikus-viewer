@@ -118,7 +118,7 @@ function Canvas() {
   canvas.margin = margin;
 
   canvas.getView = function () {
-    var visibleIds = [];
+    var visibleItems = [];
   
     const invScale = 1 / scale;
     const viewLeft = -translate[0] * invScale;
@@ -127,25 +127,39 @@ function Canvas() {
     const viewBottom = viewTop + height * invScale;
   
     data.forEach(d => {
-      const px = d.x;
-      const py = d.y;
-  
+      const px = d.sprite.position.x / scale1
+      const py = d.sprite.position.y / scale1
+
       if (
         px >= viewLeft && px <= viewRight &&
         py >= viewTop && py <= viewBottom
       ) {
-        visibleIds.push(d.id);
+        visibleItems.push(d);
       }
     });
 
-    // get the id of the top left and bottom right image
-    
+    console.log("visibleItems", visibleItems.length, visibleItems.map(d => d.id))
 
-    if(visibleIds.length == data.length) {
-      visibleIds = []
+    // Find the top-left and bottom-right items among visible ones
+    let topLeftItem = null;
+    let bottomRightItem = null;
+
+    if (visibleItems.length > 0) {
+      visibleItems.sort((a, b) => a.x - b.x || a.y - b.y);
+      topLeftItem = visibleItems[0];
+      bottomRightItem = visibleItems[visibleItems.length - 1];
+      
     }
-  
-    return visibleIds
+
+    // Example: Log the IDs (or use the items as needed)
+    // console.log("Top Left Item ID:", topLeftItem ? topLeftItem.id : 'None');
+    // console.log("Bottom Right Item ID:", bottomRightItem ? bottomRightItem.id : 'None');
+
+    // Return all visible IDs (consistent with function's likely original purpose)
+    // const visibleIds = visibleItems.map(d => d.id);
+    // return visibleIds;
+    
+    return [ topLeftItem ? topLeftItem.id : null, bottomRightItem ? bottomRightItem.id : null].filter(d => d !== null);
   };
 
 
