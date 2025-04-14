@@ -205,7 +205,7 @@ function Canvas() {
     const centerY = (minY + maxY) / 2;
     
     // Calculate scale to fit the bounding box
-    const scale = 0.8 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
+    const scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
   
   
     const translateTarget = [
