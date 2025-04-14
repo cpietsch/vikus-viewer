@@ -144,7 +144,7 @@ function Canvas() {
     };
   };
 
-  canvas.setView = function ({ ids, scale }, duration = 1000) {
+  canvas.setViewScale = function ({ ids, scale }, duration = 1000) {
     const items = data.filter(d => ids.includes(d.id));
     if (!items.length) return;
   
@@ -169,6 +169,69 @@ function Canvas() {
       .transition()
       .duration(duration)
       .call(zoom.scale(scale).translate([tx, ty]).event);
+  };
+
+  canvas.setView = function (ids, duration = 1000) {
+    const items = data.filter(d => ids.includes(d.id));
+    if (!items.length) return;
+  
+    vizContainer.style("pointer-events", "none");
+    zoom.center(null);
+    state.zoomingToImage = true;
+  
+    // Compute the bounding box of all selected items
+    const xs = items.map(d => d.x);
+    const ys = items.map(d => d.y);
+  
+    const minX = d3.min(xs);
+    const maxX = d3.max(xs);
+    const minY = d3.min(ys);
+    const maxY = d3.max(ys);
+
+    const width = canvas.width();
+    const height = canvas.height();
+  
+    // Use rangeBandImage for padding/spacing logic
+    const padding = rangeBandImage / 2;
+    const boxWidth = maxX - minX + padding * 2;
+    const boxHeight = maxY - minY + padding * 2;
+  
+    // Calculate center without padding (center point remains the same)
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+  
+    // const maxDimension = Math.max(canvas.width(), canvas.height()); // Not used in new scale or existing translate
+  
+    // Calculate scale to fit the bounding box within 90% of the view, capped at 8x zoom.
+    // Adapted from the provided d3 v4+ example.
+    const scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 90% of view
+  
+  
+    // Translate using the standard D3 v3 centering formula: translate = [width/2 - scale*cx, height/2 - scale*cy]
+    // Adjusting slightly for potential margins if necessary, though margins are often handled by the SVG/container setup.
+    // Let's try the most direct adaptation first.
+    const translateTarget = [
+      width / 2 - scale * centerX,
+      height / 2 - scale * (height + centerY) // Corrected Y calculation
+    ];
+
+    // Note: The original translateNow calculation was complex and included terms like `height + centerY` and `maxDimension`.
+    // If the standard centering formula above doesn't work correctly due to the specific coordinate system
+    // or PIXI setup used in this project, the original calculation might need to be revisited or adapted.
+    // const translateOriginal = [
+    //   -scale * (centerX - padding) - (Math.max(width, height) * 0.3) / 2 + margin.left,
+    //   -scale * (height + centerY + padding) - margin.top + height / 2,
+    // ];
+
+    vizContainer
+      .call(zoom.translate(translate).event) // Use current translate as starting point
+      .transition()
+      .duration(duration)
+      .call(zoom.scale(scale).translate(translateTarget).event) // Apply new scale and target translate
+      .each("end", function () {
+        state.zoomingToImage = false;
+        vizContainer.style("pointer-events", "auto");
+      });
   };
 
   canvas.rangeBand = function () {

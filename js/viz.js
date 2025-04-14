@@ -88,9 +88,9 @@ function init() {
         window.onhashchange = function () {
           canvas.onhashchange();
         }
-        // setTimeout(function () {
-        //   canvas.onhashchange();
-        // }, 100);
+        setTimeout(function () {
+          canvas.setView("['GEM_88_4', 'GS_08_5_GM', 'GEM_89_24', 'VII_59_433_x', 'VII_59_749_x', 'VII_60_111_x', 'VII_60_286_x', 'GEM_89_11', 'GS_2000_28_GM', 'VII_59_777_x']")
+        }, 100);
 
         // setTimeout(function () {
         //   var idx = 102
