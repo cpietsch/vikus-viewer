@@ -138,20 +138,17 @@ function Canvas() {
       }
     });
   
-    return visibleIds;
+    return {
+      ids: visibleIds,
+      scale: scale
+    };
   };
 
-  canvas.setView = function (ids, duration = 1000) {
+  canvas.setView = function ({ ids, scale }, duration = 1000) {
     const items = data.filter(d => ids.includes(d.id));
     if (!items.length) return;
   
-    state.zoomingToImage = true;
-    vizContainer.style("pointer-events", "none");
-    zoom.center(null);
-  
-    d3.select(".tagcloud").classed("hide", true);
-  
-    // Compute the bounding box of all selected items
+    // Get bounding box in layout space
     const xs = items.map(d => d.x);
     const ys = items.map(d => d.y);
   
@@ -160,35 +157,18 @@ function Canvas() {
     const minY = d3.min(ys);
     const maxY = d3.max(ys);
   
-    // Use rangeBandImage for padding/spacing logic
-    const padding = rangeBandImage / 2;
-    const boxWidth = maxX - minX + padding * 2;
-    const boxHeight = maxY - minY + padding * 2;
-  
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
   
-    const maxDimension = Math.max(width, height);
-  
-    // Calculate scale similar to zoomToImage — how much to zoom in to fit items
-    const scale = 1 / (rangeBandImage / (maxDimension * 0.6));
-  
-    // Translate to center the bounding box
-    const translateNow = [
-      -scale * (centerX - padding) - (maxDimension * 0.3) / 2 + margin.left,
-      -scale * (height + centerY + padding) - margin.top + height / 2,
-    ];
+    // Translate to center of bounding box
+    const tx = -scale * centerX + width / 2;
+    const ty = -scale * (centerY + height) + height / 2;
   
     vizContainer
       .call(zoom.translate(translate).event)
       .transition()
       .duration(duration)
-      .call(zoom.scale(scale).translate(translateNow).event)
-      .each("end", function () {
-        zoomedToImage = true;
-        state.zoomingToImage = false;
-        vizContainer.style("pointer-events", "auto");
-      });
+      .call(zoom.scale(scale).translate([tx, ty]).event);
   };
 
   canvas.rangeBand = function () {
