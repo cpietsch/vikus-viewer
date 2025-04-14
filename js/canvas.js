@@ -197,8 +197,8 @@ function Canvas() {
   
     // Use rangeBandImage for padding/spacing logic
     const padding = rangeBandImage / 2;
-    const boxWidth = maxX - minX ;
-    const boxHeight = maxY - minY ;
+    const boxWidth = maxX - minX + padding * 2;
+    const boxHeight = maxY - minY + padding * 2;
   
     // Calculate center without padding (center point remains the same)
     const centerX = (minX + maxX) / 2;
@@ -209,8 +209,8 @@ function Canvas() {
   
   
     const translateTarget = [
-      width / 2 - scale * centerX,
-      height / 2 - scale * (height + centerY) // Corrected Y calculation
+      width / 2 - scale * (centerX + padding),
+      height / 2 - scale * (height + centerY + padding), 
     ];
 
     // old code
