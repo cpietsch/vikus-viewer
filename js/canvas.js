@@ -127,8 +127,8 @@ function Canvas() {
     const viewBottom = viewTop + height * invScale;
   
     data.forEach(d => {
-      const px = d.sprite.position.x / scale1;
-      const py = d.sprite.position.y / scale1;
+      const px = d.x;
+      const py = d.y;
   
       if (
         px >= viewLeft && px <= viewRight &&
@@ -138,42 +138,17 @@ function Canvas() {
       }
     });
 
+    // get the id of the top left and bottom right image
+    
+
     if(visibleIds.length == data.length) {
       visibleIds = []
     }
   
-    return {
-      ids: visibleIds,
-      scale: scale
-    };
+    return visibleIds
   };
 
-  canvas.setViewScale = function ({ ids, scale }, duration = 1000) {
-    const items = data.filter(d => ids.includes(d.id));
-    if (!items.length) return;
-  
-    // Get bounding box in layout space
-    const xs = items.map(d => d.x);
-    const ys = items.map(d => d.y);
-  
-    const minX = d3.min(xs);
-    const maxX = d3.max(xs);
-    const minY = d3.min(ys);
-    const maxY = d3.max(ys);
-  
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-  
-    // Translate to center of bounding box
-    const tx = -scale * centerX + width / 2;
-    const ty = -scale * (centerY + height) + height / 2;
-  
-    vizContainer
-      .call(zoom.translate(translate).event)
-      .transition()
-      .duration(duration)
-      .call(zoom.scale(scale).translate([tx, ty]).event);
-  };
+
 
   canvas.setView = function (ids, duration = 1000) {
     const items = data.filter(d => ids.includes(d.id));
@@ -1159,7 +1134,7 @@ function Canvas() {
         // params.set("translate", _translate)
         // params.set("scale", _scale)
         
-        const idsInViewport = canvas.getView().ids;
+        const idsInViewport = canvas.getView();
         if(idsInViewport.length > 0){
           params.set("ids", idsInViewport.join(","));
         } else {
