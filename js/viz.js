@@ -89,8 +89,9 @@ function init() {
           canvas.onhashchange();
         }
         setTimeout(function () {
-          canvas.setView("['GEM_88_4', 'GS_08_5_GM', 'GEM_89_24', 'VII_59_433_x', 'VII_59_749_x', 'VII_60_111_x', 'VII_60_286_x', 'GEM_89_11', 'GS_2000_28_GM', 'VII_59_777_x']")
-        }, 100);
+          // canvas.setView("['GS_98_2_GM', 'VII_60_527_x', 'SM_2012-0158', 'VII_59_483_x', 'VII_60_411_x', 'VII_60_230_x']");
+          //canvas.setView("['GEM_88_4', 'GS_08_5_GM', 'GEM_89_24', 'VII_59_433_x', 'VII_59_749_x', 'VII_60_111_x', 'VII_60_286_x', 'GEM_89_11', 'GS_2000_28_GM', 'VII_59_777_x']")
+        }, 200);
 
         // setTimeout(function () {
         //   var idx = 102
@@ -135,6 +136,7 @@ function init() {
       search.reset();
       tags.reset();
       canvas.split();
+      window.location.hash = "";
     });
 
   d3.select(".filterReset").on("click", function () {
@@ -223,7 +225,7 @@ utils.setMode = function(title) {
     "active",
     (d) => d.title == title
   );
-  updateHash("mode", layout.title, ["translate", "scale"]);
+  updateHash("mode", layout.title, ["translate", "scale", "ids"]);
 }
 
 function updateHash(name, value, clear = undefined) {

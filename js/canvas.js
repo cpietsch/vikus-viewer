@@ -118,7 +118,7 @@ function Canvas() {
   canvas.margin = margin;
 
   canvas.getView = function () {
-    const visibleIds = [];
+    var visibleIds = [];
   
     const invScale = 1 / scale;
     const viewLeft = -translate[0] * invScale;
@@ -137,6 +137,10 @@ function Canvas() {
         visibleIds.push(d.id);
       }
     });
+
+    if(visibleIds.length == data.length) {
+      visibleIds = []
+    }
   
     return {
       ids: visibleIds,
@@ -193,31 +197,23 @@ function Canvas() {
   
     // Use rangeBandImage for padding/spacing logic
     const padding = rangeBandImage / 2;
-    const boxWidth = maxX - minX + padding * 2;
-    const boxHeight = maxY - minY + padding * 2;
+    const boxWidth = maxX - minX ;
+    const boxHeight = maxY - minY ;
   
     // Calculate center without padding (center point remains the same)
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
-  
-    // const maxDimension = Math.max(canvas.width(), canvas.height()); // Not used in new scale or existing translate
-  
-    // Calculate scale to fit the bounding box within 90% of the view, capped at 8x zoom.
-    // Adapted from the provided d3 v4+ example.
-    const scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 90% of view
+    
+    // Calculate scale to fit the bounding box
+    const scale = 0.8 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
   
   
-    // Translate using the standard D3 v3 centering formula: translate = [width/2 - scale*cx, height/2 - scale*cy]
-    // Adjusting slightly for potential margins if necessary, though margins are often handled by the SVG/container setup.
-    // Let's try the most direct adaptation first.
     const translateTarget = [
       width / 2 - scale * centerX,
       height / 2 - scale * (height + centerY) // Corrected Y calculation
     ];
 
-    // Note: The original translateNow calculation was complex and included terms like `height + centerY` and `maxDimension`.
-    // If the standard centering formula above doesn't work correctly due to the specific coordinate system
-    // or PIXI setup used in this project, the original calculation might need to be revisited or adapted.
+    // old code
     // const translateOriginal = [
     //   -scale * (centerX - padding) - (Math.max(width, height) * 0.3) / 2 + margin.left,
     //   -scale * (height + centerY + padding) - margin.top + height / 2,
@@ -1070,10 +1066,10 @@ function Canvas() {
       (height + center[1]) * scale + translate[1],
     ];
     // console.log(window.innerHeight, translate, scale)
-    console.log(
-      ((translate[0] / scale)) / (window.innerWidth),
-      ((translate[1] / scale)) / (window.innerHeight)
-    )
+    // console.log(
+    //   ((translate[0] / scale)) / (window.innerWidth),
+    //   ((translate[1] / scale)) / (window.innerHeight)
+    // )
   }
 
   function zoomstart(d) {
@@ -1085,6 +1081,7 @@ function Canvas() {
 
   var debounceHash = null;
   var debounceHashTime = 400;
+  var userInteraction = false;
 
   function zoomend() {
     // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
@@ -1143,26 +1140,34 @@ function Canvas() {
       ];
       console.log("center", width, center, d.x, d.y)
     */
-        var _translate = [
-          ((translate[0] / scale)) / (window.innerWidth),
-          ((translate[1] / scale)) / (window.innerHeight)
-        ]
-        console.log("############", _translate, window.innerWidth, window.innerHeight)
-        _translate = _translate.map(d => d * 100000)
+        // var _translate = [
+        //   ((translate[0] / scale)) / (window.innerWidth),
+        //   ((translate[1] / scale)) / (window.innerHeight)
+        // ]
+        // console.log("############", _translate, window.innerWidth, window.innerHeight)
+        // _translate = _translate.map(d => d * 100000)
 
-        //.map(d => parseInt(d))
+        // //.map(d => parseInt(d))
 
 
-        var _scale = scale / scale1
+        // var _scale = scale / scale1
 
-        _scale = scale / Math.log(window.innerWidth * window.innerHeight)
+        // _scale = scale / Math.log(window.innerWidth * window.innerHeight)
 
-        _scale = scale
+        // _scale = scale
 
-        params.set("translate", _translate)
-        params.set("scale", _scale)
+        // params.set("translate", _translate)
+        // params.set("scale", _scale)
+        
+        const idsInViewport = canvas.getView().ids;
+        if(idsInViewport.length > 0){
+          params.set("ids", idsInViewport.join(","));
+        } else {
+          params.delete("ids");
+        }
         params.delete("selected")
         window.location.hash = params.toString().replaceAll("%2C", ",")
+        userInteraction = true;
         // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
 
       }, debounceHashTime)
@@ -1205,6 +1210,7 @@ function Canvas() {
 
 
   canvas.onhashchange = function () {
+
     var hash = window.location.hash.slice(1);
     console.log("hashchange", hash)
 
@@ -1259,6 +1265,13 @@ function Canvas() {
       // if(scale > 1.1){
       //   canvas.resetZoom();
       // }
+    }
+
+    if (params.has("ids") && !userInteraction) {
+      var ids = params.get("ids").split(",")
+      console.log("set setView", ids)
+      // console.log("ids", ids)
+      canvas.setView(ids)
     }
 
     if (hash === "") {
@@ -1317,6 +1330,8 @@ function Canvas() {
         zoomToImage(d, 1000)
       }
     }
+
+    userInteraction = false;
 
 
   }

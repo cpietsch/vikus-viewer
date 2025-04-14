@@ -260,13 +260,13 @@ function Tags() {
 
   }
 
-  tags.updateAll = function(){
+  tags.updateAll = function(clear){
     tags.update();
     tags.highlightWords(filterWords);
 
     setTimeout(function(){
       canvas.project();
-      tags.updateHash();
+      tags.updateHash(clear);
     },300);
 
   }
@@ -296,19 +296,22 @@ function Tags() {
       filterWords.push(d.key);
     }
     // c(filterWords);
-    tags.updateAll();
+    tags.updateAll(true);
 
     lock = false
   }
 
 
 
-  tags.updateHash = function(){
+  tags.updateHash = function(clear){
     console.log("updateHashtags")
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
     params.set("filter", filterWords);
     if(filterWords.length === 0) params.delete("filter");
+    if(clear){
+      params.delete("ids");
+    }
     
     var newHash = params.toString().replaceAll("%2C", ",")
 
