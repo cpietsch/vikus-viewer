@@ -118,7 +118,7 @@ function Canvas() {
   canvas.margin = margin;
 
   canvas.getView = function () {
-    var visibleItems = [];
+    const visibleItems = [];
   
     const invScale = 1 / scale;
     const viewLeft = -translate[0] * invScale;
@@ -127,41 +127,49 @@ function Canvas() {
     const viewBottom = viewTop + height * invScale;
   
     data.forEach(d => {
-      const px = d.sprite.position.x / scale1
-      const py = d.sprite.position.y / scale1
-
+      const px = d.sprite.position.x / scale1;
+      const py = d.sprite.position.y / scale1;
+      const halfW = d.sprite.width / scale1 / 2;
+      const halfH = d.sprite.height / scale1 / 2;
+  
+      const left = px - halfW;
+      const right = px + halfW;
+      const top = py - halfH;
+      const bottom = py + halfH;
+  
       if (
-        px >= viewLeft && px <= viewRight &&
-        py >= viewTop && py <= viewBottom
+        left >= viewLeft &&
+        right <= viewRight &&
+        top >= viewTop &&
+        bottom <= viewBottom
       ) {
         visibleItems.push(d);
       }
     });
-
-    console.log("visibleItems", visibleItems.length, visibleItems.map(d => d.id))
-
-    // Find the top-left and bottom-right items among visible ones
-    let topLeftItem = null;
-    let bottomRightItem = null;
-
-    if (visibleItems.length > 0) {
-      visibleItems.sort((a, b) => a.x - b.x || a.y - b.y);
-      topLeftItem = visibleItems[0];
-      bottomRightItem = visibleItems[visibleItems.length - 1];
-      
-    }
-
-    // Example: Log the IDs (or use the items as needed)
-    // console.log("Top Left Item ID:", topLeftItem ? topLeftItem.id : 'None');
-    // console.log("Bottom Right Item ID:", bottomRightItem ? bottomRightItem.id : 'None');
-
-    // Return all visible IDs (consistent with function's likely original purpose)
-    // const visibleIds = visibleItems.map(d => d.id);
-    // return visibleIds;
-    
-    return [ topLeftItem ? topLeftItem.id : null, bottomRightItem ? bottomRightItem.id : null].filter(d => d !== null);
+  
+    console.log("fully visible items:", visibleItems.length, visibleItems.map(d => d.id));
+  
+    let mostLeft = null;
+    let mostRight = null;
+    let mostTop = null;
+    let mostBottom = null;
+  
+    visibleItems.forEach(d => {
+      if (!mostLeft || d.x < mostLeft.x) mostLeft = d;
+      if (!mostRight || d.x > mostRight.x) mostRight = d;
+      if (!mostTop || d.y < mostTop.y) mostTop = d;
+      if (!mostBottom || d.y > mostBottom.y) mostBottom = d;
+    });
+  
+    const unique = new Set([
+      mostLeft?.id,
+      mostRight?.id,
+      mostTop?.id,
+      mostBottom?.id,
+    ]);
+  
+    return Array.from(unique).filter(id => id !== undefined && id !== null);
   };
-
 
 
   canvas.setView = function (ids, duration = 1000) {
