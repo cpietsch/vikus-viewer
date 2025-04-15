@@ -118,27 +118,27 @@ function Canvas() {
   canvas.margin = margin;
 
   canvas.getView = function () {
-    const visibleItems = [];
-  
-    const invScale = 1 / scale;
-    const viewLeft = -translate[0] * invScale;
-    const viewTop = (-translate[1] * invScale) - height;
-    const viewRight = viewLeft + width * invScale;
-    const viewBottom = viewTop + height * invScale;
-  
-    data.forEach(d => {
-      const px = d.sprite.position.x / scale1;
-      const py = d.sprite.position.y / scale1;
-      let halfW = d.sprite.width / scale1 / 2;
-      let halfH = d.sprite.height / scale1 / 2;
+    var visibleItems = [];
+
+    var invScale = 1 / scale;
+    var viewLeft = -translate[0] * invScale;
+    var viewTop = (-translate[1] * invScale) - height;
+    var viewRight = viewLeft + width * invScale;
+    var viewBottom = viewTop + height * invScale;
+
+    data.forEach(function (d) {
+      var px = d.sprite.position.x / scale1;
+      var py = d.sprite.position.y / scale1;
+      var halfW = d.sprite.width / scale1 / 2;
+      var halfH = d.sprite.height / scale1 / 2;
 
       halfH = halfW = 0;
-  
-      const left = px - halfW;
-      const right = px + halfW;
-      const top = py - halfH;
-      const bottom = py + halfH;
-  
+
+      var left = px - halfW;
+      var right = px + halfW;
+      var top = py - halfH;
+      var bottom = py + halfH;
+
       if (
         left >= viewLeft &&
         right <= viewRight &&
@@ -149,71 +149,72 @@ function Canvas() {
       }
     });
 
-    if(visibleItems.length === 0 || visibleItems.length == data.length) {
+    if (visibleItems.length === 0 || visibleItems.length == data.length) {
       return []
     }
-  
-    console.log("fully visible items:", visibleItems.length, visibleItems.map(d => d.id));
-  
-    let mostLeft = null;
-    let mostRight = null;
-    let mostTop = null;
-    let mostBottom = null;
-  
-    visibleItems.forEach(d => {
+
+    console.log("fully visible items:", visibleItems.length, visibleItems.map(function (d) { return d.id; }));
+
+    var mostLeft = null;
+    var mostRight = null;
+    var mostTop = null;
+    var mostBottom = null;
+
+    visibleItems.forEach(function (d) {
       if (!mostLeft || d.x < mostLeft.x) mostLeft = d;
       if (!mostRight || d.x > mostRight.x) mostRight = d;
       if (!mostTop || d.y < mostTop.y) mostTop = d;
       if (!mostBottom || d.y > mostBottom.y) mostBottom = d;
     });
-  
-    const unique = new Set([
+
+    var unique = new Set([
       mostLeft?.id,
       mostRight?.id,
       mostTop?.id,
       mostBottom?.id,
     ]);
-  
-    return Array.from(unique).filter(id => id !== undefined && id !== null);
+
+    return Array.from(unique).filter(function (id) { return id !== undefined && id !== null; });
   };
 
 
-  canvas.setView = function (ids, duration = 1000) {
-    const items = data.filter(d => ids.includes(d.id));
+  canvas.setView = function (ids, duration) {
+    if (duration === void 0) { duration = 1000; }
+    var items = data.filter(function (d) { return ids.includes(d.id); });
     if (!items.length) return;
-  
+
     vizContainer.style("pointer-events", "none");
     zoom.center(null);
     state.zoomingToImage = true;
-  
-    // Compute the bounding box of all selected items
-    const xs = items.map(d => d.x);
-    const ys = items.map(d => d.y);
-  
-    const minX = d3.min(xs);
-    const maxX = d3.max(xs);
-    const minY = d3.min(ys);
-    const maxY = d3.max(ys);
 
-    const width = canvas.width();
-    const height = canvas.height();
-  
+    // Compute the bounding box of all selected items
+    var xs = items.map(function (d) { return d.x; });
+    var ys = items.map(function (d) { return d.y; });
+
+    var minX = d3.min(xs);
+    var maxX = d3.max(xs);
+    var minY = d3.min(ys);
+    var maxY = d3.max(ys);
+
+    var width = canvas.width();
+    var height = canvas.height();
+
     // Use rangeBandImage for padding/spacing logic
-    const padding = rangeBandImage / 2;
-    const boxWidth = maxX - minX + padding * 2;
-    const boxHeight = maxY - minY + padding * 2;
-  
+    var padding = rangeBandImage / 2;
+    var boxWidth = maxX - minX + padding * 2;
+    var boxHeight = maxY - minY + padding * 2;
+
     // Calculate center without padding (center point remains the same)
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-    
+    var centerX = (minX + maxX) / 2;
+    var centerY = (minY + maxY) / 2;
+
     // Calculate scale to fit the bounding box
-    const scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
-  
-  
-    const translateTarget = [
+    var scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
+
+
+    var translateTarget = [
       width / 2 - scale * (centerX + padding),
-      height / 2 - scale * (height + centerY + padding), 
+      height / 2 - scale * (height + centerY + padding),
     ];
 
     // old code
@@ -521,21 +522,21 @@ function Canvas() {
     state.init = true;
   };
 
-  var imageBorders = new Map();
+  var imageBorders = {};
 
   canvas.removeBorder = function (id) {
-    if (imageBorders.has(id)) {
-      stage3.removeChild(imageBorders.get(id));
-      imageBorders.delete(id);
+    if (imageBorders.hasOwnProperty(id)) {
+      stage3.removeChild(imageBorders[id]);
+      delete imageBorders[id];
       sleep = false;
     }
   }
 
   canvas.removeAllBorders = function () {
-    imageBorders.forEach(function (d) {
+    d3.values(imageBorders).forEach(function (d) {
       stage3.removeChild(d);
     });
-    imageBorders.clear();
+    imageBorders = {};
     sleep = false;
   }
 
@@ -553,15 +554,15 @@ function Canvas() {
       sprite.height
     );
     stage3.addChild(graphics);
-    imageBorders.set(d.id, graphics);
+    imageBorders[d.id] = graphics;
   }
 
 
   canvas.addBorderToImage = function (d) {
     sleep = false;
-    if (imageBorders.has(d.id)) {
-      stage3.removeChild(imageBorders.get(d.id));
-      imageBorders.delete(d.id);
+    if (imageBorders.hasOwnProperty(d.id)) {
+      stage3.removeChild(imageBorders[d.id]);
+      delete imageBorders[d.id];
       updateHashBorders();
       return;
     }
@@ -571,7 +572,7 @@ function Canvas() {
 
   function updateHashBorders() {
     if (!d3.event) return;
-    var borders = Array.from(imageBorders.keys());
+    var borders = Object.keys(imageBorders);
     utils.updateHash("borders", borders);
   }
 
@@ -1136,7 +1137,7 @@ function Canvas() {
       loadBigImage(selectedImage, "zoom");
     }
 
-     var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
+    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
     console.log("center", center)
 
 
@@ -1149,7 +1150,7 @@ function Canvas() {
         var params = new URLSearchParams(hash);
 
         const idsInViewport = canvas.getView();
-        if(idsInViewport.length > 0){
+        if (idsInViewport.length > 0) {
           params.set("ids", idsInViewport.join(","));
         } else if (params.get("ids").split(",").length <= 1) {
           return;
@@ -1177,7 +1178,7 @@ function Canvas() {
     var params = new URLSearchParams(hash);
     // console.log("searchParams", [...params.entries()])
 
-  
+
     if (params.has("ids") && !userInteraction) {
       var ids = params.get("ids").split(",")
       console.log("set setView", ids)
@@ -1216,11 +1217,11 @@ function Canvas() {
         var borderIds = params.get("borders").split(",")
         console.log("borders", borderIds)
         // check if borderIds are in imageBorders
-        var enter = borderIds.filter(d => !imageBorders.has(d))
-        var exit = Array.from(imageBorders.keys()).filter(d => !borderIds.includes(d))
+        var enter = borderIds.filter(function (d) { return !imageBorders.hasOwnProperty(d) })
+        var exit = Object.keys(imageBorders).filter(function (d) { return !borderIds.includes(d) })
 
         enter.forEach(function (id) {
-          var d = data.find(d => d.id == id)
+          var d = data.find(function (d) { return d.id == id })
           canvas.addBorderToImage(d)
         })
 
