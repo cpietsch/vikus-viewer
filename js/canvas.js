@@ -129,8 +129,10 @@ function Canvas() {
     data.forEach(d => {
       const px = d.sprite.position.x / scale1;
       const py = d.sprite.position.y / scale1;
-      const halfW = d.sprite.width / scale1 / 2;
-      const halfH = d.sprite.height / scale1 / 2;
+      let halfW = d.sprite.width / scale1 / 2;
+      let halfH = d.sprite.height / scale1 / 2;
+
+      halfH = halfW = 0;
   
       const left = px - halfW;
       const right = px + halfW;
@@ -146,6 +148,10 @@ function Canvas() {
         visibleItems.push(d);
       }
     });
+
+    if(visibleItems.length === 0 || visibleItems.length == data.length) {
+      return []
+    }
   
     console.log("fully visible items:", visibleItems.length, visibleItems.map(d => d.id));
   
@@ -488,6 +494,7 @@ function Canvas() {
         if (selectedImage && !selectedImage.active) return;
         if (timelineHover) return;
         // console.log(selectedImage)
+        userInteraction = true;
 
         if (Math.abs(zoomedToImageScale - scale) < 0.1) {
           canvas.resetZoom();
@@ -892,7 +899,7 @@ function Canvas() {
         state.zoomingToImage = false;
         console.log("zoomedToImage", zoomedToImage);
         vizContainer.style("pointer-events", "auto");
-        utils.updateHash("selected", d.id, ["translate", "scale"]);
+        utils.updateHash("ids", d.id, ["translate", "scale"]);
       });
   }
   canvas.zoomToImage = zoomToImage;
@@ -1076,102 +1083,6 @@ function Canvas() {
     startScale = scale;
   }
 
-  var debounceHash = null;
-  var debounceHashTime = 400;
-  var userInteraction = false;
-
-  function zoomend() {
-    // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
-    drag = startTranslate && translate !== startTranslate;
-    zooming = false;
-    filterVisible();
-
-    if (
-      zoomedToImage &&
-      selectedImage &&
-      !selectedImage.big &&
-      state.lastZoomed != selectedImage.id &&
-      !state.zoomingToImage
-    ) {
-      loadBigImage(selectedImage, "zoom");
-    }
-
-    // translate = translate.map(d => parseInt(d))
-    // scale = parseFloat(scale.toFixed(2))
-
-    // console.log("##1", translate, scale, scale1)
-    // console.log("##2", translate.map(d => d / scale1), Math.log(scale) / Math.log(scale1))
-
-    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
-    console.log("center", center)
-
-    createRect(center[0], height + center[1], 5, 5, 0xff0000, 0.3, stage2)
-
-    if (lastSourceEvent) {
-      if (debounceHash) clearTimeout(debounceHash)
-      debounceHash = setTimeout(function () {
-        if (zooming) return
-        // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
-        var hash = window.location.hash.slice(1);
-        var params = new URLSearchParams(hash);
-
-        // var _translate = translate.map(d => parseInt(d / scale1))
-        // console.log("outerWidth", outerWidth)
-        // console.log("widthOuter", widthOuter)
-
-        // var _translate = [
-        //   (translate[0] / scale),
-        //   (translate[1] / scale) - (window.innerHeight / 2)
-        // ]
-
-        /*
-
-            var scale = 1 / (rangeBandImage / (max * 0.6));
-            var translateNow = [
-              -scale * (d.x - padding) - (max * 0.3) / 2 + margin.left,
-              -scale * (height + d.y + padding) - margin.top + height / 2,
-            ];
-      var center = [
-        (d.x + imgPadding) * scale + translate[0],
-        (height + d.y + imgPadding) * scale + translate[1],
-      ];
-      console.log("center", width, center, d.x, d.y)
-    */
-        // var _translate = [
-        //   ((translate[0] / scale)) / (window.innerWidth),
-        //   ((translate[1] / scale)) / (window.innerHeight)
-        // ]
-        // console.log("############", _translate, window.innerWidth, window.innerHeight)
-        // _translate = _translate.map(d => d * 100000)
-
-        // //.map(d => parseInt(d))
-
-
-        // var _scale = scale / scale1
-
-        // _scale = scale / Math.log(window.innerWidth * window.innerHeight)
-
-        // _scale = scale
-
-        // params.set("translate", _translate)
-        // params.set("scale", _scale)
-        
-        const idsInViewport = canvas.getView();
-        if(idsInViewport.length > 0){
-          params.set("ids", idsInViewport.join(","));
-        } else {
-          params.delete("ids");
-        }
-        params.delete("selected")
-        window.location.hash = params.toString().replaceAll("%2C", ",")
-        userInteraction = true;
-        // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
-
-      }, debounceHashTime)
-    }
-
-    console.log("zoomend", rangeBand, imgPadding, translate, scale, scale1)
-  }
   function createRect(x, y, width, height, color, alpha, targetStage) {
     // Create a graphics object
     var graphics = new PIXI.Graphics();
@@ -1205,6 +1116,57 @@ function Canvas() {
     return p2
   }
 
+  var debounceHash = null;
+  var debounceHashTime = 400;
+  var userInteraction = false;
+
+  function zoomend() {
+    // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
+    drag = startTranslate && translate !== startTranslate;
+    zooming = false;
+    filterVisible();
+
+    if (
+      zoomedToImage &&
+      selectedImage &&
+      !selectedImage.big &&
+      state.lastZoomed != selectedImage.id &&
+      !state.zoomingToImage
+    ) {
+      loadBigImage(selectedImage, "zoom");
+    }
+
+     var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
+    console.log("center", center)
+
+
+    if (lastSourceEvent) {
+      if (debounceHash) clearTimeout(debounceHash)
+      debounceHash = setTimeout(function () {
+        if (zooming) return
+        // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
+        var hash = window.location.hash.slice(1);
+        var params = new URLSearchParams(hash);
+
+        const idsInViewport = canvas.getView();
+        if(idsInViewport.length > 0){
+          params.set("ids", idsInViewport.join(","));
+        } else if (params.get("ids").split(",").length <= 1) {
+          return;
+        } else {
+          params.delete("ids");
+        }
+        window.location.hash = params.toString().replaceAll("%2C", ",")
+        userInteraction = true;
+        // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
+
+      }, debounceHashTime)
+    }
+
+    console.log("zoomend", rangeBand, imgPadding, translate, scale, scale1)
+  }
+
+
 
   canvas.onhashchange = function () {
 
@@ -1215,55 +1177,7 @@ function Canvas() {
     var params = new URLSearchParams(hash);
     // console.log("searchParams", [...params.entries()])
 
-    if (params.has("translate") && params.has("scale")) {
-      var _translate = params.get("translate").split(",").map(d => parseFloat(d / 100000));
-      // .map(d => parseInt(d * scale1));
-
-      var _scale = (params.get("scale")) * scale1
-      _scale = params.get("scale") * Math.log(window.innerWidth * window.innerHeight)
-
-      _scale = params.get("scale")
-
-      // _translate = [
-      //   _translate[0] * _scale,
-      //   (_translate[1] + (window.innerHeight / 2)) * _scale
-      // ]
-
-      /*
-      var _translate = [
-          ((translate[0] / scale) - (window.innerWidth / 2)) / (window.innerWidth),
-          ((translate[1] / scale) - (window.innerHeight / 2)) / (window.innerHeight)
-        ]
-      */
-
-      _translate = [
-        ((_translate[0] * (window.innerWidth))) * _scale,
-        ((_translate[1] * (window.innerHeight))) * _scale
-      ];
-
-      // createRect(_translate[0] * -1 * _scale, _translate[1] * -1, 5, 5, 0x00ff00, 1, stage2)
-      console.log("TRANSLATE", _translate, window.innerWidth, window.innerHeight)
-      // console.log("parsed", translate, _translate, scale, _scale)
-
-      // if(_translate[0] != translate[0] || _translate[1] != translate[1] || Math.abs(_scale - scale) > 0.2){
-      if (
-        Math.abs(_scale - scale) > 0.2 ||
-        Math.abs(_translate[0] - translate[0]) > 10 ||
-        Math.abs(_translate[1] - translate[1]) > 10
-      ) {
-        console.log("animate zoom")
-        vizContainer
-          .call(zoom.translate(translate).event)
-          .transition()
-          .duration(1000)
-          .call(zoom.scale(_scale).translate(_translate).event)
-      }
-    } else {
-      // if(scale > 1.1){
-      //   canvas.resetZoom();
-      // }
-    }
-
+  
     if (params.has("ids") && !userInteraction) {
       var ids = params.get("ids").split(",")
       console.log("set setView", ids)
@@ -1320,13 +1234,13 @@ function Canvas() {
 
 
 
-    if (params.has("selected")) {
-      var id = params.get("selected")
-      var d = data.find(d => d.id == id)
-      if (d) {
-        zoomToImage(d, 1000)
-      }
-    }
+    // if (params.has("selected")) {
+    //   var id = params.get("selected")
+    //   var d = data.find(d => d.id == id)
+    //   if (d) {
+    //     zoomToImage(d, 1000)
+    //   }
+    // }
 
     userInteraction = false;
 
