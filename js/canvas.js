@@ -1152,7 +1152,7 @@ function Canvas() {
         const idsInViewport = canvas.getView();
         if (idsInViewport.length > 0) {
           params.set("ids", idsInViewport.join(","));
-        } else if (params.get("ids").split(",").length <= 1) {
+        } else if (params.has("ids") && params.get("ids").split(",").length <= 1) {
           return;
         } else {
           params.delete("ids");
