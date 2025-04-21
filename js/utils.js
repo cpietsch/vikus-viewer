@@ -6,6 +6,10 @@
 
 window.utils = { config: {} };
 
+utils.setMode = function (mode) {
+	console.log("set mode", mode)
+}
+
 utils.getDataBaseUrl = function () {
 	var params = new URLSearchParams(window.location.search)
 	var config = params.get('config')

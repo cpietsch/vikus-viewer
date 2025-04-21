@@ -127,12 +127,14 @@ function Canvas() {
     var viewBottom = viewTop + height * invScale;
 
     data.forEach(function (d) {
-      var px = d.sprite.position.x / scale1;
-      var py = d.sprite.position.y / scale1;
-      var halfW = d.sprite.width / scale1 / 2;
-      var halfH = d.sprite.height / scale1 / 2;
+      var px = d.x;
+      var py = d.y;
+      // var px = d.sprite.position.x / scale1;
+      // var py = d.sprite.position.y / scale1;
+      // var halfW = d.sprite.width / scale1 / 2;
+      // var halfH = d.sprite.height / scale1 / 2;
 
-      halfH = halfW = 0;
+      var halfH = halfW = 0;
 
       var left = px - halfW;
       var right = px + halfW;
@@ -762,9 +764,11 @@ function Canvas() {
 
   function imageAnimation() {
     var sleep = true;
+    var diff, d;
 
-    data.forEach(function (d, i) {
-      var diff;
+  
+    for (var i = 0; i < data.length; i++) {
+      d = data[i];
       diff = d.x1 - d.sprite.position.x;
       if (Math.abs(diff) > 0.1) {
         d.sprite.position.x += diff * speed;
@@ -795,7 +799,7 @@ function Canvas() {
         d.sprite2.visible = d.sprite2.alpha > 0.1;
         //else d.sprite2.visible = d.visible;
       }
-    });
+    };
     return sleep;
   }
 
@@ -1183,7 +1187,15 @@ function Canvas() {
       var ids = params.get("ids").split(",")
       console.log("set setView", ids)
       // console.log("ids", ids)
-      canvas.setView(ids)
+      // if there is a mode in the hash and it is different from the current mode wait 300ms
+      // before setting the view
+      if(params.has("mode") && params.get("mode") !== state.mode.title) {
+        setTimeout(function () {
+          canvas.setView(ids)
+        }, 300)
+      } else {
+        canvas.setView(ids)
+      }
     }
 
     if (hash === "") {
@@ -1233,18 +1245,7 @@ function Canvas() {
       canvas.removeAllBorders()
     }
 
-
-
-    // if (params.has("selected")) {
-    //   var id = params.get("selected")
-    //   var d = data.find(d => d.id == id)
-    //   if (d) {
-    //     zoomToImage(d, 1000)
-    //   }
-    // }
-
     userInteraction = false;
-
 
   }
 

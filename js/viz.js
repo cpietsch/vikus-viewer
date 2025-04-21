@@ -204,7 +204,7 @@ function init() {
       .classed("space", (d) => d.space)
       .text((d) => d.title);
 
-    s.on("click", function (d) { utils.setMode(d.title) });
+    s.on("click", function (d) { utils.setMode(d.title, interaction=true) });
     d3.selectAll(".navi .button").classed(
       "active",
       (d) => d.title == config.loader.layouts[0].title
@@ -212,7 +212,7 @@ function init() {
   }
 }
 
-utils.setMode = function(title) {
+utils.setMode = function(title, interaction = false) {
   console.log("setMode", title);
   if(utils.config.loader.layouts === undefined) return;
   var currentMode = canvas.getMode().title;
@@ -226,7 +226,7 @@ utils.setMode = function(title) {
     "active",
     (d) => d.title == title
   );
-  updateHash("mode", layout.title, ["translate", "scale", "ids"]);
+  updateHash("mode", layout.title, interaction ? ["ids"] : undefined);
 }
 
 function updateHash(name, value, clear = undefined) {
