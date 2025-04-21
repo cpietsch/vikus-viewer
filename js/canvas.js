@@ -83,7 +83,7 @@ function Canvas() {
   var stagePadding = 40;
   var imgPadding;
 
-  var bottomPadding = 70;
+  var bottomPadding = 40;
   var extent = [0, 0];
   var bottomZooming = false;
 
@@ -1355,7 +1355,7 @@ function Canvas() {
       .call(zoom.translate(translate).event)
       .transition()
       .duration(duration)
-      .call(zoom.translate([0, 0]).scale(1).event)
+      .call(zoom.translate([0, y]).scale(1).event)
       .each("end", function () {
         if (callback && scale < zoomBarrier) callback();
       })
