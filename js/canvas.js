@@ -10,6 +10,8 @@ function Canvas() {
     left: 0,
   };
 
+  var hashDelay = 800;
+
   var minHeight = 400;
   var width = window.innerWidth - margin.left - margin.right;
   var widthOuter = window.innerWidth;
@@ -1174,10 +1176,13 @@ function Canvas() {
       // console.log("ids", ids)
       // if there is a mode in the hash and it is different from the current mode wait 300ms
       // before setting the view
-      if(params.has("mode") && params.get("mode") !== state.mode.title) {
+      if(
+        params.has("mode") && params.get("mode") !== state.mode.title ||
+        params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",")
+      ) {
         setTimeout(function () {
           canvas.setView(ids)
-        }, 300)
+        }, hashDelay)
       } else {
         canvas.setView(ids)
       }
@@ -1225,7 +1230,7 @@ function Canvas() {
         exit.forEach(function (id) {
           canvas.removeBorder(id)
         })
-      }, params.has("filter") ? 2000 : 0)
+      }, params.has("filter") || params.has("mode") ? 2000 : 0)
     } else {
       canvas.removeAllBorders()
     }

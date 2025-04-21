@@ -287,6 +287,10 @@ function Tags() {
     tags.updateAll();
   }
 
+  tags.getFilterWords = function(){
+    return filterWords;
+  }
+
   tags.mouseclick = function (d) {
     lock = true;
 
