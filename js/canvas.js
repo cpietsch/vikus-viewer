@@ -528,6 +528,18 @@ function Canvas() {
 
   var imageBorders = {};
 
+  canvas.updateBorderPositions = function () {
+    var graphics = d3.values(imageBorders);
+    if (graphics.length == 0) return;
+    graphics.forEach(function (graphic) {
+      var d = graphic.source;
+      graphic.position.x = d.sprite.position.x - d.sprite.width / 2;
+      graphic.position.y = d.sprite.position.y - d.sprite.height / 2;
+      // console.log(d.sprite.position.x, graphic.position);
+    });
+  }
+
+
   canvas.removeBorder = function (id) {
     if (imageBorders.hasOwnProperty(id)) {
       stage3.removeChild(imageBorders[id]);
@@ -548,17 +560,20 @@ function Canvas() {
     sleep = false;
     var sprite = d.sprite;
     var graphics = new PIXI.Graphics();
-    var borderColorHash = config.style?.selectionColor || "#ff0000";
+    var borderColorHash = config.style?.borderColor || "#ff0000";
     var borderColor = parseInt(borderColorHash.substring(1), 16);
-    graphics.lineStyle(4, borderColor, 1);
+    graphics.lineStyle(5, borderColor, 1);
     graphics.drawRect(
-      sprite.position.x - sprite.width / 2,
-      sprite.position.y - sprite.height / 2,
+      0,0,
       sprite.width,
       sprite.height
     );
+    graphics.position.x = sprite.position.x - sprite.width / 2;
+    graphics.position.y = sprite.position.y - sprite.height / 2;
+    graphics.source = d
     stage3.addChild(graphics);
     imageBorders[d.id] = graphics;
+    console.log("added border", graphics);
   }
 
 
@@ -802,6 +817,7 @@ function Canvas() {
         //else d.sprite2.visible = d.visible;
       }
     };
+    canvas.updateBorderPositions();
     return sleep;
   }
 
