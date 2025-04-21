@@ -915,7 +915,7 @@ function Canvas() {
 
     detailContainer.select(".outer").node().scrollTop = 0;
 
-    detailContainer.classed("hide", false).classed("sneak", utils.isMobile());
+    detailContainer.classed("hide", false).classed("sneak", utils.isMobile() || isInIframe);
 
     // needs to be done better
     // for (field in selectedImage) {
@@ -983,6 +983,7 @@ function Canvas() {
 
   var zoomBarrierState = false;
   var lastSourceEvent = null;
+  var isInIframe = window.self !== window.top;
 
   function zoomed() {
     lastSourceEvent = d3.event.sourceEvent;
@@ -1063,22 +1064,6 @@ function Canvas() {
     stage2.y = d3.event.translate[1];
 
     sleep = false;
-
-    // var pc = [
-    //   (window.innerWidth / 2 - translate[0]) / scale / window.innerWidth,
-    //   (window.innerHeight / 2 - translate[1]) / scale / window.innerHeight
-    // ]
-
-    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
-    var p1 = [
-      (center[0]) * scale + translate[0],
-      (height + center[1]) * scale + translate[1],
-    ];
-    // console.log(window.innerHeight, translate, scale)
-    // console.log(
-    //   ((translate[0] / scale)) / (window.innerWidth),
-    //   ((translate[1] / scale)) / (window.innerHeight)
-    // )
   }
 
   function zoomstart(d) {
