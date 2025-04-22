@@ -1,109 +1,74 @@
-// christopher pietsch
-// cpietsch@gmail.com
-// 2015-2018
+import CanvasBase from './CanvasBase';
+import CanvasZoom from './CanvasZoom';
+import CanvasLayout from './CanvasLayout';
+import CanvasImage from './CanvasImage';
 
 function Canvas() {
-  var margin = {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  };
+  var canvasBase = new CanvasBase();
+  var canvasZoom = new CanvasZoom();
+  var canvasLayout = new CanvasLayout();
+  var canvasImage = new CanvasImage();
+
+  var margin = canvasBase.margin;
+  var width = canvasBase.width;
+  var height = canvasBase.height;
+  var scale = canvasBase.scale;
+  var translate = canvasBase.translate;
+  var data = canvasBase.data;
+
+  var zoom = canvasZoom.zoom;
+  var maxZoomLevel = canvasZoom.maxZoomLevel;
+  var zoomBarrier = canvasZoom.zoomBarrier;
+
+  var columns = canvasLayout.columns;
+  var rangeBand = canvasLayout.rangeBand;
+  var rangeBandImage = canvasLayout.rangeBandImage;
+
+  var imageSize = canvasImage.imageSize;
+  var imageSize2 = canvasImage.imageSize2;
+  var imageSize3 = canvasImage.imageSize3;
 
   var hashDelay = 800;
-
   var minHeight = 400;
-  var width = window.innerWidth - margin.left - margin.right;
   var widthOuter = window.innerWidth;
-  var height = window.innerHeight // < minHeight ? minHeight : window.innerHeight;
-  console.log("height", height)
-  console.log("width", width)
-
-  var scale;
-  var scale1 = 1;
-  var scale2 = 1;
-  var scale3 = 1;
   var allData = [];
-
-  var translate = [0, 0];
-  var scale = 1;
   var timeDomain = [];
   var canvasDomain = [];
   var loadImagesCue = [];
-
-  var resolution = 1; // window.devicePixelRatio || 1;
-
-  var x = d3.scale
-    .ordinal()
-    .rangeBands([margin.left, width + margin.left], 0.2);
-
-  var yscale = d3.scale.linear()
-
-  var Quadtree = d3.geom
-    .quadtree()
-    .x(function (d) {
-      return d.x;
-    })
-    .y(function (d) {
-      return d.y;
-    });
-
+  var resolution = 1;
+  var x = d3.scale.ordinal().rangeBands([margin.left, width + margin.left], 0.2);
+  var yscale = d3.scale.linear();
+  var Quadtree = d3.geom.quadtree().x(function (d) { return d.x; }).y(function (d) { return d.y; });
   var quadtree;
-
-  var maxZoomLevel = utils.isMobile() ? 5000 : 2500;
-
-  var zoom = d3.behavior
-    .zoom()
-    .scaleExtent([1, maxZoomLevel])
-    .size([width, height])
-    .on("zoom", zoomed)
-    .on("zoomend", zoomend)
-    .on("zoomstart", zoomstart);
-
   var canvas;
   var config;
   var container;
   var entries;
   var years;
-  var data;
   var rangeBand = 0;
   var rangeBandImage = 0;
-  var imageSize = 256;
-  var imageSize2 = 1024;
-  var imageSize3 = 4000;
-  var columns = 4;
   var renderer, stage;
-
   var svgscale, voronoi;
-
   var selectedImageDistance = 0;
   var selectedImage = null;
-
   var drag = false;
   var sleep = false;
-
   var stagePadding = 40;
   var imgPadding;
-
   var bottomPadding = 40;
   var extent = [0, 0];
   var bottomZooming = false;
-
   var touchstart = 0;
   var vizContainer;
   var spriteClick = false;
-
   var state = {
     lastZoomed: 0,
     zoomingToImage: false,
     init: false,
     mode: "time",
   };
-
   var zoomedToImage = false;
   var zoomedToImageScale = 117;
-  var zoomBarrier = 2;
-
   var startTranslate = [0, 0];
   var startScale = 0;
   var cursorCutoff = 1;
@@ -113,129 +78,18 @@ function Canvas() {
   var stage, stage1, stage2, stage3, stage4, stage5;
   var timelineHover = false;
   var tsneIndex = {};
-  var tsneScale = {}
+  var tsneScale = {};
 
   function canvas() { }
 
   canvas.margin = margin;
 
   canvas.getView = function () {
-    var visibleItems = [];
-
-    var invScale = 1 / scale;
-    var viewLeft = -translate[0] * invScale;
-    var viewTop = (-translate[1] * invScale) - height;
-    var viewRight = viewLeft + width * invScale;
-    var viewBottom = viewTop + height * invScale;
-
-    data.forEach(function (d) {
-      var px = d.x;
-      var py = d.y;
-      // var px = d.sprite.position.x / scale1;
-      // var py = d.sprite.position.y / scale1;
-      // var halfW = d.sprite.width / scale1 / 2;
-      // var halfH = d.sprite.height / scale1 / 2;
-
-      var halfH = halfW = 0;
-
-      var left = px - halfW;
-      var right = px + halfW;
-      var top = py - halfH;
-      var bottom = py + halfH;
-
-      if (
-        left >= viewLeft &&
-        right <= viewRight &&
-        top >= viewTop &&
-        bottom <= viewBottom
-      ) {
-        visibleItems.push(d);
-      }
-    });
-
-    if (visibleItems.length === 0 || visibleItems.length == data.length) {
-      return []
-    }
-
-    console.log("fully visible items:", visibleItems.length, visibleItems.map(function (d) { return d.id; }));
-
-    var mostLeft = null;
-    var mostRight = null;
-    var mostTop = null;
-    var mostBottom = null;
-
-    visibleItems.forEach(function (d) {
-      if (!mostLeft || d.x < mostLeft.x) mostLeft = d;
-      if (!mostRight || d.x > mostRight.x) mostRight = d;
-      if (!mostTop || d.y < mostTop.y) mostTop = d;
-      if (!mostBottom || d.y > mostBottom.y) mostBottom = d;
-    });
-
-    var unique = new Set([
-      mostLeft?.id,
-      mostRight?.id,
-      mostTop?.id,
-      mostBottom?.id,
-    ]);
-
-    return Array.from(unique).filter(function (id) { return id !== undefined && id !== null; });
+    return canvasBase.getView();
   };
 
-
   canvas.setView = function (ids, duration) {
-    if (duration === void 0) { duration = 1000; }
-    var items = data.filter(function (d) { return ids.includes(d.id); });
-    if (!items.length) return;
-
-    vizContainer.style("pointer-events", "none");
-    zoom.center(null);
-    state.zoomingToImage = true;
-
-    // Compute the bounding box of all selected items
-    var xs = items.map(function (d) { return d.x; });
-    var ys = items.map(function (d) { return d.y; });
-
-    var minX = d3.min(xs);
-    var maxX = d3.max(xs);
-    var minY = d3.min(ys);
-    var maxY = d3.max(ys);
-
-    var width = canvas.width();
-    var height = canvas.height();
-
-    // Use rangeBandImage for padding/spacing logic
-    var padding = rangeBandImage / 2;
-    var boxWidth = maxX - minX + padding * 2;
-    var boxHeight = maxY - minY + padding * 2;
-
-    // Calculate center without padding (center point remains the same)
-    var centerX = (minX + maxX) / 2;
-    var centerY = (minY + maxY) / 2;
-
-    // Calculate scale to fit the bounding box
-    var scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
-
-
-    var translateTarget = [
-      width / 2 - scale * (centerX + padding),
-      height / 2 - scale * (height + centerY + padding),
-    ];
-
-    // old code
-    // const translateOriginal = [
-    //   -scale * (centerX - padding) - (Math.max(width, height) * 0.3) / 2 + margin.left,
-    //   -scale * (height + centerY + padding) - margin.top + height / 2,
-    // ];
-
-    vizContainer
-      .call(zoom.translate(translate).event) // Use current translate as starting point
-      .transition()
-      .duration(duration)
-      .call(zoom.scale(scale).translate(translateTarget).event) // Apply new scale and target translate
-      .each("end", function () {
-        state.zoomingToImage = false;
-        vizContainer.style("pointer-events", "auto");
-      });
+    return canvasBase.setView(ids, duration);
   };
 
   canvas.rangeBand = function () {
@@ -258,114 +112,16 @@ function Canvas() {
   canvas.y = yscale;
 
   canvas.resize = function () {
-    if (!state.init) return;
-    width = window.innerWidth - margin.left - margin.right;
-    height = window.innerHeight // < minHeight ? minHeight : window.innerHeight;
-    widthOuter = window.innerWidth;
-    renderer.resize(width + margin.left + margin.right, height);
-    zoom.size([width, height]);
-    canvas.makeScales();
-    canvas.project();
-    canvas.resetZoom();
-    console.log("dimensions", width, height)
-    console.log("self.innerWidth", self.innerWidth, self.innerHeight)
+    return canvasBase.resize();
   };
 
   canvas.makeScales = function () {
-    x.rangeBands([margin.left, width + margin.left], 0.2);
-
-    rangeBand = x.rangeBand();
-    rangeBandImage = rangeBand / columns;
-
-    imgPadding = rangeBand / columns / 2;
-
-    scale1 = imageSize / rangeBandImage;
-    scale2 = imageSize2 / rangeBandImage;
-    scale3 = imageSize3 / rangeBandImage;
-
-    stage3.scale.x = 1 / scale1;
-    stage3.scale.y = 1 / scale1;
-    stage3.y = height;
-
-    stage4.scale.x = 1 / scale2;
-    stage4.scale.y = 1 / scale2;
-    stage4.y = height;
-
-    stage5.scale.x = 1 / scale3;
-    stage5.scale.y = 1 / scale3;
-    stage5.y = height;
-
-    timeline.rescale(scale1);
-
-    cursorCutoff = (1 / scale1) * imageSize * 0.48;
-    zoomedToImageScale =
-      (0.8 / (rangeBand / columns / width)) *
-      (state.mode.type === "group" ? 1 : 0.5);
-    // console.log("zoomedToImageScale", zoomedToImageScale)
+    return canvasBase.makeScales();
   };
 
   canvas.initGroupLayout = function () {
-    var groupKey = state.mode.groupKey
-    console.log("initGroupLayout", groupKey);
-    canvasDomain = d3
-      .nest()
-      .key(function (d) {
-        return d[groupKey];
-      })
-      .entries(data.concat(timelineData))
-      .sort(function (a, b) {
-        return a.key - b.key;
-      })
-      .map(function (d) {
-        return d.key;
-      });
-
-    // if (groupKey == "stadt") {
-    //   console.log("stadt", canvasDomain)
-    //   const missing = canvasDomain.filter(d => !utils.citiesOrder.includes(d))
-    //   console.log("missing", missing)
-    //   canvasDomain = utils.citiesOrder
-    // }
-
-    timeDomain = canvasDomain.map(function (d) {
-      return {
-        key: d,
-        values: timelineData
-          .filter(function (e) {
-            return d == e[groupKey];
-          }).map(function (e) {
-            e.type = "timeline";
-            return e;
-          })
-      };
-    });
-    // console.log("canvasDomain", canvasDomain);
-    // console.log("timeDomain", timeDomain);
-
-
-    timeline.init(timeDomain);
-
-    x.domain(canvasDomain);
-
+    return canvasLayout.initGroupLayout();
   };
-
-  // canvas.setCustomTimelineData = function () {
-  //   timelineData = [{ "x": "54", "key": "200" }, { "x": "182", "key": "1k" }, { "x": "237", "key": "2k" }, { "x": "365", "key": "10k" }, { "x": "420", "key": "20k" }, { "x": "548", "key": "100k" }, { "x": "603", "key": "200k" }, { "x": "731", "key": "1M" }, { "x": "786", "key": "2M" }]
-  //   canvasDomain = timelineData.map(d => d.key)
-  //   timeDomain = timelineData.map(function (d) {
-  //     return {
-  //       key: d.key,
-  //       values: [],
-  //       type: "static",
-
-  //     };
-  //   });
-  //   timeline.init(timeDomain);
-  //   x.domain(canvasDomain);
-
-  //   console.log("canvasDomain", canvasDomain);
-  //   console.log("timeDomain", timeDomain);
-  // }
 
   canvas.init = function (_data, _timeline, _config) {
     data = _data;
@@ -382,12 +138,6 @@ function Canvas() {
     if (config.loader.textures.big) {
       imageSize3 = config.loader.textures.big.size;
     }
-
-    // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    // PIXI.settings.SPRITE_MAX_TEXTURES = Math.min(
-    //   PIXI.settings.SPRITE_MAX_TEXTURES,
-    //   16
-    // );
 
     var renderOptions = {
       resolution: resolution,
@@ -417,9 +167,6 @@ function Canvas() {
 
     canvas.initGroupLayout();
 
-    //canvas.makeScales();
-
-    // add preview pics
     data.forEach(function (d, i) {
       var sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
@@ -447,40 +194,11 @@ function Canvas() {
         mousemove(d);
         touchstart = new Date() * 1;
       })
-      // .on("touchend", function (d, i, nodes, event) {
-      //   var touchtime = new Date() * 1 - touchstart;
-      //   if (touchtime < 20) {
-      //     console.log("touched", touchtime, d, i, nodes, event);
-      //     return;
-      //   }
-      // })
-      // .on("touchend", function (d) {
-      //   var touchtime = new Date() * 1 - touchstart;
-      //   if (touchtime > 250) {
-      //     console.log("longtouch", touchtime);
-      //     return;
-      //   }
-      //   if (selectedImageDistance > 15) return;
-      //   if (selectedImage && !selectedImage.id) return;
-      //   if (selectedImage && !selectedImage.active) return;
-      //   if (drag) return;
-
-      //   console.log("touch zoom")
-
-      //   // if (Math.abs(zoomedToImageScale - scale) < 0.1) {
-      //   //   canvas.resetZoom();
-      //   // } else {
-      //   //   zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
-      //   // }
-
-      //   // zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
-      // })
       .on("click", function () {
-
         if (d3.event.shiftKey) {
           console.log("shift click", selectedImage);
           canvas.addBorderToImage(selectedImage);
-          return
+          return;
         }
 
         var clicktime = new Date() * 1 - lastClick;
@@ -498,31 +216,20 @@ function Canvas() {
         if (selectedImageDistance > cursorCutoff) return;
         if (selectedImage && !selectedImage.active) return;
         if (timelineHover) return;
-        // console.log(selectedImage)
         userInteraction = true;
 
         if (Math.abs(zoomedToImageScale - scale) < 0.1) {
           canvas.resetZoom();
-          // console.log("reset zoom")
         } else {
-          // console.log("zoom to image", zoomedToImageScale, scale)
           zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
         }
       });
 
-    // disable right click
     vizContainer.on("contextmenu", function () {
       d3.event.preventDefault();
     });
 
-
-
-    //canvas.makeScales();
-    //canvas.project();
     animate();
-
-    // selectedImage = data.find(d => d.id == 88413)
-    // showDetail(selectedImage)
     state.init = true;
   };
 
@@ -535,10 +242,8 @@ function Canvas() {
       var d = graphic.source;
       graphic.position.x = d.sprite.position.x - d.sprite.width / 2;
       graphic.position.y = d.sprite.position.y - d.sprite.height / 2;
-      // console.log(d.sprite.position.x, graphic.position);
     });
-  }
-
+  };
 
   canvas.removeBorder = function (id) {
     if (imageBorders.hasOwnProperty(id)) {
@@ -546,7 +251,7 @@ function Canvas() {
       delete imageBorders[id];
       sleep = false;
     }
-  }
+  };
 
   canvas.removeAllBorders = function () {
     d3.values(imageBorders).forEach(function (d) {
@@ -554,7 +259,7 @@ function Canvas() {
     });
     imageBorders = {};
     sleep = false;
-  }
+  };
 
   canvas.addBorder = function (d) {
     sleep = false;
@@ -564,18 +269,17 @@ function Canvas() {
     var borderColor = parseInt(borderColorHash.substring(1), 16);
     graphics.lineStyle(5, borderColor, 1);
     graphics.drawRect(
-      0,0,
+      0, 0,
       sprite.width,
       sprite.height
     );
     graphics.position.x = sprite.position.x - sprite.width / 2;
     graphics.position.y = sprite.position.y - sprite.height / 2;
-    graphics.source = d
+    graphics.source = d;
     stage3.addChild(graphics);
     imageBorders[d.id] = graphics;
     console.log("added border", graphics);
-  }
-
+  };
 
   canvas.addBorderToImage = function (d) {
     sleep = false;
@@ -587,7 +291,7 @@ function Canvas() {
     }
     canvas.addBorder(d);
     updateHashBorders();
-  }
+  };
 
   function updateHashBorders() {
     if (!d3.event) return;
@@ -639,20 +343,13 @@ function Canvas() {
     );
 
     selectedImageDistance = best && best.d || 1000;
-    // console.log(cursorCutoff, scale, scale1, selectedImageDistance)
 
-    // if (best.p && selectedImageDistance > 7) {
-    //   //selectedImage = null;
-    //   //zoom.center(null);
-    //   container.style("cursor", "default");
-    // } else {
     if (best && best.p && !zoomedToImage) {
       var d = best.p;
       var center = [
         (d.x + imgPadding) * scale + translate[0],
         (height + d.y + imgPadding) * scale + translate[1],
       ];
-      // console.log("center", width, center, d.x, d.y)
       zoom.center(center);
       selectedImage = d;
     }
@@ -662,112 +359,14 @@ function Canvas() {
         ? "pointer"
         : "default";
     });
-    // }
   }
 
   function stackLayout(data, invert) {
-    var groupKey = state.mode.groupKey
-    var years = d3
-      .nest()
-      .key(function (d) {
-        return d[groupKey];
-      })
-      .entries(data);
-
-    years.forEach(function (year) {
-      var startX = x(year.key);
-      var total = year.values.length;
-      year.values.sort(function (a, b) {
-        return b.keywords.length - a.keywords.length;
-      });
-
-      year.values.forEach(function (d, i) {
-        var row = Math.floor(i / columns) + 2;
-        d.ii = i;
-
-        d.x = startX + (i % columns) * (rangeBand / columns);
-        d.y = (invert ? 1 : -1) * (row * (rangeBand / columns));
-
-        d.x1 = d.x * scale1 + imageSize / 2;
-        d.y1 = d.y * scale1 + imageSize / 2;
-
-        if (d.sprite.position.x == 0) {
-          d.sprite.position.x = d.x1;
-          d.sprite.position.y = d.y1;
-        }
-
-        if (d.sprite2) {
-          d.sprite2.position.x = d.x * scale2 + imageSize2 / 2;
-          d.sprite2.position.y = d.y * scale2 + imageSize2 / 2;
-        }
-
-        d.order = (invert ? 1 : 1) * (total - i);
-      });
-    });
-
+    return canvasLayout.stackLayout(data, invert);
   }
 
   function stackYLayout(data, invert) {
-    if (data.length == 0) return
-    var groupKey = state.mode.groupKey
-    var years = d3
-      .nest()
-      .key(function (d) {
-        return d[groupKey];
-      })
-      .entries(data);
-
-    // y scale for state.mode.y (e.g. "kaufpreis")
-    var yExtent = d3.extent(data, function (d) { return +d[state.mode.y]; })
-    var yRange = [2 * (rangeBand / columns), height * 0.7]
-
-    yExtent[0] = 0;
-
-    var yscale = d3.scale.linear()
-      .domain(yExtent)
-      .range(yRange);
-
-    // console.log("yscale", yscale.domain(), yscale.range())
-
-    years.forEach(function (year) {
-      var startX = x(year.key);
-
-      year.values.sort(function (a, b) {
-        return b[state.mode.y] - a[state.mode.y];
-      });
-
-      year.values.forEach(function (d, i) {
-        d.ii = i;
-
-        d.x = startX + (i % columns) * (rangeBand / columns);
-        d.y = (invert ? 1 : -1) * yscale(d[state.mode.y]);
-        //d.y = (invert ? 1 : -1) * (row * (rangeBand / columns));
-
-        d.x1 = d.x * scale1 + imageSize / 2;
-        d.y1 = d.y * scale1 + imageSize / 2;
-
-        if (d.sprite.position.x == 0) {
-          d.sprite.position.x = d.x1;
-          d.sprite.position.y = d.y1;
-        }
-
-        if (d.sprite2) {
-          d.sprite2.position.x = d.x * scale2 + imageSize2 / 2;
-          d.sprite2.position.y = d.y * scale2 + imageSize2 / 2;
-        }
-
-        //d.order = (invert ? 1 : 1) * (total - i);
-      });
-    });
-
-    // data.filter(d => !d[state.mode.y]).forEach(function (d, i) {
-    //   d.x = 0;
-    //   d.y = 0;
-    //   d.active = false;
-    //   // d.sprite.visible = false;
-    //   // if (d.sprite2) d.sprite2.visible = false;
-    // })
-
+    return canvasLayout.stackYLayout(data, invert);
   }
 
   canvas.distance = function (a, b) {
@@ -776,14 +375,12 @@ function Canvas() {
     );
   };
 
-
   var speed = 0.03;
 
   function imageAnimation() {
     var sleep = true;
     var diff, d;
 
-  
     for (var i = 0; i < data.length; i++) {
       d = data[i];
       diff = d.x1 - d.sprite.position.x;
@@ -814,7 +411,6 @@ function Canvas() {
         }
 
         d.sprite2.visible = d.sprite2.alpha > 0.1;
-        //else d.sprite2.visible = d.visible;
       }
     };
     canvas.updateBorderPositions();
@@ -836,9 +432,6 @@ function Canvas() {
         columns = config.projection.columns;
       }
     }
-    // if (layout.timeline) {
-    //   canvas.setCustomTimelineData()
-    // }
 
     timeline.setDisabled(layout.type != "group" && !layout.timeline);
     canvas.makeScales();
@@ -877,30 +470,16 @@ function Canvas() {
     state.zoomingToImage = true;
     vizContainer.style("pointer-events", "none");
     zoom.center(null);
-    loadMiddleImage(d);
+    canvasImage.loadMiddleImage(d);
     d3.select(".tagcloud").classed("hide", true);
 
-    // var padding = (state.mode.type === "group" ? 0.1 : 0.8) * rangeBandImage;
-    // var sidbar = width / 8;
-    // // var scale = d.sprite.width / rangeBandImage * columns * 1.3;
-    // var scale = scale1 * 4;
-    // console.log(d, imgPadding, scale, scale1, padding, scale1, d.x, d.sprite.width);
-
-    // var translateNow = [
-    //   -scale * (d.x + margin.left / scale1 / 6 ),
-    //   -scale * (height + d.y + (margin.top / scale1 / 2)),
-    // ];
-
     var padding = rangeBandImage / 2;
-    //var scale = 1 / (rangeBandImage / (width * 0.8));
     var max = Math.max(width, height);
     var scale = 1 / (rangeBandImage / (max * 0.6));
     var translateNow = [
       -scale * (d.x - padding) - (max * 0.3) / 2 + margin.left,
       -scale * (height + d.y + padding) - margin.top + height / 2,
     ];
-
-    // console.log(translateNow)
 
     zoomedToImageScale = scale;
 
@@ -918,7 +497,7 @@ function Canvas() {
         selectedImage = d;
         hideTheRest(d);
         showDetail(d);
-        loadBigImage(d, "click");
+        canvasImage.loadBigImage(d, "click");
         state.zoomingToImage = false;
         console.log("zoomedToImage", zoomedToImage);
         vizContainer.style("pointer-events", "auto");
@@ -928,24 +507,11 @@ function Canvas() {
   canvas.zoomToImage = zoomToImage;
 
   function showDetail(d) {
-    // console.log("show detail", d)
-    // console.log(detailVue, detailVue._data.item)
-
     detailContainer.select(".outer").node().scrollTop = 0;
 
     detailContainer.classed("hide", false).classed("sneak", utils.isMobile() || isInIframe);
 
-    // needs to be done better
-    // for (field in selectedImage) {
-    //   if (field[0] === "_") detailData[field] = selectedImage[field];
-    // }
-
     var detailData = {};
-    // var activeFields = config.detail.structure
-    //   .filter(function (field, index) {
-    //     return selectedImage[field.source] && selectedImage[field.source] !== "";
-    //   })
-    // console.log("activeFields", activeFields)
 
     config.detail.structure.forEach(function (field) {
       var val = selectedImage[field.source];
@@ -954,15 +520,10 @@ function Canvas() {
       if (field.fields && field.fields.length) {
         field.fields.forEach(function (subfield) {
           var val = selectedImage[subfield];
-          // console.log("subfield", subfield, val)
           if (val && val !== "") detailData[subfield] = val;
         })
       }
-      // detailData[field.source] = selectedImage[field.source];
     })
-    // console.log("showDetail", detailData)
-
-    // detailVue._data.structure = activeFields;
 
     detailData["_id"] = selectedImage.id;
     detailData["_keywords"] = selectedImage.keywords || "None";
@@ -979,8 +540,8 @@ function Canvas() {
     console.log("changePage", id, page, selectedImage);
     selectedImage.page = page;
     detailVue._data.page = page;
-    clearBigImages();
-    loadBigImage(selectedImage);
+    canvasImage.clearBigImages();
+    canvasImage.loadBigImage(selectedImage);
   };
 
   function hideTheRest(d) {
@@ -1004,116 +565,22 @@ function Canvas() {
   var isInIframe = window.self !== window.top;
 
   function zoomed() {
-    lastSourceEvent = d3.event.sourceEvent;
-    translate = d3.event.translate;
-    scale = d3.event.scale;
-    if (!startTranslate) startTranslate = translate;
-    drag = startTranslate && translate !== startTranslate;
-    // check borders
-    var x1 = (-1 * translate[0]) / scale;
-    var x2 = x1 + widthOuter / scale;
-
-    if (d3.event.sourceEvent != null) {
-      if (x1 < 0) {
-        translate[0] = 0;
-      } else if (x2 > widthOuter) {
-        translate[0] = (widthOuter * scale - widthOuter) * -1;
-      }
-
-      zoom.translate([translate[0], translate[1]]);
-
-      x1 = (-1 * translate[0]) / scale;
-      x2 = x1 + width / scale;
-    }
-
-    if (
-      zoomedToImageScale != 0 &&
-      scale > zoomedToImageScale * 0.9 &&
-      !zoomedToImage &&
-      selectedImage &&
-      selectedImage.type == "image"
-    ) {
-      zoomedToImage = true;
-      zoom.center(null);
-      zoomedToImageScale = scale;
-      hideTheRest(selectedImage);
-      showDetail(selectedImage);
-    }
-
-    if (zoomedToImage && zoomedToImageScale * 0.8 > scale) {
-      // console.log("clear")
-      zoomedToImage = false;
-      state.lastZoomed = 0;
-      showAllImages();
-      clearBigImages();
-      detailContainer.classed("hide", true);
-    }
-
-    timeline.update(x1, x2, scale, translate, scale1);
-
-    // toggle zoom overlays
-    if (scale > zoomBarrier && !zoomBarrierState) {
-      zoomBarrierState = true;
-      d3.select(".tagcloud, .crossfilter").classed("hide", true);
-      //d3.select(".filter").classed("hide", true);
-      d3.select(".searchbar").classed("hide", true);
-      d3.select(".infobar").classed("sneak", true);
-      // d3.select(".filterReset").classed("hide", true);
-      //d3.select(".filterReset").text("Zur Übersicht")
-      // console.log("zoomBarrierState", zoomBarrierState)
-    }
-    if (scale < zoomBarrier && zoomBarrierState) {
-      zoomBarrierState = false;
-      d3.select(".tagcloud, .crossfilter").classed("hide", false);
-      //d3.select(".filter").classed("hide", false);
-      d3.select(".vorbesitzerinOuter").classed("hide", false);
-      // d3.select(".infobar").classed("sneak", false);
-      d3.select(".searchbar").classed("hide", false);
-      //d3.select(".filterReset").text("Filter zurücksetzen")
-
-      // d3.select(".filterReset").classed("hide", false);
-      // console.log("zoomBarrierState", zoomBarrierState)
-
-    }
-
-    stage2.scale.x = d3.event.scale;
-    stage2.scale.y = d3.event.scale;
-    stage2.x = d3.event.translate[0];
-    stage2.y = d3.event.translate[1];
-
-    sleep = false;
+    return canvasZoom.zoomed();
   }
 
   function zoomstart(d) {
-    zooming = true;
-    startTranslate = false;
-    drag = false;
-    startScale = scale;
+    return canvasZoom.zoomstart(d);
   }
 
   function createRect(x, y, width, height, color, alpha, targetStage) {
-    // Create a graphics object
     var graphics = new PIXI.Graphics();
-
-    // Set fill properties
     graphics.beginFill(color || 0xFFFFFF, alpha || 1);
-
-    // Draw rectangle
     graphics.drawRect(x, y, width, height);
-
-    // End fill
     graphics.endFill();
-
-    // Add to target stage (defaulting to stage2 if none specified)
     (targetStage || stage2).addChild(graphics);
-
-    // Wake up the renderer
     sleep = false;
-
-    // Return the created graphics object
     return graphics;
   }
-
 
   function toScreenPoint(p) {
     var p2 = [0, 0]
@@ -1129,70 +596,19 @@ function Canvas() {
   var userInteraction = false;
 
   function zoomend() {
-    // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
-    drag = startTranslate && translate !== startTranslate;
-    zooming = false;
-    filterVisible();
-
-    if (
-      zoomedToImage &&
-      selectedImage &&
-      !selectedImage.big &&
-      state.lastZoomed != selectedImage.id &&
-      !state.zoomingToImage
-    ) {
-      loadBigImage(selectedImage, "zoom");
-    }
-
-    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
-    console.log("center", center)
-
-
-    if (lastSourceEvent) {
-      if (debounceHash) clearTimeout(debounceHash)
-      debounceHash = setTimeout(function () {
-        if (zooming) return
-        // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
-        var hash = window.location.hash.slice(1);
-        var params = new URLSearchParams(hash);
-
-        const idsInViewport = canvas.getView();
-        if (idsInViewport.length > 0) {
-          params.set("ids", idsInViewport.join(","));
-        } else if (params.has("ids") && params.get("ids").split(",").length <= 1) {
-          return;
-        } else {
-          params.delete("ids");
-        }
-        window.location.hash = params.toString().replaceAll("%2C", ",")
-        userInteraction = true;
-        // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
-
-      }, debounceHashTime)
-    }
-
-    console.log("zoomend", rangeBand, imgPadding, translate, scale, scale1)
+    return canvasZoom.zoomend();
   }
 
-
-
   canvas.onhashchange = function () {
-
     var hash = window.location.hash.slice(1);
     console.log("hashchange", hash)
 
-
     var params = new URLSearchParams(hash);
-    // console.log("searchParams", [...params.entries()])
-
 
     if (params.has("ids") && !userInteraction) {
       var ids = params.get("ids").split(",")
       console.log("set setView", ids)
-      // console.log("ids", ids)
-      // if there is a mode in the hash and it is different from the current mode wait 300ms
-      // before setting the view
-      if(
+      if (
         params.has("mode") && params.get("mode") !== state.mode.title ||
         params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",")
       ) {
@@ -1206,19 +622,16 @@ function Canvas() {
 
     if (hash === "") {
       console.log("reset")
-      // reset
       canvas.resetZoom(function () {
         tags.reset();
         utils.setMode()
         search.reset();
-        //canvas.split();
       })
       return
     }
 
     if (params.has("filter")) {
       var filter = params.get("filter").split(",")
-      // console.log("filter", filter)
       tags.setFilterWords(filter)
     } else {
       tags.setFilterWords([])
@@ -1234,7 +647,6 @@ function Canvas() {
       setTimeout(function () {
         var borderIds = params.get("borders").split(",")
         console.log("borders", borderIds)
-        // check if borderIds are in imageBorders
         var enter = borderIds.filter(function (d) { return !imageBorders.hasOwnProperty(d) })
         var exit = Object.keys(imageBorders).filter(function (d) { return !borderIds.includes(d) })
 
@@ -1252,7 +664,6 @@ function Canvas() {
     }
 
     userInteraction = false;
-
   }
 
   canvas.highlight = function () {
@@ -1261,12 +672,6 @@ function Canvas() {
     });
     canvas.wakeup();
   };
-
-  // canvas.project = function () {
-  //     sleep = false
-  //     canvas.split();
-  //     canvas.resetZoom();
-  // }
 
   canvas.project = function () {
     ping();
@@ -1290,71 +695,13 @@ function Canvas() {
       cursorCutoff = (1 / scale1) * imageSize * 1;
     }
 
-    //canvas.resetZoom();
-
     zoomedToImageScale =
       (0.8 / (x.rangeBand() / columns / width)) *
       (state.mode.type === "group" ? 1 : 0.5);
   };
 
   canvas.projectTSNE = function () {
-    var marginBottom = -height / 2.5;
-
-    var inactive = data.filter(function (d) {
-      return !d.active;
-    });
-    var inactiveSize = inactive.length;
-
-    var active = data.filter(function (d) {
-      return d.active;
-    });
-
-    var dimension = Math.min(width, height) * 0.8;
-
-    inactive.forEach(function (d, i) {
-      var r = dimension / 1.4 + Math.random() * 40;
-      var a = -Math.PI / 2 + (i / inactiveSize) * 2 * Math.PI;
-
-      d.x = r * Math.cos(a) + width / 2 + margin.left;
-      d.y = r * Math.sin(a) + marginBottom;
-    });
-
-    active.forEach(function (d) {
-      var factor = height / 2;
-      var tsneEntry = tsneIndex[state.mode.title][d.id];
-      if (tsneEntry) {
-        d.x =
-          tsneEntry[0] * dimension + width / 2 - dimension / 2 + margin.left;
-        d.y = -1 * tsneEntry[1] * dimension;
-      } else {
-        // console.log("not found", d)
-        d.alpha = 0;
-        d.x = 0;
-        d.y = 0;
-        d.active = false;
-      }
-      // var tsneEntry = tsne.find(function (t) {
-      //     return t.id == d.id
-      // })
-    });
-
-    data.forEach(function (d) {
-      d.x1 = d.x * scale1 + imageSize / 2;
-      d.y1 = d.y * scale1 + imageSize / 2;
-
-      if (d.sprite.position.x == 0) {
-        d.sprite.position.x = d.x1;
-        d.sprite.position.y = d.y1;
-      }
-
-      if (d.sprite2) {
-        d.sprite2.position.x = d.x * scale2 + imageSize2 / 2;
-        d.sprite2.position.y = d.y * scale2 + imageSize2 / 2;
-      }
-    });
-
-    quadtree = Quadtree(data);
-    //chart.resetZoom();
+    return canvasLayout.projectTSNE();
   };
 
   canvas.resetZoom = function (callback) {
@@ -1364,13 +711,7 @@ function Canvas() {
       return d.y;
     });
 
-    // var y = -extent[1] - bottomPadding;
-    // y = extent[1] / -3 - bottomPadding;
-    // // this needs a major cleanup
-    // y = Math.max(y, -bottomPadding);
     var y = -bottomPadding;
-
-    console.log("resetZoom", translate)
 
     vizContainer
       .call(zoom.translate(translate).event)
@@ -1436,137 +777,28 @@ function Canvas() {
   }
 
   function loadMiddleImage(d) {
-    if (d.loaded) {
-      d.alpha2 = 1;
-      return;
-    }
-    var url = "";
-    if (config.loader.textures.detail.csv) {
-      url = d[config.loader.textures.detail.csv];
-    } else {
-      url = config.loader.textures.detail.url + d.id + ".jpg";
-    }
-
-    var texture = new PIXI.Texture.from(url);
-    var sprite = new PIXI.Sprite(texture);
-
-    var update = function () {
-      sleep = false;
-    };
-
-    sprite.on("added", update);
-    texture.once("update", update);
-
-    sprite.scale.x = d.scaleFactor;
-    sprite.scale.y = d.scaleFactor;
-
-    sprite.anchor.x = 0.5;
-    sprite.anchor.y = 0.5;
-    sprite.position.x = d.x * scale2 + imageSize2 / 2;
-    sprite.position.y = d.y * scale2 + imageSize2 / 2;
-    sprite._data = d;
-    stage4.addChild(sprite);
-    d.sprite2 = sprite;
-    d.alpha2 = d.highlight;
-    d.loaded = true;
-    sleep = false;
+    return canvasImage.loadMiddleImage(d);
   }
 
   function loadBigImage(d) {
-    if (!config.loader.textures.big) {
-      loadMiddleImage(d);
-      return;
-    }
-
-    state.lastZoomed = d.id;
-    var page = d.page ? "_" + d.page : "";
-    var url = "";
-    if (config.loader.textures.big.csv) {
-      url = d[config.loader.textures.big.csv];
-    } else {
-      url = config.loader.textures.big.url + d.id + page + ".jpg";
-    }
-
-    var texture = new PIXI.Texture.from(url);
-    var sprite = new PIXI.Sprite(texture);
-    var res = config.loader.textures.big.size;
-
-    var updateSize = function (t) {
-      var size = Math.max(texture.width, texture.height);
-      sprite.scale.x = sprite.scale.y = (imageSize3 / size) * d.scaleFactor;
-      sleep = false;
-      if (t.valid) {
-        d.alpha = 0;
-        d.alpha2 = 0;
-      }
-    };
-
-    sprite.on("added", updateSize);
-    texture.once("update", updateSize);
-
-    if (d.imagenum) {
-      sprite.on("mousemove", function (s) {
-        var pos = s.data.getLocalPosition(s.currentTarget);
-        s.currentTarget.cursor = pos.x > 0 ? "e-resize" : "w-resize";
-      });
-      sprite.on("click", function (s) {
-        if (drag) return;
-
-        s.stopPropagation();
-        spriteClick = true;
-        var pos = s.data.getLocalPosition(s.currentTarget);
-        var dir = pos.x > 0 ? 1 : -1;
-        var page = d.page + dir;
-        var nextPage = page;
-        if (page > d.imagenum - 1) nextPage = 0;
-        if (page < 0) nextPage = d.imagenum - 1;
-
-        canvas.changePage(d.id, nextPage);
-      });
-      sprite.interactive = true;
-    }
-
-    sprite.anchor.x = 0.5;
-    sprite.anchor.y = 0.5;
-    sprite.position.x = d.x * scale3 + imageSize3 / 2;
-    sprite.position.y = d.y * scale3 + imageSize3 / 2;
-    sprite._data = d;
-    d.big = true;
-    stage5.addChild(sprite);
-    sleep = false;
+    return canvasImage.loadBigImage(d);
   }
 
   function clearBigImages() {
-    while (stage5.children[0]) {
-      stage5.children[0]._data.big = false;
-      stage5.removeChild(stage5.children[0]);
-      sleep = false;
-    }
+    return canvasImage.clearBigImages();
   }
 
   function loadImages() {
-    return; // remove when finished
-    if (zooming) return;
-    if (zoomedToImage) return;
-
-    if (loadImagesCue.length) {
-      var d = loadImagesCue.pop();
-      if (!d.loaded) {
-        loadMiddleImage(d);
-      }
-    }
+    return;
   }
 
   function nearest(x, y, best, node) {
-    // mike bostock https://bl.ocks.org/mbostock/4343214
     var x1 = node.x1,
       y1 = node.y1,
       x2 = node.x2,
       y2 = node.y2;
     node.visited = true;
-    //console.log(node, x , x1 , best.d);
-    //return;
-    // exclude node if point is farther away than best distance in either axis
+
     if (
       x < x1 - best.d ||
       x > x2 + best.d ||
@@ -1575,7 +807,7 @@ function Canvas() {
     ) {
       return best;
     }
-    // test point if there is one, potentially updating best
+
     var p = node.point;
     if (p) {
       p.scanned = true;
@@ -1587,9 +819,7 @@ function Canvas() {
         best.p = p;
       }
     }
-    // check if kid is on the right or left, and top or bottom
-    // and then recurse on most likely kids first, so we quickly find a
-    // nearby point and then exclude many larger rectangles later
+
     var kids = node.nodes;
     var rl = 2 * x > x1 + x2,
       bt = 2 * y > y1 + y2;
