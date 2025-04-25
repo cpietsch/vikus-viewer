@@ -265,5 +265,3 @@ function updateHash(name, value, clear = undefined) {
 
 utils.updateHash = updateHash;
 
-
-d3.select(".browserInfo").classed("show", utils.isMobile());
