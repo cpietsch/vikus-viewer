@@ -1188,14 +1188,8 @@ function Canvas() {
 
 
   canvas.onhashchange = function () {
-
-    var hash = window.location.hash.slice(1);
-    console.log("hashchange", hash, scale, translate)
-
-
+     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
-    // console.log("searchParams", [...params.entries()])
-
 
     if (params.has("ids") && !userInteraction) {
       var ids = params.get("ids").split(",")

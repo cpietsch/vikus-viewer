@@ -86,6 +86,9 @@ function init() {
         }
 
         window.onhashchange = function () {
+          var hash = window.location.hash.slice(1);
+          var params = new URLSearchParams(hash);
+          if(params.has("no-ui")) deactivateUI();
           canvas.onhashchange();
         }
         setTimeout(function () {
@@ -171,6 +174,12 @@ function init() {
   //     return that === this;
   //   });
   // });
+
+  function deactivateUI() {
+    d3.selectAll(".navi").style("display", "none");
+    d3.selectAll(".searchbar").style("display", "none");
+    d3.selectAll(".infobar").style("display", "none");
+  }
 
   function initLayouts(config) {
     d3.select(".navi").classed("hide", false);
