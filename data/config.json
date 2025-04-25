@@ -1,6 +1,6 @@
 {
   "project": {
-    "name": "test",
+    "name": "Wikidata: State of the Art",
     "quality": 1
   },
   "loader": {
@@ -8,34 +8,28 @@
     "items": "data/data.csv",
     "textures": {
       "medium": {
-        "size": 200,
-        "url": "data/sprites/spritesheet.json"
+        "size": 128,
+        "url": "https://vikusviewer.fh-potsdam.de/artonwikidata/data/sprites/spritesheet.json"
       },
       "detail": {
         "size": 1024,
-        "url": "data/1024/"
+        "url": "https://vikusviewer.fh-potsdam.de/artonwikidata/data/1024/"
+      },
+      "big": {
+        "size": 4096,
+        "url": "https://vikusviewer.fh-potsdam.de/artonwikidata/data/4096/"
       }
     },
     "layouts": [
       {
-        "title": "Datierung",
+        "title": "year",
         "type": "group",
         "groupKey": "year"
-      },
-      {
-        "title": "Test",
-        "type": "group",
-        "groupKey": "Column"
-      },
-      {
-        "title": "Farbe plot",
-        "url": "data/colors.csv",
-        "scale": 0.9
       }
     ]
   },
   "style": {
-    "borderColor": "#FFFF00",
+    "selectionColor": "#00FF00",
     "fontColor": "#2b2b2b",
     "fontColorActive": "#ffffff",
     "fontBackground": "#2b2b2b",
@@ -56,50 +50,50 @@
   "detail": {
     "structure": [
       {
-        "name": "Titel",
-        "source": "_Titel",
+        "name": "ID",
+        "source": "id",
         "display": "column",
         "type": "text"
       },
       {
-        "name": "Künstler:in",
-        "source": "_Künstler:in",
+        "name": "Title",
+        "source": "_title",
         "display": "column",
         "type": "text"
       },
       {
-        "name": "Inventarnummer",
-        "source": "_Inventarnummer",
+        "name": "Artist",
+        "source": "_artist",
         "display": "column",
         "type": "text"
       },
       {
-        "name": "Datierung Von",
-        "source": "_Datierung Von",
+        "name": "Creation",
+        "source": "_creation",
         "display": "column",
         "type": "text"
       },
       {
-        "name": "Datierung Bis",
-        "source": "_Datierung Bis",
+        "name": "Collection",
+        "source": "_collection",
         "display": "column",
         "type": "text"
       },
       {
-        "name": "Technik",
-        "source": "_Techniken",
-        "display": "column",
-        "type": "text"
-      },
-      {
-        "name": "KI-Schlagworte",
+        "name": "Depicts",
         "source": "_keywords",
         "display": "column",
         "type": "keywords"
       },
       {
-        "name": "Lizenz",
-        "source": "'<a href=https://creativecommons.org/publicdomain/mark/1.0/>Public Domain</a>'",
+        "name": "Sitelinks",
+        "source": "_sitelinks",
+        "display": "column",
+        "type": "text"
+      },
+      {
+        "name": "Source",
+        "source": "'<a href=https://www.wikidata.org/wiki/' + column.id + '>' + 'Wikidata' + '</a>'",
         "display": "column",
         "type": "function"
       }
