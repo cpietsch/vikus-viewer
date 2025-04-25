@@ -306,7 +306,6 @@ function Tags() {
 
 
   tags.updateHash = function(clear){
-    console.log("updateHashtags")
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
     params.set("filter", filterWords);
@@ -316,6 +315,8 @@ function Tags() {
     }
     
     var newHash = params.toString().replaceAll("%2C", ",")
+
+    console.log("updateHashtags tags", clear, newHash, hash)
 
     if(newHash !== hash){
       window.location.hash = params.toString().replaceAll("%2C", ",")

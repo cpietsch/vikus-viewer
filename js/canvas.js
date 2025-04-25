@@ -227,6 +227,14 @@ function Canvas() {
     //   -scale * (height + centerY + padding) - margin.top + height / 2,
     // ];
 
+    if(items.length == 1) {
+      zoomedToImageScale = scale;
+      // var d = items[0];
+      // setTimeout(function () {
+      //   hideTheRest(d);
+      // }, duration / 2);
+    }
+
     vizContainer
       .interrupt()
       .call(zoom.translate(translate).event) // Use current translate as starting point
@@ -236,6 +244,16 @@ function Canvas() {
       .each("end", function () {
         state.zoomingToImage = false;
         vizContainer.style("pointer-events", "auto");
+        if(items.length == 1) {
+          var d = items[0];
+          zoomedToImage = true;
+          selectedImage = d;
+          zoomedToImageScale = scale;
+          
+          showDetail(d);
+          loadBigImage(d, "click");
+          hideTheRest(d);
+        }
       });
   };
 
@@ -1541,7 +1559,7 @@ function Canvas() {
   }
 
   function loadImages() {
-    return; // remove when finished
+    //return; // remove when finished
     if (zooming) return;
     if (zoomedToImage) return;
 
