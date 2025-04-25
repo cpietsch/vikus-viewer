@@ -88,7 +88,7 @@ function init() {
         window.onhashchange = function () {
           var hash = window.location.hash.slice(1);
           var params = new URLSearchParams(hash);
-          if(params.has("no-ui")) deactivateUI();
+          if(params.get('ui') === '0') deactivateUI();
           canvas.onhashchange();
         }
         setTimeout(function () {
