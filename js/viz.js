@@ -85,6 +85,9 @@ function init() {
           })
         }
 
+        const params = new URLSearchParams(window.location.hash.slice(1));
+        if (params.get('ui') === '0') deactivateUI();      
+
         window.onhashchange = function () {
           var hash = window.location.hash.slice(1);
           var params = new URLSearchParams(hash);
