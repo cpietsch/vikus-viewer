@@ -228,6 +228,7 @@ function Canvas() {
     // ];
 
     vizContainer
+      .interrupt()
       .call(zoom.translate(translate).event) // Use current translate as starting point
       .transition()
       .duration(duration)
@@ -564,7 +565,7 @@ function Canvas() {
     var borderColor = parseInt(borderColorHash.substring(1), 16);
     graphics.lineStyle(5, borderColor, 1);
     graphics.drawRect(
-      0,0,
+      0, 0,
       sprite.width,
       sprite.height
     );
@@ -588,6 +589,21 @@ function Canvas() {
     canvas.addBorder(d);
     updateHashBorders();
   }
+
+  function updateImageBorders(borderIds) {
+    var enter = borderIds.filter(function (d) { return !imageBorders.hasOwnProperty(d); });
+    var exit = Object.keys(imageBorders).filter(function (d) { return !borderIds.includes(d); });
+
+    enter.forEach(function (id) {
+      var d = data.find(function (d) { return d.id == id; });
+      canvas.addBorderToImage(d);
+    });
+
+    exit.forEach(function (id) {
+      canvas.removeBorder(id);
+    });
+  }
+
 
   function updateHashBorders() {
     if (!d3.event) return;
@@ -783,7 +799,7 @@ function Canvas() {
     var sleep = true;
     var diff, d;
 
-  
+
     for (var i = 0; i < data.length; i++) {
       d = data[i];
       diff = d.x1 - d.sprite.position.x;
@@ -1152,7 +1168,6 @@ function Canvas() {
       if (debounceHash) clearTimeout(debounceHash)
       debounceHash = setTimeout(function () {
         if (zooming) return
-        // window.history.pushState({}, "", `#translate=${translate[0]},${translate[1]}&scale=${scale}`);
         var hash = window.location.hash.slice(1);
         var params = new URLSearchParams(hash);
 
@@ -1166,20 +1181,16 @@ function Canvas() {
         }
         window.location.hash = params.toString().replaceAll("%2C", ",")
         userInteraction = true;
-        // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
 
       }, debounceHashTime)
     }
-
-    console.log("zoomend", rangeBand, imgPadding, translate, scale, scale1)
   }
-
 
 
   canvas.onhashchange = function () {
 
     var hash = window.location.hash.slice(1);
-    console.log("hashchange", hash)
+    console.log("hashchange", hash, scale, translate)
 
 
     var params = new URLSearchParams(hash);
@@ -1192,7 +1203,7 @@ function Canvas() {
       // console.log("ids", ids)
       // if there is a mode in the hash and it is different from the current mode wait 300ms
       // before setting the view
-      if(
+      if (
         params.has("mode") && params.get("mode") !== state.mode.title ||
         params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",")
       ) {
@@ -1203,7 +1214,11 @@ function Canvas() {
         canvas.setView(ids)
       }
     }
-    // if ids
+
+    if (!params.has("ids") && scale > 1) {
+      console.log("reset zoom because no ids and scale > 1")
+      canvas.resetZoom()
+    }
 
     if (hash === "") {
       console.log("reset")
@@ -1236,17 +1251,7 @@ function Canvas() {
         var borderIds = params.get("borders").split(",")
         console.log("borders", borderIds)
         // check if borderIds are in imageBorders
-        var enter = borderIds.filter(function (d) { return !imageBorders.hasOwnProperty(d) })
-        var exit = Object.keys(imageBorders).filter(function (d) { return !borderIds.includes(d) })
-
-        enter.forEach(function (id) {
-          var d = data.find(function (d) { return d.id == id })
-          canvas.addBorderToImage(d)
-        })
-
-        exit.forEach(function (id) {
-          canvas.removeBorder(id)
-        })
+        updateImageBorders(borderIds);
       }, params.has("filter") || params.has("mode") ? 2000 : 0)
     } else {
       canvas.removeAllBorders()
@@ -1390,6 +1395,7 @@ function Canvas() {
     layout(inactive, true);
     quadtree = Quadtree(data);
   };
+
 
   function filterVisible() {
     var zoomScale = scale;
@@ -1553,7 +1559,7 @@ function Canvas() {
     }
   }
 
- 
+
 
   return canvas;
 }
