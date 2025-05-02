@@ -655,8 +655,8 @@ function Canvas() {
           canvas.addBorderToImage(selectedImage);
           return
         }
-        if (d3.event.ctrlKey) {
-          console.log("ctrl click");
+        if (d3.event.ctrlKey || d3.event.metaKey) {
+          console.log("ctrl/cmd click");
           // if alt or cmd is pressed, startNew vector
           var startNew = d3.event.altKey;
           canvas.addVector(startNew);
@@ -861,7 +861,7 @@ function Canvas() {
     if (d3.event.shiftKey) {
       container.style("cursor", "copy")
     }
-    if (d3.event.ctrlKey) {
+    if (d3.event.ctrlKey || d3.event.metaKey) {
       container.style("cursor", "crosshair")
       if(d3.event.altKey) {
         container.style("cursor", "cell")
