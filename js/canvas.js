@@ -123,20 +123,21 @@ function Canvas() {
     var visibleItems = [];
 
     var invScale = 1 / scale;
-    var viewLeft = -translate[0] * invScale;
+    var viewLeft = (-translate[0] * invScale) ;
     var viewTop = (-translate[1] * invScale) - height;
-    var viewRight = viewLeft + width * invScale;
+    var viewRight = viewLeft + widthOuter * invScale;
     var viewBottom = viewTop + height * invScale;
 
     data.forEach(function (d) {
-      var px = d.x;
-      var py = d.y;
+      var px = d.x1 / scale1;
+      var py = d.y1 / scale1;
       // var px = d.sprite.position.x / scale1;
       // var py = d.sprite.position.y / scale1;
-      // var halfW = d.sprite.width / scale1 / 2;
-      // var halfH = d.sprite.height / scale1 / 2;
+      var halfW = d.sprite.width / scale1 / 2;
+      var halfH = d.sprite.height / scale1 / 2;
 
-      var halfH = halfW = 0;
+      halfH = 0;
+      halfW = 0;
 
       var left = px - halfW;
       var right = px + halfW;
@@ -1177,10 +1178,6 @@ function Canvas() {
     ) {
       loadBigImage(selectedImage, "zoom");
     }
-
-    var center = toScreenPoint([window.innerWidth / 2, window.innerHeight / 2])
-    console.log("center", center)
-
 
     if (lastSourceEvent) {
       if (debounceHash) clearTimeout(debounceHash)
