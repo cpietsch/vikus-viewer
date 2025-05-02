@@ -29,7 +29,8 @@
     ]
   },
   "style": {
-    "selectionColor": "#00FF00",
+    "annotationBorderColor": "#00FF00",
+    "annotationLineColor": "#0000FF",
     "fontColor": "#2b2b2b",
     "fontColorActive": "#ffffff",
     "fontBackground": "#2b2b2b",

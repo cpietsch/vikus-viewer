@@ -119,11 +119,149 @@ function Canvas() {
 
   canvas.margin = margin;
 
+  var annotationVectors = ""
+  var annotationVectorGraphics = undefined
+
+  canvas.abs2relCoordinate = function (p) {
+    return [
+      (p[0] / widthOuter) * 100,
+      ((-1 * p[1]) / widthOuter) * 100,
+    ].map(function (d) {
+      return Math.round(d * 100) / 100;
+    })
+  }
+
+  canvas.rel2absCoordinate = function (p) {
+    return [
+      p[0] / 100 * widthOuter,
+      (-1 * p[1] / 100) * widthOuter,
+    ]
+  }
+
+  canvas.addVector = function (startNew = false) {
+    var mouse = d3.mouse(vizContainer.node());
+    var p = toScreenPoint(mouse);
+    var relative = canvas.abs2relCoordinate(p);
+
+    console.log("add vector", relative, p)
+
+    if (startNew || annotationVectors.length == 0) {
+      annotationVectors += (annotationVectors.length ? "," : "") + "w1"
+    }
+
+    annotationVectors += "," + relative[0] + "-" + relative[1];
+    console.log("vectors", annotationVectors)
+
+    utils.updateHash("vector", annotationVectors)
+    canvas.drawVectors();
+  }
+
+  canvas.parseVectors = function (v) {
+    if (v == undefined) return;
+    if (v == "") return;
+
+    // example: "w1,0-0,1-1,2-2,w2,3-3,4-4"
+    // w1 means new vector with weight 1 
+    // 0-0,1-1,2-2 means vector points
+    // w2 means new vector with weight 2
+    // 3-3,4-4 means vector points
+
+    var parts = v.split(",");
+    var vectors = [];
+    var currentVector = [];
+    var currentWeight = 1;
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i].trim();
+      if (part.startsWith("w")) {
+        // new vector with weight
+
+        if (currentVector.length > 0) {
+          vectors.push({
+            vector: currentVector,
+            weight: currentWeight,
+          });
+        }
+        currentWeight = parseFloat(part.replaceAll("w", ""));
+
+        currentVector = [];
+      } else {
+        // vector point
+        var coords = part.split("-").map(function (d) {
+          return parseFloat(d);
+        });
+        if (coords.length == 2) {
+          var decodeAnnotationCoordinates = canvas.rel2absCoordinate(coords);
+          currentVector.push(decodeAnnotationCoordinates);
+        } else {
+          console.log("invalid vector point", part);
+        }
+      }
+    }
+    if (currentVector.length > 0) {
+      vectors.push({
+        vector: currentVector,
+        weight: currentWeight,
+      });
+    }
+    // console.log("parsed vectors", vectors);
+    return vectors;
+  }
+
+  canvas.drawVectors = function () {
+    // console.log("drawVectors", annotationVectors)
+    if (annotationVectorGraphics) {
+      stage3.removeChild(annotationVectorGraphics);
+      annotationVectorGraphics.destroy(true);
+      annotationVectorGraphics = undefined;
+    }
+
+    if (annotationVectors.length == 0) return;
+
+
+    var parsedVectors = canvas.parseVectors(annotationVectors);
+    console.log("parsedVectors", parsedVectors)
+    
+    annotationVectorGraphics = new PIXI.Graphics();
+
+    for (var i = 0; i < parsedVectors.length; i++) {
+      var vector = parsedVectors[i].vector;
+      var weight = parsedVectors[i].weight;
+      
+      var lineColorHash = config.style?.annotationLineColor || "#00ff00";
+      var color = parseInt(lineColorHash.substring(1), 16);
+      annotationVectorGraphics.lineStyle(weight, color, 0.5 );
+      // draw lines between points
+      for (var j = 0; j < vector.length - 1; j++) {
+        var start = vector[j];
+        var end = vector[j + 1];
+        annotationVectorGraphics.moveTo(start[0], start[1]);
+        annotationVectorGraphics.lineTo(end[0], end[1]);
+      }
+      annotationVectorGraphics.endFill();
+      annotationVectorGraphics.position.x = 0;
+      annotationVectorGraphics.position.y = 0;
+      annotationVectorGraphics.scale.x = scale1
+      annotationVectorGraphics.scale.y = scale1;
+      annotationVectorGraphics.interactive = false;
+      annotationVectorGraphics.buttonMode = false;
+      annotationVectorGraphics.visible = true;
+      annotationVectorGraphics.zIndex = 1000;
+
+    }
+
+    stage3.addChild(annotationVectorGraphics);
+
+    sleep = false;
+    animate();
+  }
+
+
+
   canvas.getView = function () {
     var visibleItems = [];
 
     var invScale = 1 / scale;
-    var viewLeft = (-translate[0] * invScale) ;
+    var viewLeft = (-translate[0] * invScale);
     var viewTop = (-translate[1] * invScale) - height;
     var viewRight = viewLeft + widthOuter * invScale;
     var viewBottom = viewTop + height * invScale;
@@ -194,7 +332,7 @@ function Canvas() {
 
     // Compute the bounding box of all selected items
     var xs = items.map(function (d) { return d.x; });
-    var ys = items.map(function (d) { return d.y; });
+    var ys = items.map(function (d) { return d.y });
 
     var minX = d3.min(xs);
     var maxX = d3.max(xs);
@@ -214,7 +352,7 @@ function Canvas() {
     var centerY = (minY + maxY) / 2;
 
     // Calculate scale to fit the bounding box
-    var scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 80% of view
+    var scale = 0.9 / Math.max(boxWidth / width, boxHeight / height); // Fit box in 90% of view
 
 
     var translateTarget = [
@@ -228,7 +366,7 @@ function Canvas() {
     //   -scale * (height + centerY + padding) - margin.top + height / 2,
     // ];
 
-    if(items.length == 1) {
+    if (items.length == 1) {
       zoomedToImageScale = scale;
       // var d = items[0];
       // setTimeout(function () {
@@ -245,12 +383,12 @@ function Canvas() {
       .each("end", function () {
         state.zoomingToImage = false;
         vizContainer.style("pointer-events", "auto");
-        if(items.length == 1) {
+        if (items.length == 1) {
           var d = items[0];
           zoomedToImage = true;
           selectedImage = d;
           zoomedToImageScale = scale;
-          
+
           showDetail(d);
           loadBigImage(d, "click");
           hideTheRest(d);
@@ -502,6 +640,13 @@ function Canvas() {
           canvas.addBorderToImage(selectedImage);
           return
         }
+        if (d3.event.ctrlKey) {
+          console.log("ctrl click");
+          // if alt or cmd is pressed, startNew vector
+          var startNew = d3.event.altKey;
+          canvas.addVector(startNew);
+          return
+        }
 
         var clicktime = new Date() * 1 - lastClick;
         if (clicktime < 250) return;
@@ -580,7 +725,7 @@ function Canvas() {
     sleep = false;
     var sprite = d.sprite;
     var graphics = new PIXI.Graphics();
-    var borderColorHash = config.style?.borderColor || "#ff0000";
+    var borderColorHash = config.style?.annotationBorderColor || "#ff0000";
     var borderColor = parseInt(borderColorHash.substring(1), 16);
     graphics.lineStyle(5, borderColor, 1);
     graphics.drawRect(
@@ -1164,6 +1309,7 @@ function Canvas() {
   var userInteraction = false;
 
   function zoomend() {
+    if (!startTranslate) return
     // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
     drag = startTranslate && translate !== startTranslate;
     zooming = false;
@@ -1203,7 +1349,7 @@ function Canvas() {
 
 
   canvas.onhashchange = function () {
-     var hash = window.location.hash.slice(1);
+    var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
 
     if (params.has("ids") && !userInteraction) {
@@ -1265,6 +1411,19 @@ function Canvas() {
     } else {
       canvas.removeAllBorders()
     }
+
+    if (params.has("vector")) {
+      var vectorVals = params.get("vector")//.split(",").map(function (d) { return parseFloat(d) })
+      console.log("vector Hash", vectorVals)
+      if (annotationVectors.toString() !== vectorVals.toString()) {
+        annotationVectors = vectorVals
+        canvas.drawVectors()
+      }
+    } else {
+      annotationVectors = ""
+      canvas.drawVectors()
+    }
+
 
     userInteraction = false;
 
