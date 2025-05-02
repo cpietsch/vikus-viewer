@@ -255,7 +255,20 @@ function Canvas() {
     animate();
   }
 
+  canvas.removeAllVectors = function () {
+    if (annotationVectorGraphics) {
+      stage3.removeChild(annotationVectorGraphics);
+      annotationVectorGraphics.destroy(true);
+      annotationVectorGraphics = undefined;
+    }
+    annotationVectors = ""
+    sleep = false;
+  }
 
+  canvas.removeAllCustomGraphics = function () {
+    canvas.removeAllVectors();
+    canvas.removeAllBorders();
+  }
 
   canvas.getView = function () {
     var visibleItems = [];
@@ -842,6 +855,16 @@ function Canvas() {
         ? "pointer"
         : "default";
     });
+
+    if (d3.event.shiftKey) {
+      container.style("cursor", "copy")
+    }
+    if (d3.event.ctrlKey) {
+      container.style("cursor", "crosshair")
+      if(d3.event.altKey) {
+        container.style("cursor", "cell")
+      }
+    }
     // }
   }
 
@@ -1378,6 +1401,7 @@ function Canvas() {
     if (hash === "") {
       console.log("reset")
       // reset
+      canvas.removeAllCustomGraphics()
       canvas.resetZoom(function () {
         tags.reset();
         utils.setMode()
@@ -1420,8 +1444,7 @@ function Canvas() {
         canvas.drawVectors()
       }
     } else {
-      annotationVectors = ""
-      canvas.drawVectors()
+      canvas.removeAllVectors()
     }
 
 
