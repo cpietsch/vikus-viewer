@@ -31,7 +31,7 @@ function Canvas() {
   var canvasDomain = [];
   var loadImagesCue = [];
 
-  var resolution = 1; // window.devicePixelRatio || 1;
+  var resolution = window.devicePixelRatio || 1;
 
   var x = d3.scale
     .ordinal()
@@ -574,6 +574,8 @@ function Canvas() {
     window.renderer = renderer;
 
     var renderElem = d3.select(container.node().appendChild(renderer.view));
+    renderElem.style("width", widthOuter + "px");
+    renderElem.style("height", height + "px");
 
     stage = new PIXI.Container();
     stage2 = new PIXI.Container();
