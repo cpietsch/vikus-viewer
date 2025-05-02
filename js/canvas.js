@@ -229,7 +229,7 @@ function Canvas() {
       
       var lineColorHash = config.style?.annotationLineColor || "#00ff00";
       var color = parseInt(lineColorHash.substring(1), 16);
-      annotationVectorGraphics.lineStyle(weight, color, 0.5 );
+      annotationVectorGraphics.lineStyle(weight, color, 1 );
       // draw lines between points
       for (var j = 0; j < vector.length - 1; j++) {
         var start = vector[j];
