@@ -982,7 +982,7 @@ function Canvas() {
   };
 
 
-  var speed = 0.03;
+  var speed = 0.04;
 
   function imageAnimation() {
     var sleep = true;
