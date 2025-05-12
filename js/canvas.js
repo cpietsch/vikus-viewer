@@ -690,11 +690,10 @@ function Canvas() {
         }
       });
 
-    // disable right click
+    // disable right click when in edit mode
     vizContainer.on("contextmenu", function () {
-      d3.event.preventDefault();
+      if (window.top == window.self) d3.event.preventDefault();
     });
-
 
 
     //canvas.makeScales();
