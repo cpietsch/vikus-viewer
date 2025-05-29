@@ -1384,7 +1384,8 @@ function Canvas() {
       // before setting the view
       if (
         params.has("mode") && params.get("mode") !== state.mode.title ||
-        params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",")
+        params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",") ||
+        params.has("search") && params.get("search") !== tags.getSearchTerm()
       ) {
         setTimeout(function () {
           canvas.setView(ids)
@@ -1418,6 +1419,27 @@ function Canvas() {
       tags.setFilterWords(filter)
     } else {
       tags.setFilterWords([])
+    }
+
+    if (params.has("search")) {
+      var searchTerm = params.get("search");
+      console.log("search term from hash", searchTerm);
+      // Apply search if it's different from current search
+      if (tags.getSearchTerm() !== searchTerm) {
+        tags.search(searchTerm);
+        // Also update the search input UI if search object exists
+        if (typeof search !== 'undefined' && search.setSearchTerm) {
+          search.setSearchTerm(searchTerm);
+        }
+      }
+    } else {
+      // Clear search if no search parameter in hash
+      if (tags.getSearchTerm() && tags.getSearchTerm() !== "") {
+        tags.search("");
+        if (typeof search !== 'undefined' && search.reset) {
+          search.reset();
+        }
+      }
     }
 
     if (params.has("mode")) {

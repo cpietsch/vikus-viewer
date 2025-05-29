@@ -271,8 +271,10 @@ function Tags() {
 
   tags.reset = function(){
     filterWords = []
+    state.search = "";  // Clear search term
     tags.update();
     tags.highlightWords(filterWords);
+    tags.updateHash();  // Update hash when resetting
     // canvas.highlight();
     // canvas.project()
   }
@@ -287,6 +289,10 @@ function Tags() {
 
   tags.getFilterWords = function(){
     return filterWords;
+  }
+
+  tags.getSearchTerm = function(){
+    return state.search;
   }
 
   tags.mouseclick = function (d) {
@@ -310,6 +316,14 @@ function Tags() {
     var params = new URLSearchParams(hash);
     params.set("filter", filterWords);
     if(filterWords.length === 0) params.delete("filter");
+    
+    // Add search term to hash
+    if(state.search && state.search !== ""){
+      params.set("search", state.search);
+    } else {
+      params.delete("search");
+    }
+    
     if(clear){
       params.delete("ids");
     }
@@ -378,7 +392,10 @@ function Tags() {
     tags.filter(filterWords, true);
     tags.update();
     canvas.highlight();
-    canvas.project()
+    canvas.project();
+    
+    // Update hash with search term
+    tags.updateHash();
   }
 
   return tags;
@@ -440,6 +457,10 @@ function Crossfilter() {
 
   tags.setFilterWords = function(words){
 
+  }
+
+  tags.getSearchTerm = function(){
+    return search;
   }
 
   tags.updateDom = function updateDom(key, filteredData) {
@@ -598,8 +619,18 @@ function Crossfilter() {
     Object.keys(filter).forEach(function (key) {
       filter[key] = [];
     })
+    search = "";  // Clear search term
     tags.filter();
     tags.update();
+    
+    // Update hash when resetting
+    var hash = window.location.hash.slice(1);
+    var params = new URLSearchParams(hash);
+    params.delete("search");
+    var newHash = params.toString().replaceAll("%2C", ",");
+    if(newHash !== hash){
+      window.location.hash = newHash;
+    }
   }
 
   tags.filter = function (highlight) {
@@ -637,6 +668,19 @@ function Crossfilter() {
     
     tags.filter();
     tags.update();
+    
+    // Update hash with search term for crossfilter
+    var hash = window.location.hash.slice(1);
+    var params = new URLSearchParams(hash);
+    if(search && search !== ""){
+      params.set("search", search);
+    } else {
+      params.delete("search");
+    }
+    var newHash = params.toString().replaceAll("%2C", ",");
+    if(newHash !== hash){
+      window.location.hash = newHash;
+    }
   }
 
 
