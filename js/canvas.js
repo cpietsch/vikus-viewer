@@ -309,7 +309,7 @@ function Canvas() {
       return []
     }
 
-    console.log("fully visible items:", visibleItems.length, visibleItems.map(function (d) { return d.id; }));
+    // console.log("fully visible items:", visibleItems.length, visibleItems.map(function (d) { return d.id; }));
 
     var mostLeft = null;
     var mostRight = null;
@@ -1334,7 +1334,7 @@ function Canvas() {
 
   function zoomend() {
     if (!startTranslate) return
-    // console.log("ZOOM END", width, scale, scale1, translate, toScreenPoint([window.innerWidth / 2, window.innerHeight / 2]))
+    
     drag = startTranslate && translate !== startTranslate;
     zooming = false;
     filterVisible();
@@ -1352,14 +1352,16 @@ function Canvas() {
     if (lastSourceEvent) {
       if (debounceHash) clearTimeout(debounceHash)
       debounceHash = setTimeout(function () {
+        // console.log("debounceHash", userInteraction, zooming, lastSourceEvent);
         if (zooming) return
         var hash = window.location.hash.slice(1);
         var params = new URLSearchParams(hash);
 
         const idsInViewport = canvas.getView();
+        // console.log("idsInViewport", idsInViewport);
         if (idsInViewport.length > 0) {
           params.set("ids", idsInViewport.join(","));
-        } else if (params.has("ids") && params.get("ids").split(",").length <= 1) {
+        } else if (zoomedToImage) {
           return;
         } else {
           params.delete("ids");
@@ -1573,7 +1575,7 @@ function Canvas() {
   };
 
   canvas.resetZoom = function (callback) {
-    var duration = scale > 1 ? 1000 : 0;
+    var duration = scale > 1 ? 1000 : 100;
 
     extent = d3.extent(data, function (d) {
       return d.y;
