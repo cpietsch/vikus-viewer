@@ -339,6 +339,7 @@ function Canvas() {
     var items = data.filter(function (d) { return ids.includes(d.id); });
     if (!items.length) return;
 
+
     vizContainer.style("pointer-events", "none");
     zoom.center(null);
     state.zoomingToImage = true;
@@ -1378,21 +1379,32 @@ function Canvas() {
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
 
+    console.log("onhashchange", params.toString());
+
     if (params.has("ids") && !userInteraction) {
       var ids = params.get("ids").split(",")
       console.log("set setView", ids)
       // console.log("ids", ids)
       // if there is a mode in the hash and it is different from the current mode wait 300ms
       // before setting the view
+      console.log(tags.getSearchTerm(), params.get("search")+ "")
       if (
         params.has("mode") && params.get("mode") !== state.mode.title ||
         params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",") ||
-        params.has("search") && params.get("search") !== tags.getSearchTerm()
+        params.get("search") !== tags.getSearchTerm()
       ) {
+        console.log("delayed setView due to mode/filter/search change")
+        // temp fix to avoid sticky image
+        zoomedToImage = false;
+        state.lastZoomed = 0;
+        showAllImages();
+        clearBigImages();
+        // temp fix end
         setTimeout(function () {
           canvas.setView(ids)
         }, hashDelay)
       } else {
+        console.log("setView immediately")
         canvas.setView(ids)
       }
     }
