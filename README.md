@@ -6,7 +6,7 @@
 
 ## Documentation
 
-This repo contains the HTML, CSS and JS of the VIKUS Viewer software. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any web server will work too. There is no server-side logic necessary. To minimize the loading time your should make use of GZIP compression on JS and CSV files. Also enable HTTP/2, since Multiplexing will heavily help with loading all those image assets.
+This repo contains the HTML, CSS and JS of the VIKUS Viewer software. To get started you will have to clone this repo and run a webserver. We recommend nginx for production, but any web server should work. VIKUS Viewer is a static web app that requires no server-side logic ensuring long-term availability. To minimize the loading time your web server should make use of GZIP compression on JS and CSV files. Also enable HTTP/2, since multiplexing significantly helps with loading image assets.
 
 ### IIIF
 VIKUS Viewer can be used with IIIF Collections through the [vikus-IIIF-generator](https://github.com/cpietsch/vikus-IIIF-generator).
@@ -15,14 +15,15 @@ VIKUS Viewer can be used with IIIF Collections through the [vikus-IIIF-generator
 
 To use the VIKUS Viewer for a custom image collection, you need to prepare metadata files that describe the collection and objects, and configure the visualization. To get started, you first need to create a ```/data``` folder which will contain all metadata and image files. Have a look at the metadata generated for the [Van Gogh collection](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) (Van Gogh Museum) as a reference for the following descriptions.
 
+#### Remote Version
+You can use the latest version deployed on GitHub Pages (main branch) with your remote or local config / data using the `config` hashtag parameter:
+`https://cpietsch.github.io/vikus-viewer/?config=https://vikusviewer.fh-potsdam.de/fw4/vis/data/config.json#filter=Figurendarstellung,Profan&ids=169946,161228,92338,89554`
+
 #### [config.json](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json)
 
 This is the configuration file that defines the project name, data URLs, columns, styles, and what is shown in the detail sidebar of your collection. The URLs don't have to be absolute, but it can be handy if your assets are not hosted on the same server.
 
-#### detail.structure
-
-The detail.structure defines the structure of the detail view. If there is no data for a field, it will not be displayed.
-
+The **detail.structure** in config.json defines the structure of the detail view. If there is no data for a field, it will not be displayed.
 You can use the following types in combination with the metadata fields from data.csv. defined in `source`:
 - `text`: renders simple text
 - `markdown`: renders markdown
@@ -41,7 +42,6 @@ The data.csv holds all the metadata information for each object in the collectio
 - `year` can be a number or a string, will be sorted ascending
 - `_fields` these are custom metadata fields (note the prefixed underscore)
 
-All of the columns are beeing sticked together to enable the freetext search.
 
 #### [timeline.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/timeline.csv)
 
@@ -50,6 +50,7 @@ The timeline.csv holds the information for the timeline displayed underneath the
 - `title` the headline of the blurb
 - `text` first detail text when zoomed in a little bit
 - `extra` additional text when zoomed to the maximum
+
 
 #### [info.md](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/info.md)
 
@@ -67,14 +68,14 @@ You can also create the layout through a Jupyter Notebook in python using CLIP.
 
 ### Layouts
 
-You can add layouts or remove the lime layout in the [loader.layout](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json#L10) section of the config.json.
+You can add layouts or remove the time layout in the [loader.layout](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json#L10) section of the config.json.
 Add a custom layout in this format: `{"title": "UMAP", "url": "umap.csv", "scale": 0.8 }` or `{
         "title": "test",
         "type": "group",
         "groupKey": "colum to group on",
         "columns": 4
       },` The scale
-parameter is optional and can we tweaked depending on your layout and number of images.
+parameter is optional and can be used to manually tweak the display depending on your layout and number of images.
 
 ## Credits
 
