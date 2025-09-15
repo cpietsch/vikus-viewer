@@ -77,6 +77,20 @@ Add a custom layout in this format: `{"title": "UMAP", "url": "umap.csv", "scale
       },` The scale
 parameter is optional and can be used to manually tweak the display depending on your layout and number of images.
 
+### Annotations
+
+VIKUS Viewer now supports basic annotation features to enable visual communication with cultural collections. The following tools are available on desktop browsers and work directly on the VIKUS Viewer canvas:
+
+#### Highlighting Objects
+Hold **Shift** and click on any item to highlight it. You can select multiple items in sequence to draw attention to specific objects. While holding Shift, the cursor changes to an arrow with a plus sign, indicating highlight mode.
+
+#### Freehand Drawing 
+Create simple, zoomable vector paths directly on the canvas:
+- Hold **Command** (Mac) / **Ctrl** (Win) and click anywhere to add a new segment to the current path. The cursor becomes a crosshair for precise placement.
+- Hold **Command + Option** (Mac) / **Ctrl + Alt** (Win) and click to start a new path. The cursor turns into an outlined plus sign (cell cursor), indicating the start of a new annotation.
+
+Annotations are stored in the URL's hash, allowing browser history navigation (e.g., undo via the back button). The URL hash now also encodes the current viewport, keyword selection, search query, and layout. This makes it possible to embed specific views in iframe-based storytelling environments such as [!nflect](https://uclab.fh-potsdam.de/inflect/). To enable embedding, make sure the server hosting your VIKUS Viewer instance is configured with an appropriate Content-Security-Policy header.
+
 ## Credits
 
 VIKUS Viewer was designed and developed by Christopher Pietsch. 
