@@ -4,7 +4,11 @@
 // 2015-2018
 
 
-window.utils = {};
+window.utils = { config: {} };
+
+utils.setMode = function (mode) {
+	console.log("set mode", mode)
+}
 
 utils.getDataBaseUrl = function () {
 	var params = new URLSearchParams(window.location.search)
@@ -43,6 +47,8 @@ utils.welcome = function () {
 }
 
 utils.initConfig = function (config) {
+
+	this.config = config;
 
 	// load infosidebar info.md
 	d3.text(utils.makeUrl(config.baseUrl.path, config.loader.info), function (error, text) {
@@ -168,4 +174,51 @@ utils.simulateLargeDatasets = function (data) {
 	Array.prototype.push.apply(data, _.clone(data, true))
 	Array.prototype.push.apply(data, _.clone(data, true).slice(0, 1036))
 }
+
+utils.nearest = function(x, y, best, node) {
+    // mike bostock https://bl.ocks.org/mbostock/4343214
+    var x1 = node.x1,
+      y1 = node.y1,
+      x2 = node.x2,
+      y2 = node.y2;
+    node.visited = true;
+    //console.log(node, x , x1 , best.d);
+    //return;
+    // exclude node if point is farther away than best distance in either axis
+    if (
+      x < x1 - best.d ||
+      x > x2 + best.d ||
+      y < y1 - best.d ||
+      y > y2 + best.d
+    ) {
+      return best;
+    }
+    // test point if there is one, potentially updating best
+    var p = node.point;
+    if (p) {
+      p.scanned = true;
+      var dx = p.x - x,
+        dy = p.y - y,
+        d = Math.sqrt(dx * dx + dy * dy);
+      if (d < best.d) {
+        best.d = d;
+        best.p = p;
+      }
+    }
+    // check if kid is on the right or left, and top or bottom
+    // and then recurse on most likely kids first, so we quickly find a
+    // nearby point and then exclude many larger rectangles later
+    var kids = node.nodes;
+    var rl = 2 * x > x1 + x2,
+      bt = 2 * y > y1 + y2;
+    if (kids[bt * 2 + rl]) best = utils.nearest(x, y, best, kids[bt * 2 + rl]);
+    if (kids[bt * 2 + (1 - rl)])
+      best = utils.nearest(x, y, best, kids[bt * 2 + (1 - rl)]);
+    if (kids[(1 - bt) * 2 + rl])
+      best = utils.nearest(x, y, best, kids[(1 - bt) * 2 + rl]);
+    if (kids[(1 - bt) * 2 + (1 - rl)])
+      best = utils.nearest(x, y, best, kids[(1 - bt) * 2 + (1 - rl)]);
+
+    return best;
+  }
 

@@ -38,6 +38,7 @@ var canvas;
 var search;
 var ping;
 var timeline;
+var config;
 
 if (Modernizr.webgl && !utils.isMobile()) {
   init();
@@ -84,6 +85,22 @@ function init() {
           })
         }
 
+        const params = new URLSearchParams(window.location.hash.slice(1));
+        if (params.get('ui') === '0') deactivateUI();      
+
+        window.onhashchange = function () {
+          var hash = window.location.hash.slice(1);
+          var params = new URLSearchParams(hash);
+          if(params.get('ui') === '0') deactivateUI();
+          canvas.onhashchange();
+        }
+        
+        //setTimeout(function () {
+          // canvas.setView("[GS_2000_28_GM,VII_59_777_x]");
+          // canvas.setView("['GS_98_2_GM', 'VII_60_527_x', 'SM_2012-0158', 'VII_59_483_x', 'VII_60_411_x', 'VII_60_230_x']");
+          //canvas.setView("['GEM_88_4', 'GS_08_5_GM', 'GEM_89_24', 'VII_59_433_x', 'VII_59_749_x', 'VII_60_111_x', 'VII_60_286_x', 'GEM_89_11', 'GS_2000_28_GM', 'VII_59_777_x']")
+        //}, 200);
+
         // debug zoom to image
         // setTimeout(function () {
         //   var idx = 102
@@ -114,7 +131,9 @@ function init() {
             });
             canvas.wakeup();
           })
-          //.finished() recalculate sizes
+          .finished(function () {
+            canvas.onhashchange();
+          })
           .load(makeUrl(baseUrl.path, config.loader.textures.medium.url));
       });
     });
@@ -135,6 +154,7 @@ function init() {
       search.reset();
       tags.reset();
       canvas.split();
+      window.location.hash = "";
     });
 
   d3.select(".filterReset").on("click", function () {
@@ -145,7 +165,7 @@ function init() {
   });
   d3.select(".filterReset").on("dblclick", function () {
     console.log("dblclick");
-    location.reload();
+    //location.reload();
   });
 
   d3.select(".slidebutton").on("click", function () {
@@ -168,6 +188,12 @@ function init() {
   //     return that === this;
   //   });
   // });
+
+  function deactivateUI() {
+    d3.selectAll(".navi").style("display", "none");
+    d3.selectAll(".searchbar").style("display", "none");
+    d3.selectAll(".infobar").style("display", "none");
+  }
 
   function initLayouts(config) {
     d3.select(".navi").classed("hide", false);
@@ -201,13 +227,7 @@ function init() {
       .classed("space", (d) => d.space)
       .text((d) => d.title);
 
-    s.on("click", function (d) {
-      canvas.setMode(d);
-      d3.selectAll(".navi .button").classed(
-        "active",
-        (d) => d.title == canvas.getMode().title
-      );
-    });
+    s.on("click", function (d) { utils.setMode(d.title, interaction=true) });
     d3.selectAll(".navi .button").classed(
       "active",
       (d) => d.title == config.loader.layouts[0].title
@@ -215,4 +235,44 @@ function init() {
   }
 }
 
-d3.select(".browserInfo").classed("show", utils.isMobile());
+utils.setMode = function(title, interaction = false) {
+  console.log("setMode", title);
+  if(utils.config.loader.layouts === undefined) return;
+  var currentMode = canvas.getMode().title;
+  if(title === undefined){
+    title = utils.config.loader.layouts[0].title;
+  }
+  if(currentMode === title) return;
+  var layout = utils.config.loader.layouts.find((d) => d.title == title);
+  canvas.setMode(layout);
+  d3.selectAll(".navi .button").classed(
+    "active",
+    (d) => d.title == title
+  );
+  updateHash("mode", layout.title, interaction ? ["ids"] : undefined);
+}
+
+function updateHash(name, value, clear = undefined) {
+  console.log("updateHashtags", name, value);
+  var hash = window.location.hash.slice(1);
+  if(clear && clear.length === 0) hash = "";
+  var params = new URLSearchParams(hash);
+  if(clear && clear.length > 0) {
+    clear.forEach((d) => params.delete(d));
+  }
+
+  params.set(name, value);
+  // if value is am array and is empty remove the filter
+  if(typeof value === "object" && value.length === 0) params.delete(name);
+  if(typeof value === "string" && value === "") params.delete(name);
+  
+  var newHash = params.toString().replaceAll("%2C", ",")
+
+  if(newHash !== hash){
+    window.location.hash = params.toString().replaceAll("%2C", ",")
+    // window.history.pushState({}, "", `#${params.toString().replaceAll("%2C", ",")}`);
+  }
+}
+
+utils.updateHash = updateHash;
+

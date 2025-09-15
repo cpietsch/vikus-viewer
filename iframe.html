@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Iframe Test</title>
+    <style>
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .left-iframe {
+            width: 40%;
+            height: 100%;
+            border: none;
+        }
+
+        .right-iframe {
+            width: 60%;
+            height: 400px;
+            border: none;
+        }
+
+        .links {
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .links a {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe src="index.html" id="left-iframe" class="left-iframe"></iframe>
+    <iframe src="index.html" id="right-iframe" class="right-iframe"></iframe>
+
+    <div class="links">
+        <a href="index.html#">Initial</a>
+        <a href="index.html#mode=Test">Test Layout</a>
+        <a href="index.html#mode=Test&translate=0,-857&scale=0.071905843633175&filter=Gebäude,Zaun">Filters</a>
+        <a href="index.html#translate=-4211,-13844&scale=0.6341552518640957">Zoom</a>
+        <a
+            href="index.html#translate=-5540,-9211&scale=1.0795105357844987&borders=GEM_78_1,VII_59_849_x,GEM_78_5">Selection</a>
+    </div>
+
+    <script>
+        const leftIframe = document.getElementById('left-iframe');
+        const rightIframe = document.getElementById('right-iframe');
+        console.log('Iframes:', leftIframe, rightIframe);
+
+        // Function to monitor hash changes in an iframe
+        function monitorHashChanges(iframe, otherIframe, iframeId) {
+            iframe.addEventListener('load', function () {
+                console.log(`${iframeId} loaded:`, iframe.contentWindow.location.hash);
+
+                // Store current hash to detect changes
+                let currentHash = iframe.contentWindow.location.hash;
+
+                // Check for hash changes periodically
+                setInterval(() => {
+                    try {
+                        const newHash = iframe.contentWindow.location.hash;
+                        if (newHash !== currentHash) {
+                            console.log(`${iframeId} URL hash changed:`, newHash);
+                            currentHash = newHash;
+
+                            const otherUrl = new URL(otherIframe.src);
+                            otherIframe.src = otherUrl.pathname + newHash;
+                        }
+                    } catch (e) {
+                        // Handle potential security exceptions when accessing iframe content
+                        console.error(`Error checking ${iframeId} hash:`, e);
+                    }
+                }, 100); // Check every 100ms
+            });
+        }
+
+        // Monitor both iframes
+        monitorHashChanges(leftIframe, rightIframe, 'Left iframe');
+        monitorHashChanges(rightIframe, leftIframe, 'Right iframe');
+
+        // Handle link clicks
+        document.querySelectorAll('.links a').forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                // Update both iframes
+                leftIframe.src = this.href;
+                rightIframe.src = this.href;
+            });
+        });
+    </script>
+</body>
+
+</html>
