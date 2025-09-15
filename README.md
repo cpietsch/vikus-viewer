@@ -16,8 +16,8 @@ VIKUS Viewer can be used with IIIF Collections through the [vikus-IIIF-generator
 To use the VIKUS Viewer for a custom image collection, you need to prepare metadata files that describe the collection and objects, and configure the visualization. To get started, you first need to create a ```/data``` folder which will contain all metadata and image files. Have a look at the metadata generated for the [Van Gogh collection](https://github.com/cpietsch/vikus-viewer-data/tree/master/vangogh) (Van Gogh Museum) as a reference for the following descriptions.
 
 #### Remote Version
-You can use the latest version deployed on GitHub Pages (main branch) with your remote or local config / data using the `config` hashtag parameter:
-`https://cpietsch.github.io/vikus-viewer/?config=https://vikusviewer.fh-potsdam.de/fw4/vis/data/config.json#filter=Figurendarstellung,Profan&ids=169946,161228,92338,89554`
+You can use the latest version deployed on GitHub Pages (main branch) with your remote or local config / data using the `config`  parameter:
+`https://cpietsch.github.io/vikus-viewer/?config=https://vikusviewer.fh-potsdam.de/fw4/vis/data/config.json`
 
 #### [config.json](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json)
 
