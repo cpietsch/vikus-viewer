@@ -84,23 +84,33 @@ function init() {
           })
         }
 
+        // debug zoom to image
         // setTimeout(function () {
         //   var idx = 102
         //   canvas.zoomToImage(data[idx], 100)
         // }, 100);
 
+        // Create a lookup map to handle multiple entries with same ID
+
+        const idToItemsMap = new Map();
+        data.forEach(d => {
+          if (d.sprite) { // Ensure sprite exists
+            if (!idToItemsMap.has(d.id)) {
+              idToItemsMap.set(d.id, []);
+            }
+            idToItemsMap.get(d.id).push(d);
+          }
+        });
+
         LoaderSprites()
-          .progress(function (textures) {
-            // Create a lookup map for faster access
-            const dataMap = new Map(
-              data
-                .filter(d => d.sprite) // Ensure sprite exists
-                .map(d => [d.id, d])
-            );
-            
+          .progress(function (textures) {      
             Object.keys(textures).forEach(id => {
-              const item = dataMap.get(id);
-              if (item) item.sprite.texture = textures[id];
+              const items = idToItemsMap.get(id);
+              if (items) {
+                items.forEach(item => {
+                  item.sprite.texture = textures[id];
+                });
+              }
             });
             canvas.wakeup();
           })
