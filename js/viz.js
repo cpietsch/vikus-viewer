@@ -64,10 +64,12 @@ function init() {
       Loader(makeUrl(baseUrl.path, config.loader.items)).finished(function (data) {
         console.log(data);
 
-        utils.clean(data, config.delimiter);
+        utils.clean(data, config);
         
         if(config.filter && config.filter.type === "crossfilter") {
           tags = Crossfilter();
+        } else if(config.filter && config.filter.type === "hierarchical") {
+          tags = TagsHierarchical();
         } else {
           tags = Tags();
         }
