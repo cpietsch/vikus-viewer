@@ -2,6 +2,7 @@
 // User interactions (mouse, touch, keyboard) for Canvas module
 
 function CanvasInteraction(canvasConfig, canvasState, canvasData) {
+  var canvasDebug = CanvasDebug();
   var isInIframe = window.self !== window.top;
 
   function toScreenPoint(p) {
@@ -80,12 +81,12 @@ function CanvasInteraction(canvasConfig, canvasState, canvasData) {
       var selectedImageDistance = canvasState.getSelectedImageDistance();
 
       if (d3.event.shiftKey) {
-        console.log("shift click", selectedImage);
+        canvasDebug.log('interaction', "shift click", selectedImage);
         addBorderToImage(selectedImage);
         return;
       }
       if (d3.event.ctrlKey || d3.event.metaKey) {
-        console.log("ctrl/cmd click");
+        canvasDebug.log('interaction', "ctrl/cmd click");
         var startNew = d3.event.altKey;
         addVector(startNew);
         return;
@@ -95,7 +96,7 @@ function CanvasInteraction(canvasConfig, canvasState, canvasData) {
       if (clicktime < 250) return;
       lastClick = new Date() * 1;
 
-      console.log("click");
+      canvasDebug.log('interaction', "click");
       if (canvasState.getSpriteClick()) {
         canvasState.setSpriteClick(false);
         return;

@@ -2,6 +2,7 @@
 // Zoom and pan interactions for Canvas module
 
 function CanvasZoom(canvasConfig, canvasState, canvasData, timeline, pixiRenderer, imageLoader, detailModule) {
+  var canvasDebug = CanvasDebug();
   var canvasHash = null; // Will be set via setHashModule
   
   var zoom = d3.behavior
@@ -180,7 +181,7 @@ function CanvasZoom(canvasConfig, canvasState, canvasData, timeline, pixiRendere
         detailModule.showDetail(d, config);
         imageLoader.loadBigImage(d, config);
         canvasState.setZoomingToImage(false);
-        console.log("zoomedToImage", canvasState.isZoomedToImage());
+        canvasDebug.log('zoom', "zoomedToImage", canvasState.isZoomedToImage());
         vizContainer.style("pointer-events", "auto");
         utils.updateHash("ids", d.id, ["translate", "scale"]);
       });
@@ -198,7 +199,7 @@ function CanvasZoom(canvasConfig, canvasState, canvasData, timeline, pixiRendere
 
     var y = -canvasConfig.bottomPadding;
 
-    console.log("resetZoom", canvasState.getTranslate());
+    canvasDebug.log('zoom', "resetZoom", canvasState.getTranslate());
 
     var translate = canvasState.getTranslate();
     var vizContainer = pixiRenderer.getContainer();

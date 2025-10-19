@@ -2,6 +2,8 @@
 // URL hash synchronization for Canvas module
 
 function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDetail, canvasAnnotations, timeline, tags, search) {
+  var canvasDebug = CanvasDebug();
+  var canvasUtils = CanvasUtils();
   
   function getView() {
     var visibleItems = [];
@@ -70,11 +72,11 @@ function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDet
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
 
-    console.log("onhashchange", params.toString());
+    canvasDebug.log('hash', "onhashchange", params.toString());
 
     if (params.has("ids") && !canvasState.isUserInteraction()) {
       var ids = params.get("ids").split(",");
-      console.log("set setView", ids);
+      canvasDebug.log('hash', "set setView", ids);
       
       var searchTerm = tags.getSearchTerm ? tags.getSearchTerm() : "";
       var hasDelayedChanges = 
@@ -83,7 +85,7 @@ function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDet
         (params.get("search") !== searchTerm);
 
       if (hasDelayedChanges) {
-        console.log("delayed setView due to mode/filter/search change");
+        canvasDebug.log('hash', "delayed setView due to mode/filter/search change");
         // temp fix to avoid sticky image
         canvasState.setZoomedToImage(false);
         canvasState.setLastZoomed(0);
@@ -94,18 +96,18 @@ function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDet
           setView(ids);
         }, canvasConfig.hashDelay);
       } else {
-        console.log("setView immediately");
+        canvasDebug.log('hash', "setView immediately");
         setView(ids);
       }
     }
 
     if (!params.has("ids") && canvasState.getScale() > 1) {
-      console.log("reset zoom because no ids and scale > 1");
+      canvasDebug.log('hash', "reset zoom because no ids and scale > 1");
       canvasZoom.resetZoom();
     }
 
     if (hash === "") {
-      console.log("reset");
+      canvasDebug.log('hash', "reset");
       canvasAnnotations.removeAllCustomGraphics();
       canvasZoom.resetZoom(function () {
         tags.reset();
@@ -124,7 +126,7 @@ function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDet
 
     if (params.has("search")) {
       var searchTerm = params.get("search");
-      console.log("search term from hash", searchTerm);
+      canvasDebug.log('hash', "search term from hash", searchTerm);
       if (tags.getSearchTerm() !== searchTerm) {
         tags.search(searchTerm);
         if (typeof search !== 'undefined' && search.setSearchTerm) {
@@ -149,7 +151,7 @@ function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDet
     if (params.has("borders")) {
       setTimeout(function () {
         var borderIds = params.get("borders").split(",");
-        console.log("borders", borderIds);
+        canvasDebug.log('hash', "borders", borderIds);
         canvasAnnotations.updateImageBorders(borderIds, config);
       }, params.has("filter") || params.has("mode") ? 2000 : 0);
     } else {
@@ -158,7 +160,7 @@ function CanvasHash(canvasConfig, canvasState, canvasData, canvasZoom, canvasDet
 
     if (params.has("vector")) {
       var vectorVals = params.get("vector");
-      console.log("vector Hash", vectorVals);
+      canvasDebug.log('hash', "vector Hash", vectorVals);
       if (canvasAnnotations.getVectors().toString() !== vectorVals.toString()) {
         canvasAnnotations.setVectors(vectorVals);
         canvasAnnotations.drawVectors(config);
