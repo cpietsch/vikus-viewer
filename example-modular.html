@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+  Example: How to use the modular Canvas
+  
+  This file demonstrates the correct order for including
+  the new modular Canvas files.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VIKUS Viewer - Modular Canvas Example</title>
+  
+  <!-- External dependencies (must load first) -->
+  <script src="js/d3.v3.min.js"></script>
+  <script src="js/pixi.min.js"></script>
+  <script src="js/vue.min.js"></script>
+  <script src="js/lodash.min.js"></script>
+  <script src="js/crossfilter.js"></script>
+  
+  <!-- Utility modules -->
+  <script src="js/utils.js"></script>
+  
+  <!-- Canvas modules (ORDER MATTERS!) -->
+  <!-- Step 1: Core modules (no dependencies) -->
+  <script src="js/canvas-config.js"></script>
+  <script src="js/canvas-state.js"></script>
+  <script src="js/canvas-data.js"></script>
+  
+  <!-- Step 2: Feature modules (depend on core) -->
+  <script src="js/canvas-annotations.js"></script>
+  <script src="js/canvas-detail.js"></script>
+  <script src="js/canvas-layout.js"></script>
+  
+  <!-- Step 3: Rendering modules -->
+  <script src="js/canvas-image-loader.js"></script>
+  <script src="js/canvas-pixi-renderer.js"></script>
+  
+  <!-- Step 4: Interaction modules -->
+  <script src="js/canvas-interaction.js"></script>
+  <script src="js/canvas-zoom.js"></script>
+  <script src="js/canvas-hash.js"></script>
+  
+  <!-- Step 5: Main orchestrator (must be last) -->
+  <script src="js/canvas-modular.js"></script>
+  
+  <!-- Other VIKUS modules -->
+  <script src="js/timeline.js"></script>
+  <script src="js/tags.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/viz.js"></script>
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page">
+    <!-- Your VIKUS Viewer content -->
+  </div>
+  
+  <script>
+    // Usage is exactly the same as before!
+    // The Canvas() constructor works identically
+    
+    var canvas = Canvas();
+    
+    // All methods work as expected:
+    // canvas.init(data, timeline, config);
+    // canvas.zoom
+    // canvas.setMode(mode);
+    // canvas.resize();
+    // etc.
+  </script>
+</body>
+</html>
