@@ -260,6 +260,8 @@ function TagsHierarchical() {
         .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
         .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
         .style("opacity", 0)
+        .classed("active", function(d){ return filterWords.indexOf(d.key) > -1; })
+
 
     e.append("span")
         .text(function(d) { return d.display; })
