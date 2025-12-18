@@ -16,7 +16,8 @@ utils.getDataBaseUrl = function () {
 	var path = ""
 	if (config) {
 		path = config.split("/")
-		path.pop()
+		path.pop() // remove config file
+		path.pop() // remove data folder
 		path = path.join("/") + "/"
 		console.log("url", path)
 	}
