@@ -15,6 +15,7 @@ function TagsHierarchical() {
   var wordBackground;
   var keywordsNestGlobal;
   var sortKeywords = "alphabetical";
+  var levelIndent = 20;
 
   // var filterWords = ["Potsdam"];
   var filterWords = [];
@@ -238,7 +239,11 @@ function TagsHierarchical() {
       .classed("active", function(d){ return filterWords.indexOf(d.key) > -1; })
       // .transition()
       // .duration(1000)
-      .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
+      .style("transform", function(d,i){ 
+        var level = (d.key.match(/:/g) || []).length;
+        var indent = level * levelIndent * 0.707; // cos(45°) ≈ 0.707
+        return "translate(" + (d.x + indent) + "px," + indent + "px) rotate(45deg)"; 
+      })
       .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
       .style("opacity", 1)
       // .filter(function(d){ return filterWords.indexOf(d.key) > -1; })
@@ -257,7 +262,11 @@ function TagsHierarchical() {
         .on("mouseenter", tags.mouseenter)
         .on("mouseleave", tags.mouseleave)
         .on("click", tags.mouseclick)
-        .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
+        .style("transform", function(d,i){ 
+          var level = (d.key.match(/:/g) || []).length;
+          var indent = level * levelIndent * 0.707; // cos(45°) ≈ 0.707
+          return "translate(" + (d.x + indent) + "px," + indent + "px) rotate(45deg)"; 
+        })
         .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
         .style("opacity", 0)
         .classed("active", function(d){ return filterWords.indexOf(d.key) > -1; })
@@ -281,7 +290,11 @@ function TagsHierarchical() {
       // .transition()
       // .delay(400)
       // .duration(0)
-      .style("transform", function(d,i){ return "translate(" + d.x + "px,0px) rotate(45deg)"; })
+      .style("transform", function(d,i){ 
+        var level = (d.key.match(/:/g) || []).length;
+        var indent = level * levelIndent * 0.707; // cos(45°) ≈ 0.707
+        return "translate(" + (d.x + indent) + "px," + indent + "px) rotate(45deg)"; 
+      })
       .style("font-size", function(d) { return keywordsScale(d.values.length) + "px"; })
       .style("opacity", 1)
 
