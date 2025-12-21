@@ -52,7 +52,7 @@ function Tags() {
   }
 
   tags.resize = function(){
-    if(!state.init) return;
+    //if(!state.init) return;
     
     width = window.innerWidth - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
