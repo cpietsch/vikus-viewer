@@ -434,6 +434,7 @@ function Canvas() {
     width = window.innerWidth - margin.left - margin.right;
     height = window.innerHeight // < minHeight ? minHeight : window.innerHeight;
     widthOuter = window.innerWidth;
+    d3.select(renderer.view).style({width: widthOuter+"px", height: height+"px"});
     renderer.resize(width + margin.left + margin.right, height);
     zoom.size([width, height]);
     canvas.makeScales();
@@ -441,6 +442,8 @@ function Canvas() {
     canvas.resetZoom();
     console.log("dimensions", width, height)
     console.log("self.innerWidth", self.innerWidth, self.innerHeight)
+    var ids = new URLSearchParams(window.location.hash.slice(1)).get("ids");
+    if (ids) canvas.setView(ids.split(","), 0, true);
   };
 
   canvas.makeScales = function () {
