@@ -1379,6 +1379,8 @@ function Canvas() {
 
 
   canvas.onhashchange = function () {
+  	userInteraction = false;
+
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
 
