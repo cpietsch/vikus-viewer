@@ -1357,7 +1357,7 @@ function Canvas() {
       if (debounceHash) clearTimeout(debounceHash)
       debounceHash = setTimeout(function () {
         // console.log("debounceHash", userInteraction, zooming, lastSourceEvent);
-        if (zooming) return
+        if (zooming || state.zoomingToImage) return
         var hash = window.location.hash.slice(1);
         var params = new URLSearchParams(hash);
 
@@ -1379,8 +1379,6 @@ function Canvas() {
 
 
   canvas.onhashchange = function () {
-  	if (isInIframe) userInteraction = false;
-
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
 
