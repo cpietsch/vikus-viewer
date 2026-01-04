@@ -1112,9 +1112,9 @@ function Canvas() {
 
     zoomedToImageScale = scale;
 
-    setTimeout(function () {
-      hideTheRest(d);
-    }, duration / 2);
+    // setTimeout(function () {
+    //   hideTheRest(d);
+    // }, duration / 2);
 
     vizContainer
       .call(zoom.translate(translate).event)
