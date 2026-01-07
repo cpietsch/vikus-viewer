@@ -97,6 +97,11 @@ function init() {
           canvas.onhashchange();
         }
         
+		if (params.has("filter")) {
+		  var filter = params.get("filter").split(",")
+		  tags.setFilterWords(filter)
+		}
+		
         //setTimeout(function () {
           // canvas.setView("[GS_2000_28_GM,VII_59_777_x]");
           // canvas.setView("['GS_98_2_GM', 'VII_60_527_x', 'SM_2012-0158', 'VII_59_483_x', 'VII_60_411_x', 'VII_60_230_x']");
