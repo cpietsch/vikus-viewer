@@ -335,7 +335,7 @@ function Canvas() {
 
 
   canvas.setView = function (ids, duration) {
-    if (duration === void 0) { duration = 1000; }
+    if (duration === void 0) { duration = 1500; }
     var items = data.filter(function (d) { return ids.includes(d.id); });
     if (!items.length) return;
 
@@ -690,7 +690,7 @@ function Canvas() {
           // console.log("reset zoom")
         } else {
           // console.log("zoom to image", zoomedToImageScale, scale)
-          zoomToImage(selectedImage, 1400 / Math.sqrt(Math.sqrt(scale)));
+          zoomToImage(selectedImage, 2000 / Math.sqrt(Math.sqrt(scale)));
         }
       });
 
@@ -985,7 +985,7 @@ function Canvas() {
   };
 
 
-  var speed = 0.04;
+  var speed = 0.06;
 
   function imageAnimation() {
     var sleep = true;
@@ -1590,7 +1590,7 @@ function Canvas() {
   };
 
   canvas.resetZoom = function (callback) {
-    var duration = scale > 1 ? 1000 : 100;
+    var duration = scale > 1 ? 1500 : 100;
 
     extent = d3.extent(data, function (d) {
       return d.y;
