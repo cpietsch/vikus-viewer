@@ -28,17 +28,28 @@ You can use the following types in combination with the metadata fields from dat
 - `text`: renders simple text
 - `markdown`: renders markdown
 - `keywords`: renders an array
+- `link`: renders a hyperlink
 - `function`: a custom function that can be defined in the `source` field. Example: "column._width + 'mm * ' + column._height + 'mm'"
 
 You can choose `display` to define the display of the field. Possible values are: `column` and `wide`.
 
+Additional top-level options in config.json:
+- `searchEnabled`: set to `false` to hide the search bar (default: `true`)
+- `delimiter`: custom delimiter used to split the `keywords` field in data.csv (default: `","`)
+- `sortKeywords`: controls the sort order of the keyword tag cloud. Possible values:
+  - `"alphabetical"` (default) – sort A–Z
+  - `"alphabetical-reverse"` – sort Z–A
+  - `"count"` – sort by number of items descending
+  - `"count-reverse"` – sort by number of items ascending
+  - an array of keyword strings – display keywords in the given custom order
+- `sortArrays`: an object that maps column names to arrays defining a custom display order for crossfilter dimension values. Example: `{ "_medium": ["Oil", "Watercolor", "Pencil"] }`
+
 
 #### [data.csv](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/data.csv)
 
-The data.csv holds all the metadata information for each object in the collection. The following fields are mandatory: `id
-`, `keywords`, `year`.
-- `id` is is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
-- `keywords` comma seperated list of keywords for the tags on the top
+The data.csv holds all the metadata information for each object in the collection. The following fields are mandatory: `id`, `keywords`, `year`.
+- `id` is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
+- `keywords` comma-separated list of keywords for the tags on the top
 - `year` can be a number or a string, will be sorted ascending
 - `_fields` these are custom metadata fields (note the prefixed underscore)
 
@@ -68,18 +79,83 @@ You can also create the layout through a Jupyter Notebook in python using CLIP.
 
 ### Layouts
 
-You can add layouts or remove the time layout in the [loader.layout](https://github.com/cpietsch/vikus-viewer-data/blob/master/vangogh/config.json#L10) section of the config.json.
-Add a custom layout in this format: `{"title": "UMAP", "url": "umap.csv", "scale": 0.8 }` or `{
-        "title": "test",
-        "type": "group",
-        "groupKey": "colum to group on",
-        "columns": 4
-      },` The scale
-parameter is optional and can be used to manually tweak the display depending on your layout and number of images.
+You can add layouts or remove the time layout in the `loader.layouts` section of the config.json. Multiple layouts appear as navigation buttons in the viewer.
+
+There are two layout types:
+
+**Group layout** – groups items by a metadata column (e.g. year):
+```json
+{ "title": "Time", "type": "group", "groupKey": "year", "columns": 4 }
+```
+- `groupKey` – the column from data.csv to group by (e.g. `"year"`, `"_medium"`)
+- `columns` – number of columns per group (optional)
+
+**CSV layout** – positions items using x/y coordinates from a CSV file. Each row must contain an `id` column plus `x` and `y` coordinates:
+```json
+{ "title": "Similarity", "url": "tsne.csv", "scale": 0.8 }
+```
+- `url` – path to the CSV file (relative to the data folder or absolute)
+- `scale` – optional multiplier to manually scale the spread of the layout
+
+You can also add a visual spacer between navigation buttons:
+```json
+{ "space": true }
+```
+
+Example `loader.layouts` with multiple views:
+```json
+"layouts": [
+  { "title": "Time", "type": "group", "groupKey": "year" },
+  { "title": "Medium", "type": "group", "groupKey": "_medium", "columns": 6 },
+  { "title": "Similarity", "url": "tsne.csv", "scale": 0.8 }
+]
+```
+
+### Filters
+
+VIKUS Viewer supports three filter modes, configured via the `filter` key in config.json.
+
+#### Default (keyword tag cloud)
+When no `filter` key is set, items are filtered using a tag cloud of keywords from the `keywords` column in data.csv. Clicking a tag highlights matching items; clicking multiple tags narrows down to items matching all selected tags. Use the `sortKeywords` config option to control tag ordering.
+
+#### Hierarchical keywords
+Activate hierarchical keyword filtering by adding the following to config.json:
+```json
+"filter": {
+  "type": "hierarchical"
+}
+```
+Keywords in data.csv must use a colon-separated hierarchy, e.g. `Animals:Mammals:Dog`. The viewer will display top-level categories first and reveal subcategories as the user drills down. Example: [kunst-im-oeffentlichen-raum-pankow](https://vikus.kunst-im-oeffentlichen-raum-pankow.de).
+
+#### Crossfilter
+Crossfilter replaces the keyword bar with a panel of independent filter dimensions, each mapped to a metadata column. Selecting a value in one dimension updates the counts in all other dimensions (faceted search). Add the following to config.json:
+```json
+"filter": {
+  "type": "crossfilter",
+  "dimensions": [
+    { "label": "Medium", "source": "_medium" },
+    { "label": "Artist",  "source": "_artist" }
+  ]
+}
+```
+- `dimensions` – array of filter dimensions. Each entry has:
+  - `label` – display name shown above the filter column
+  - `source` – column name from data.csv to filter on
+
+You can control the display order of values within a dimension using the top-level `sortArrays` option:
+```json
+"sortArrays": {
+  "_medium": ["Oil on canvas", "Watercolor", "Pencil"]
+}
+```
+
+The crossfilter panel can be styled via CSS by targeting the `.crossfilter` class.
+
+Example: [Die Sammlung Emil Bührle](https://cpietsch.github.io/kunsthaus-viewer/).
 
 ### Annotations
 
-VIKUS Viewer now supports basic annotation features to enable visual communication with cultural collections. The following tools are available on desktop browsers and work directly on the VIKUS Viewer canvas:
+VIKUS Viewer supports basic annotation features to enable visual communication with cultural collections. The following tools are available on desktop browsers and work directly on the VIKUS Viewer canvas:
 
 #### Highlighting Objects
 Hold **Shift** and click on any item to highlight it. You can select multiple items in sequence to draw attention to specific objects. While holding Shift, the cursor changes to an arrow with a plus sign, indicating highlight mode.
@@ -89,7 +165,27 @@ Create simple, zoomable vector paths directly on the canvas:
 - Hold **Command** (Mac) / **Ctrl** (Win) and click anywhere to add a new segment to the current path. The cursor becomes a crosshair for precise placement.
 - Hold **Command + Option** (Mac) / **Ctrl + Alt** (Win) and click to start a new path. The cursor turns into an outlined plus sign (cell cursor), indicating the start of a new annotation.
 
-Annotations are stored in the URL's hash, allowing browser history navigation (e.g., undo via the back button). The URL hash now also encodes the current viewport, keyword selection, search query, and layout. This makes it possible to embed specific views in iframe-based storytelling environments such as [!nflect](https://uclab.fh-potsdam.de/inflect/). To enable embedding, make sure the server hosting your VIKUS Viewer instance is configured with an appropriate Content-Security-Policy header.
+### Shareable URLs
+
+The URL hash encodes the full viewer state so that specific views can be shared as links or embedded in storytelling environments such as [!nflect](https://uclab.fh-potsdam.de/inflect/). Browser history navigation (back/forward) also works thanks to hash updates.
+
+The following parameters are stored in the URL hash:
+
+| Parameter | Description |
+|-----------|-------------|
+| `filter`  | Comma-separated list of active keyword filters, e.g. `filter=Landscape,Portrait` |
+| `search`  | Active search query, e.g. `search=van+gogh` |
+| `mode`    | Active layout title, e.g. `mode=Similarity` |
+| `ids`     | Comma-separated list of highlighted item IDs, e.g. `ids=123,456` |
+
+In addition, the following **query-string** parameter (not hash) controls the data source:
+
+| Parameter | Description |
+|-----------|-------------|
+| `config`  | URL to a remote config.json, e.g. `?config=https://example.com/data/config.json` |
+| `ui`      | Set to `0` to hide all UI elements (search bar, navigation, info panel) for clean embedding, e.g. `?ui=0` |
+
+To enable embedding via `<iframe>`, make sure the server hosting your VIKUS Viewer instance is configured with an appropriate `Content-Security-Policy` header.
 
 ## Credits
 
