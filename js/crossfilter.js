@@ -50,7 +50,41 @@ function Crossfilter() {
   }
 
   tags.setFilterWords = function(words){
+    // Reset all dimensions first
+    Object.keys(filter).forEach(function (key) {
+      filter[key] = [];
+    });
 
+    if (!words || words.length === 0) {
+      tags.filter();
+      tags.update();
+      return;
+    }
+
+    // Parse dimension:value pairs from hash
+    words.forEach(function(word) {
+      var colonIndex = word.indexOf(":");
+      if (colonIndex > -1) {
+        var dim = word.substring(0, colonIndex);
+        var value = word.substring(colonIndex + 1);
+        if (filter[dim] !== undefined && filter[dim].indexOf(value) === -1) {
+          filter[dim].push(value);
+        }
+      }
+    });
+
+    tags.filter();
+    tags.update();
+  }
+
+  tags.getFilterWords = function(){
+    var pairs = [];
+    Object.entries(filter).forEach(function(entry) {
+      entry[1].forEach(function(value) {
+        pairs.push(entry[0] + ":" + value);
+      });
+    });
+    return pairs;
   }
 
   tags.getSearchTerm = function(){
@@ -88,6 +122,7 @@ function Crossfilter() {
         filter[key] = [];
         tags.filter();
         tags.update();
+        tags.updateHash(true);
         lock = false;
       })
 
@@ -112,6 +147,7 @@ function Crossfilter() {
         filter[key] = addOrRemove(filter[key], d.key);
         tags.filter();
         tags.update();
+        tags.updateHash(true);
         lock = false;
       })
       .on("mouseenter", function (d) {
@@ -216,15 +252,7 @@ function Crossfilter() {
     search = "";  // Clear search term
     tags.filter();
     tags.update();
-    
-    // Update hash when resetting
-    var hash = window.location.hash.slice(1);
-    var params = new URLSearchParams(hash);
-    params.delete("search");
-    var newHash = params.toString().replaceAll("%2C", ",");
-    if(newHash !== hash){
-      window.location.hash = newHash;
-    }
+    tags.updateHash();
   }
 
   tags.filter = function (highlight) {
@@ -262,17 +290,42 @@ function Crossfilter() {
     
     tags.filter();
     tags.update();
-    
-    // Update hash with search term for crossfilter
+    tags.updateHash();
+  }
+
+  tags.updateHash = function(clear) {
     var hash = window.location.hash.slice(1);
     var params = new URLSearchParams(hash);
-    if(search && search !== ""){
+
+    // Encode multi-dimensional filter as dimension:value pairs separated by |
+    var filterPairs = [];
+    Object.entries(filter).forEach(function(entry) {
+      var key = entry[0];
+      var values = entry[1];
+      values.forEach(function(value) {
+        filterPairs.push(key + ":" + value);
+      });
+    });
+
+    if (filterPairs.length > 0) {
+      params.set("filter", filterPairs.join("|"));
+    } else {
+      params.delete("filter");
+    }
+
+    if (search && search !== "") {
       params.set("search", search);
     } else {
       params.delete("search");
     }
-    var newHash = params.toString().replaceAll("%2C", ",");
-    if(newHash !== hash){
+
+    if (clear) {
+      params.delete("ids");
+    }
+
+    var newHash = params.toString().replaceAll("%2C", ",").replaceAll("%7C", "|");
+
+    if (newHash !== hash) {
       window.location.hash = newHash;
     }
   }

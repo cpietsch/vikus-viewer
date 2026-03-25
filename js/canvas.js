@@ -5,9 +5,9 @@
 function Canvas() {
   var margin = {
     top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
+    right: 10,
+    bottom: 10,
+    left: 10,
   };
 
   var hashDelay = 800;
@@ -1391,9 +1391,13 @@ function Canvas() {
       // if there is a mode in the hash and it is different from the current mode wait 300ms
       // before setting the view
       console.log(tags.getSearchTerm(), params.get("search")+ "")
+      var currentFilterWords = tags.getFilterWords ? tags.getFilterWords() : [];
+      var filterStr = params.has("filter") ? params.get("filter") : "";
+      // Crossfilter uses dim:value pairs separated by |, tags use comma
+      var filterSep = filterStr.indexOf(":") > -1 ? "|" : ",";
       if (
         params.has("mode") && params.get("mode") !== state.mode.title ||
-        params.has("filter") && params.get("filter") !== tags.getFilterWords().join(",") ||
+        params.has("filter") && filterStr !== currentFilterWords.join(filterSep) ||
         params.get("search") !== tags.getSearchTerm()
       ) {
         console.log("delayed setView due to mode/filter/search change")
@@ -1431,7 +1435,9 @@ function Canvas() {
     }
 
     if (params.has("filter")) {
-      var filter = params.get("filter").split(",")
+      var filterStr = params.get("filter");
+      // Crossfilter uses dim:value pairs separated by |, tags use comma
+      var filter = filterStr.indexOf(":") > -1 ? filterStr.split("|") : filterStr.split(",");
       // console.log("filter", filter)
       tags.setFilterWords(filter)
     } else {
