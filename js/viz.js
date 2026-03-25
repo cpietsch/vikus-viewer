@@ -98,9 +98,14 @@ function init() {
         }
         
 		if (params.has("filter")) {
-		  var filter = params.get("filter").split(",")
+		  var filterStr = params.get("filter");
+		  // Crossfilter uses dim:value pairs separated by |, tags use comma
+		  var filter = filterStr.indexOf(":") > -1 ? filterStr.split("|") : filterStr.split(",");
 		  tags.setFilterWords(filter)
 		}
+    // else {
+		//   tags.setFilterWords([])
+		// }
 		
         //setTimeout(function () {
           // canvas.setView("[GS_2000_28_GM,VII_59_777_x]");
