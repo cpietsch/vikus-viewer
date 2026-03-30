@@ -103,6 +103,10 @@ function Crossfilter() {
       filteredData.sort(function (a, b) {
         return sorted.indexOf(a.key) - sorted.indexOf(b.key)
       })
+    } else {
+      filteredData.sort(function (a, b) {
+        return a.key.localeCompare(b.key)
+      })
     }
 
     var classLabel = key.replace(/[^a-z0-9]/gi, '_').toLowerCase()
@@ -221,15 +225,30 @@ function Crossfilter() {
       var filterCur = filters[a];
       var index = {}
       var otherFilter = filters.filter(function (d) { return d !== filterCur; })
-      // console.log(filter, "otherFilter", otherFilter)
+      // For array dimensions, include own filter to show co-occurring values
+      var val0 = searchedData.length > 0 ? searchedData[0][filterCur[0]] : null;
+      var isArrayDim = Array.isArray(val0);
+      var activeFilter = isArrayDim ? filters : otherFilter;
       for (var i = 0; i < searchedData.length; i++) {
         var d = searchedData[i];
-        var hit = otherFilter.filter(function (otherFilter) {
-          return otherFilter[1].length === 0 || otherFilter[1].indexOf(d[otherFilter[0]]) > -1;
+        var hit = activeFilter.filter(function (af) {
+          if (af[1].length === 0) return true;
+          var val = d[af[0]];
+          if (Array.isArray(val)) {
+            return af[1].every(function(v) { return val.indexOf(v) > -1; });
+          }
+          return af[1].indexOf(val) > -1;
         })
 
-        if (hit.length == otherFilter.length) {
-          index[d[filterCur[0]]] = ++index[d[filterCur[0]]] || 1;
+        if (hit.length == activeFilter.length) {
+          var val = d[filterCur[0]];
+          if (Array.isArray(val)) {
+            val.forEach(function(v) {
+              index[v] = ++index[v] || 1;
+            });
+          } else {
+            index[val] = ++index[val] || 1;
+          }
         }
       }
       var filteredData = Object.keys(index)
@@ -267,7 +286,11 @@ function Crossfilter() {
     data.forEach(function (d) {
       var searched = search !== "" ? d.search.indexOf(search) > -1 : true
       var active = filters.filter(function (f) {
-        return f[1].indexOf(d[f[0]]) > -1;
+        var val = d[f[0]];
+        if (Array.isArray(val)) {
+          return f[1].every(function(v) { return val.indexOf(v) > -1; });
+        }
+        return f[1].indexOf(val) > -1;
       }).length == filters.length && searched;
 
       if (searched) {
