@@ -50,6 +50,7 @@ The data.csv holds all the metadata information for each object in the collectio
 - `id` is linked to the name of the corresponding image. (id: 123 -> 123.jpg)
 - `keywords` comma-separated list of keywords for the tags on the top
 - `year` can be a number or a string, will be sorted ascending
+- `imagenum` optional number of detail pages for an item (default: `1`). When greater than `1`, the detail view allows flipping between pages
 - `_fields` these are custom metadata fields (note the prefixed underscore)
 
 
@@ -70,6 +71,30 @@ This is the information displayed on the left side when opening the visualizatio
 ### Images
 
 Apart from the metadata, you need to preprocess the image files, i.e., to generate sprites and textures for the different zoom levels. Please see the  [vikus-viewer-script](https://github.com/cpietsch/vikus-viewer-script) for the details. After running the script you can place the resulting folders into ```/data``` or any other location. Make sure that the texture URLs in the config.json point to these folders.
+
+Texture paths are configured under `loader.textures` in config.json. Each level (`medium`, `detail`, and optionally `big`) usually points to a folder via `url`, with files named `{id}.jpg`. For multipage items (`imagenum` > 1), the default `big` folder layout uses `{id}.jpg` for the first page and `{id}_{page}.jpg` for later pages (e.g. `123_1.jpg`).
+
+Alternatively, `detail` and `big` can load absolute URLs from a column in data.csv by setting `csv` to that column name (e.g. `"_big_url"`):
+
+```json
+"textures": {
+  "medium": { "url": "data/sprites/spritesheets/", "size": 256 },
+  "detail": { "url": "data/textures/1024/", "size": 1024 },
+  "big": { "csv": "_big_url", "size": 4096 }
+}
+```
+
+For `big` textures with `csv`, each cell may contain either:
+- a **single URL** — used for every page (fine when `imagenum` is `1` or unset)
+- **several URLs** separated by `|`, indexed by page (`0` … `imagenum - 1`)
+
+```csv
+id,imagenum,_big_url
+42,3,https://example.com/a.jpg|https://example.com/b.jpg|https://example.com/c.jpg
+99,1,https://example.com/only.jpg
+```
+
+If a page index has no URL, the first URL in the cell is used. `imagenum` remains the source of truth for how many pages exist.
 
 ### Similarity (t-SNE/UMAP)
 

@@ -1721,7 +1721,14 @@ function Canvas() {
     var page = d.page ? "_" + d.page : "";
     var url = "";
     if (config.loader.textures.big.csv) {
-      url = d[config.loader.textures.big.csv];
+      // Single URL, or "|"-separated URLs indexed by d.page (imagenum remains page count).
+      var urls = String(d[config.loader.textures.big.csv] || "")
+        .split("|")
+        .map(function (u) {
+          return u.trim();
+        });
+      var pageIndex = d.page || 0;
+      url = urls[pageIndex] || urls[0] || "";
     } else {
       url = config.loader.textures.big.url + d.id + page + ".jpg";
     }
