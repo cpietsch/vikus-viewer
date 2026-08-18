@@ -482,17 +482,24 @@ function Canvas() {
   canvas.initGroupLayout = function () {
     var groupKey = state.mode.groupKey
     console.log("initGroupLayout", groupKey);
+    // Only widen the domain with timeline rows for the year layout.
+    // Timeline CSV rows lack other data.csv columns, so nesting them on a
+    // non-year groupKey would create a spurious "undefined" column.
+    var groupSource = groupKey === "year" ? data.concat(timelineData) : data;
     canvasDomain = d3
       .nest()
       .key(function (d) {
         return d[groupKey];
       })
-      .entries(data.concat(timelineData))
-      .sort(function (a, b) {
-        return a.key - b.key;
-      })
+      .entries(groupSource)
       .map(function (d) {
         return d.key;
+      })
+      .filter(function (d) {
+        return d != null && d !== "" && d !== "undefined" && d !== "null";
+      })
+      .sort(function (a, b) {
+        return a - b;
       });
 
     // if (groupKey == "stadt") {
