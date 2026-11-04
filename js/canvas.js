@@ -1210,7 +1210,7 @@ function Canvas() {
   function showAllImages() {
     data.forEach(function (d) {
       d.alpha = d.active ? 1 : 0.2;
-      d.alpha2 = d.visible ? 1 : 0;
+      d.alpha2 = 0;
     });
   }
 
